@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/hero.svg" alt="SideQuest — South Africa is your map" width="100%" max-width="900px"/>
+<img src="assets/hero.svg" alt="SideQuest — South Africa is your map" width="100%"/>
 
 # SIDEQUEST 🇿🇦
 
