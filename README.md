@@ -105,6 +105,24 @@ Android Studio (the script points at it automatically). The APK (`com.jacy.sideq
 includes the INTERNET and location permissions; install it by enabling "Install unknown
 apps" and opening the file from your phone, or `adb install` it over USB.
 
+## Auto-updates & releasing
+
+The Android app **self-updates for free via GitHub Releases** (public repo, no paid
+services): on launch it checks the latest release, and if it's newer than the installed
+version it offers to download and install it (Android asks you to approve the install
+once per app).
+
+To ship a new version to your phone:
+
+```bash
+npm run release patch   # or minor / major
+```
+
+That bumps the version everywhere (package.json, `src/lib/updater.ts`, Android
+`versionName`/`versionCode`), rebuilds the APK, commits, tags `vX.Y.Z`, pushes to
+GitHub, and attaches the APK to a release. The next time you open the app on your
+phone it shows the update banner. Repo: github.com/JacyFleisie/sidequest.
+
 ## Project structure
 
 ```
