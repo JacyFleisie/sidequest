@@ -953,6 +953,18 @@ select { background: var(--card-2); color: var(--text); border: 1px solid var(--
 .badge-sheet-need { margin-top: 10px; font-size: 13px; color: var(--muted); text-align: left; }
 
 .home-base-select { width: 100%; margin-bottom: 8px; }
+.home-base-current {
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  background: var(--card-2); border: 1px solid #ffd23f44; border-radius: 14px;
+  padding: 13px 14px; font-size: 15px; font-weight: 800; color: var(--gold);
+}
+.home-base-from { font-size: 12px; font-weight: 600; color: var(--muted); }
+.home-base-reset {
+  margin-top: 10px; font: inherit; font-size: 12px; font-weight: 800; color: var(--muted);
+  background: transparent; border: 1px solid var(--border); border-radius: 99px;
+  padding: 8px 14px; cursor: pointer; transition: all 0.15s ease;
+}
+.home-base-reset:hover { color: var(--text); border-color: var(--gold); }
 .memory-list { display: flex; flex-direction: column; gap: 8px; }
 .memory-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; }
 .memory-title { font-size: 13px; font-weight: 800; }

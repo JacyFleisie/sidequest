@@ -86,12 +86,13 @@ export default function ActiveQuest() {
     }
 
     // Record the context of this completion for badges: weather where you are
-    // (free Open-Meteo) and each stop's distance from your home base.
-    const base = HOME_BASES.find((x) => x.id === state.homeBaseId) ?? HOME_BASES[0]
+    // (free Open-Meteo) and each stop's distance from your home base — which is
+    // the exact spot chosen on the map when one is set.
+    const homePos = state.startPlace ?? HOME_BASES.find((x) => x.id === state.homeBaseId) ?? HOME_BASES[0]
     const distFromHomeKm: Record<string, number> = {}
     for (const s of session.steps) {
       const q = questById(s.questId)
-      distFromHomeKm[s.questId] = q ? haversineKm(base.lat, base.lng, q.lat, q.lng) : 0
+      distFromHomeKm[s.questId] = q ? haversineKm(homePos.lat, homePos.lng, q.lat, q.lng) : 0
     }
     const weather = await fetchWeather(pos.lat, pos.lng)
     completeActiveSession({ weather, distFromHomeKm })

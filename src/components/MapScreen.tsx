@@ -7,7 +7,7 @@ import 'leaflet.markercluster'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { ALL_QUESTS, CATEGORY_META, CHAINS, HOME_BASES, type Category, type Chain, type Quest } from '../data/quests'
-import { categoryColor, getUserLocation, nearestBase } from '../lib/game'
+import { categoryColor, getUserLocation, nearestBase, reverseGeocodeLabel } from '../lib/game'
 import { useGame, type StartPlace } from '../lib/store'
 import LocationPicker from './LocationPicker'
 import { QuestSheet } from './QuestSheet'
@@ -255,9 +255,12 @@ export default function MapScreen() {
   const useMyLocation = () => {
     setLocError(null)
     getUserLocation(
-      (latitude, longitude) => {
+      async (latitude, longitude) => {
+        // Reverse-geocode the GPS point (free OpenStreetMap Nominatim) so the home
+        // base is your actual spot, not just the nearest of the 19 city bases.
+        const label = await reverseGeocodeLabel(latitude, longitude)
         const nearest = nearestBase(latitude, longitude)
-        setStartPlace({ label: nearest.label, lat: latitude, lng: longitude })
+        setStartPlace({ label, lat: latitude, lng: longitude })
         setHomeBaseId(nearest.id)
         mapRef.current?.flyTo([latitude, longitude], 13, { duration: 1.4 })
       },

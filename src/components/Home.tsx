@@ -5,7 +5,7 @@ import { useGame } from '../lib/store'
 
 export default function Home() {
   const navigate = useNavigate()
-  const { state, homeBaseId } = useGame()
+  const { state, homeBaseId, startPlace } = useGame()
 
   const completedIds = Object.keys(state.completed).filter((id) => !id.startsWith('chain-') && !id.startsWith('s-'))
   const completedChainIds = Object.keys(state.completed).filter((id) => id.startsWith('chain-') || id.startsWith('s-'))
@@ -96,8 +96,8 @@ export default function Home() {
       </section>
 
       <p className="home-foot">
-        Home base: {HOME_BASES.find((b) => b.id === homeBaseId)?.label ?? homeBaseId} · Free forever · Made in South
-        Africa 🇿🇦
+        Home base: {startPlace?.label ?? HOME_BASES.find((b) => b.id === homeBaseId)?.label ?? homeBaseId} · Free
+        forever · Made in South Africa 🇿🇦
       </p>
     </div>
   )

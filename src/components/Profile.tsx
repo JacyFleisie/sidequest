@@ -8,7 +8,7 @@ import { Bar, Sheet } from './ui'
 const LEVEL_EMOJI = ['🌱', '🌿', '🔥', '⚡', '🌟', '💎', '👑', '🦁', '🚀', '🌍', '🏆', '🇿🇦']
 
 export default function Profile() {
-  const { state, playerName, setPlayerName, homeBaseId, setHomeBaseId } = useGame()
+  const { state, playerName, setPlayerName, homeBaseId, setHomeBaseId, startPlace, setStartPlace } = useGame()
   const [editingName, setEditingName] = useState(false)
   const [nameDraft, setNameDraft] = useState(playerName)
   const [selectedBadge, setSelectedBadge] = useState<BadgeDef | null>(null)
@@ -179,14 +179,31 @@ export default function Profile() {
 
       <section className="profile-section">
         <h2 className="section-title">📍 Home base</h2>
-        <select className="home-base-select" value={homeBaseId} onChange={(e) => setHomeBaseId(e.target.value)}>
-          {HOME_BASES.map((b) => (
-            <option key={b.id} value={b.id}>
-              {b.label}
-            </option>
-          ))}
-        </select>
-        <p className="section-sub">The generator measures "how far" from here.</p>
+        {startPlace ? (
+          <>
+            <div className="home-base-current">
+              📍 {startPlace.label}
+              <span className="home-base-from">— the spot you chose on the map</span>
+            </div>
+            <button className="home-base-reset" onClick={() => setStartPlace(null)}>
+              ↩ Reset to a city base
+            </button>
+            <p className="section-sub">Your exact home base — the generator and badges measure "how far" from here.</p>
+          </>
+        ) : (
+          <>
+            <select className="home-base-select" value={homeBaseId} onChange={(e) => setHomeBaseId(e.target.value)}>
+              {HOME_BASES.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.label}
+                </option>
+              ))}
+            </select>
+            <p className="section-sub">
+              Pick any spot on the Map tab's 📍 Start picker (or use your location) to make it your exact home base.
+            </p>
+          </>
+        )}
       </section>
 
       <section className="profile-section">

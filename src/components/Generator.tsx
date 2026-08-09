@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { HOME_BASES, VIBE_META, chainStats, type Vibe } from '../data/quests'
-import { fmtCost, fmtDuration, generateQuest, getUserLocation, nearestBase, type GeneratorInput } from '../lib/game'
+import { fmtCost, fmtDuration, generateQuest, getUserLocation, nearestBase, reverseGeocodeLabel, type GeneratorInput } from '../lib/game'
 import { useGame, type StartPlace } from '../lib/store'
 import LocationPicker from './LocationPicker'
 import { Button, QuestStats, Stat } from './ui'
@@ -61,9 +61,10 @@ export default function Generator() {
 
   const useMyLocation = () => {
     getUserLocation(
-      (latitude, longitude) => {
+      async (latitude, longitude) => {
+        const label = await reverseGeocodeLabel(latitude, longitude)
         const nearest = nearestBase(latitude, longitude)
-        setStartPlace({ label: nearest.label, lat: latitude, lng: longitude })
+        setStartPlace({ label, lat: latitude, lng: longitude })
         setHomeBaseId(nearest.id)
       },
       () => {},

@@ -505,6 +505,26 @@ export const getUserLocation = (
 }
 
 // ── Location helpers ─────────────────────────────────────────────────────────
+/**
+ * Human name for a coordinate: reverse-geocodes via free OpenStreetMap Nominatim
+ * (the same service search uses), falling back to the nearest of the 19 city bases.
+ */
+export const reverseGeocodeLabel = async (lat: number, lng: number): Promise<string> => {
+  const fallback = nearestBase(lat, lng).label
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=12`,
+    )
+    if (!res.ok) return fallback
+    const data = await res.json()
+    const a = data?.address
+    const name = a?.suburb || a?.town || a?.city || a?.village || a?.hamlet
+    return name || fallback
+  } catch {
+    return fallback
+  }
+}
+
 export const nearestBase = (lat: number, lng: number): HomeBase => {
   let best = HOME_BASES[0]
   let bestDist = Infinity
