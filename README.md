@@ -30,10 +30,11 @@ enough of class, grab your friends and go find a quest.
 
 ## About
 
-**SideQuest turns all of South Africa into a game board.** With **249 hand-written
+**SideQuest turns all of South Africa into a game board.** With **263 hand-written
 quests** across all 9 provinces — from a kota hunt in Soweto and a sunset at Zoo Lake,
-to lion-watching in the Kruger and a waterfall in KZN — every quest you finish maps a
-little more of the country.
+to lion-watching in the Kruger and a waterfall in KZN, from the Cradle of Humankind to
+a game reserve inside Krugersdorp — every quest you finish maps a little more of the
+country.
 
 No accounts. No subscriptions. No paid APIs. Just you, your friends, and the map.
 
