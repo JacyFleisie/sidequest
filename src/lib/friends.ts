@@ -1,5 +1,6 @@
 import { ALL_QUESTS, CHAINS, type Quest } from '../data/quests'
 import { BADGES, levelFromXp, type Progress } from './game'
+import { shareBase } from './share'
 import type { Friend } from './store'
 
 // ── Deterministic seeded profile (no backend — stable per friend id) ────────
@@ -182,10 +183,8 @@ export const decodeFriendCard = (raw: string): FriendCard | null => {
   }
 }
 
-export const friendCardUrl = (name: string, emoji: string): string => {
-  const base = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}/`
-  return `${base}?friend=${encodeFriendCard(name, emoji)}`
-}
+export const friendCardUrl = (name: string, emoji: string): string =>
+  `${shareBase()}?friend=${encodeFriendCard(name, emoji)}`
 
 // ── Rivalry comparisons ──────────────────────────────────────────────────────
 export interface Rivalry {

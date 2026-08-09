@@ -1,4 +1,16 @@
 // ── Share links: chains travel as URL params, no backend needed ─────────────
+import { Capacitor } from '@capacitor/core'
+
+// The public copy of the web app (GitHub Pages). Inside the installed app the origin
+// is a private https://localhost, so links generated there must point here instead —
+// otherwise a friend receiving a quest/card link would get a dead localhost URL.
+export const SHARE_BASE = 'https://jacyfleisie.github.io/sidequest'
+
+export const shareBase = (): string => {
+  if (Capacitor.isNativePlatform()) return `${SHARE_BASE}/`
+  return `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}/`
+}
+
 export interface SharedChain {
   t: string // title
   e: string // emoji
@@ -26,10 +38,8 @@ export const decodeChainShare = (raw: string): SharedChain | null => {
   }
 }
 
-export const chainShareUrl = (title: string, emoji: string, questIds: string[]): string => {
-  const base = `${window.location.origin}${window.location.pathname.split('/').slice(0, -1).join('/')}/`
-  return `${base}?chain=${encodeChainShare(title, emoji, questIds)}`
-}
+export const chainShareUrl = (title: string, emoji: string, questIds: string[]): string =>
+  `${shareBase()}?chain=${encodeChainShare(title, emoji, questIds)}`
 
 export const copyText = async (text: string): Promise<boolean> => {
   try {
