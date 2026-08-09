@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Web build output
+dist/
+*.tsbuildinfo
+
+# Machine-specific
+*.local
+.DS_Store
+.env
+.env.*
+
+# Build artifact (published as a GitHub Release asset instead)
+SideQuest-debug.apk
+
+# Android / Capacitor (generated or machine-specific — recreate with `npm run apk`)
+android/.gradle/
+android/build/
+android/app/build/
+android/capacitor-cordova-android-plugins/build/
+android/local.properties
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/public/
+
+# IDE / editor
+.idea/
+*.iml
+.vscode/
+
+# Agent tooling (run docs, logs, temp test fixtures)
+.freebuff/
