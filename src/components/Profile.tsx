@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CATEGORY_META, HOME_BASES, PROVINCES, type Category, type ProvinceId } from '../data/quests'
 import { BADGES, completedCountByProvince, levelProgress, playerStats, rankFromXp, totalCompleted, totalQuestsInProvince, type BadgeDef, type Progress } from '../lib/game'
 import { useGame } from '../lib/store'
+import { checkForUpdate, downloadAndInstall, getCurrentVersion, isAndroid, type UpdateInfo } from '../lib/updater'
 import { Bar, Sheet } from './ui'
 
 const LEVEL_EMOJI = ['🌱', '🌿', '🔥', '⚡', '🌟', '💎', '👑', '🦁', '🚀', '🌍', '🏆', '🇿🇦']
@@ -207,6 +208,10 @@ export default function Profile() {
       </section>
 
       <section className="profile-section">
+        <UpdateCard />
+      </section>
+
+      <section className="profile-section">
         <button
           className="reset-btn"
           onClick={() => {
@@ -219,6 +224,74 @@ export default function Profile() {
           🗑️ Reset progress
         </button>
       </section>
+    </div>
+  )
+}
+
+function UpdateCard() {
+  const [version, setVersion] = useState('…')
+  const [status, setStatus] = useState<'idle' | 'checking' | 'latest' | 'available' | 'error'>('idle')
+  const [info, setInfo] = useState<UpdateInfo | null>(null)
+
+  useEffect(() => {
+    void getCurrentVersion().then(setVersion)
+  }, [])
+
+  const check = async () => {
+    setStatus('checking')
+    const found = await checkForUpdate()
+    if (found) {
+      setInfo(found)
+      setStatus('available')
+    } else {
+      setStatus('latest')
+    }
+  }
+
+  const install = async () => {
+    if (!info) return
+    setStatus('checking')
+    try {
+      await downloadAndInstall(info)
+      setStatus('latest')
+    } catch (e) {
+      setInfo(null)
+      setStatus('error')
+    }
+  }
+
+  return (
+    <div className="update-card">
+      <h2 className="section-title">🔄 About & updates</h2>
+      <p className="update-card-version">
+        📍 SIDEQUEST <b>v{version}</b>
+        {isAndroid() ? ' · Android app' : ' · web build (refresh for updates)'}
+      </p>
+      {status === 'idle' && (
+        <button className="update-btn" onClick={() => void check()}>
+          🔍 Check for updates
+        </button>
+      )}
+      {status === 'checking' && <p className="update-card-status">⏳ Checking for updates…</p>}
+      {status === 'latest' && (
+        <p className="update-card-status">✓ You're on the latest version{info ? ` (installed v${info.latest})` : ''}.</p>
+      )}
+      {status === 'available' && info && (
+        <div className="update-available">
+          <p className="update-card-status">⬇️ Update available: v{info.latest} (you're on v{info.current}).</p>
+          <button className="update-btn update-btn-gold" onClick={() => void install()}>
+            ⬇️ Install v{info.latest}
+          </button>
+        </div>
+      )}
+      {status === 'error' && (
+        <div className="update-available">
+          <p className="update-card-status">⚠️ Couldn't install the update — check your connection and try again.</p>
+          <button className="update-btn" onClick={() => void check()}>
+            ↻ Try again
+          </button>
+        </div>
+      )}
     </div>
   )
 }
