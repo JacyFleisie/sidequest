@@ -37,6 +37,9 @@ Other scripts: `npm run build` (production build to `dist/`), `npm run typecheck
   chains (The Garden Route, The Durban Golden Mile, Soweto Saturday…). The 🗣️ **Social**
   vibe rolls people-quests (chat with strangers, free hugs, busk, scream in a sports field),
   and the generator never repeats itself — every roll excludes the last 18 suggestions.
+  It is **strict**: quests always respect your exact budget, time, distance and group
+  size (no silent "we loosened things up" widening) — if nothing matches it shows the
+  closest quests just outside your range and why they don't fit.
   249 quests across all 9 provinces.
 - **🏆 Profile** — XP, levels, 🎖️ **ranks** (Rookie → Explorer → Trailblazer →
   Legend of SA, with a progress bar and a "NEW RANK" celebration on promotion),

@@ -258,8 +258,9 @@ export interface GeneratorResult {
   singles: Quest[]
   featured: Chain | null
   matchedCount: number
-  relaxed: string[]
   nearbyLabel: string
+  /** Closest quests just outside the player's strict choices, when nothing matched. */
+  nearMisses: { quest: Quest; reason: string }[]
 }
 
 const DISTANCE: Record<GeneratorInput['distanceTier'], number> = {
@@ -299,11 +300,12 @@ const CATEGORY_HINTS: Partial<Record<Vibe, Category[]>> = {
 export const generateQuest = (input: GeneratorInput): GeneratorResult => {
   const { base, vibe, customCoords } = input
   const meters = DISTANCE[input.distanceTier]
-  const relaxed: string[] = []
-
-  let budget = input.budget
-  let maxMinutes = input.maxMinutes
-  let distance = meters
+  // Strict mode: the generator honours the player's exact budget, time and distance
+  // choices. If too few quests match, it says so honestly instead of silently
+  // widening the constraints (that "we loosened things up" behaviour is gone).
+  const budget = input.budget
+  const maxMinutes = input.maxMinutes
+  const distance = meters
 
   const candidates = (): Quest[] =>
     ALL_QUESTS.filter(
@@ -331,25 +333,39 @@ export const generateQuest = (input: GeneratorInput): GeneratorResult => {
   let matches = candidates()
   let scored = matches.map((x) => ({ quest: x, score: score(x) })).sort((a, b) => b.score - a.score)
 
-  if (scored.length < 4) {
-    if (budget !== Infinity) {
-      relaxed.push(`Budget bumped to "doesn't matter"`)
-      budget = Infinity
-      matches = candidates()
-      scored = matches.map((x) => ({ quest: x, score: score(x) })).sort((a, b) => b.score - a.score)
+  // Strict mode can legitimately match nothing. Rather than silently widening the
+  // filters, surface the quests that are *just* outside the player's choices so they
+  // know exactly what to tweak.
+  const nearMisses: { quest: Quest; reason: string }[] = []
+  if (scored.length === 0) {
+    const from = customCoords ?? { lat: base.lat, lng: base.lng }
+    const list: { quest: Quest; reason: string; delta: number }[] = []
+    for (const q of ALL_QUESTS) {
+      if (input.exclude?.has(q.id)) continue
+      const inPeople = q.players[0] <= input.people && q.players[1] >= input.people
+      const inBudget = q.cost <= budget
+      const inTime = q.durationMin <= maxMinutes
+      const inDist = inRange(q, base, distance, customCoords)
+      const misses: { reason: string; delta: number }[] = []
+      if (!inBudget) {
+        const d = q.cost - budget
+        misses.push({ reason: `R${d} over your budget`, delta: d })
+      }
+      if (!inTime) {
+        const d = q.durationMin - maxMinutes
+        misses.push({ reason: `${d} min longer than your time`, delta: d })
+      }
+      if (!inDist && distance !== Infinity) {
+        const d = Math.round(haversineKm(from.lat, from.lng, q.lat, q.lng) * 1000 - distance)
+        misses.push({ reason: `${(d / 1000).toFixed(1)} km outside your distance`, delta: d })
+      }
+      if (!inPeople) {
+        misses.push({ reason: `made for ${q.players[1]} person${q.players[1] > 1 ? 's' : ''}`, delta: 1000 + q.players[1] })
+      }
+      if (misses.length === 1) list.push({ quest: q, reason: misses[0].reason, delta: misses[0].delta })
     }
-  }
-  if (scored.length < 3 && distance !== Infinity) {
-    relaxed.push('Distance opened up to anywhere in SA')
-    distance = Infinity
-    matches = candidates()
-    scored = matches.map((x) => ({ quest: x, score: score(x) })).sort((a, b) => b.score - a.score)
-  }
-  if (scored.length < 3) {
-    relaxed.push('Time limit relaxed')
-    maxMinutes = Infinity
-    matches = candidates()
-    scored = matches.map((x) => ({ quest: x, score: score(x) })).sort((a, b) => b.score - a.score)
+    list.sort((a, b) => a.delta - b.delta)
+    nearMisses.push(...list.slice(0, 3).map(({ quest, reason }) => ({ quest, reason })))
   }
 
   // Pick a diverse chain: prefer top scores, but avoid repeating categories.
@@ -397,8 +413,8 @@ export const generateQuest = (input: GeneratorInput): GeneratorResult => {
     singles,
     featured: featured ?? null,
     matchedCount: scored.length,
-    relaxed,
     nearbyLabel: distance === Infinity ? 'South Africa' : (customCoords?.label ?? base.label),
+    nearMisses,
   }
 }
 

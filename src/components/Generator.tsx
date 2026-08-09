@@ -109,9 +109,6 @@ export default function Generator() {
           <p className="page-sub">
             {result.matchedCount} quests found {result.nearbyLabel === 'South Africa' ? 'across South Africa' : `near ${result.nearbyLabel}`}
           </p>
-          {result.relaxed.length > 0 && (
-            <div className="relaxed-note">Psst — we loosened things up: {result.relaxed.join(' · ')}</div>
-          )}
         </header>
 
         {result.generated && (
@@ -198,7 +195,24 @@ export default function Generator() {
         )}
 
         {!result.generated && result.singles.length === 0 && !result.featured && (
-          <div className="empty-state">Nothing matched — try a different combo. South Africa still loves you.</div>
+          <div className="empty-state">
+            <p>Nothing matched your exact choices — South Africa still loves you.</p>
+            {result.nearMisses.length > 0 && (
+              <div className="near-misses">
+                <p className="near-misses-title">Closest quests outside your range:</p>
+                {result.nearMisses.map(({ quest, reason }) => (
+                  <div className="near-miss" key={quest.id}>
+                    <span className="near-miss-emoji">{quest.emoji}</span>
+                    <span className="near-miss-main">
+                      <span className="near-miss-title">{quest.title}</span>
+                      <span className="near-miss-reason">{reason}</span>
+                    </span>
+                  </div>
+                ))}
+                <p className="near-misses-hint">Tweak your budget, time or distance to pull these in.</p>
+              </div>
+            )}
+          </div>
         )}
       </div>
     )
