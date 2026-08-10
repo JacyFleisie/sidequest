@@ -43,14 +43,7 @@ export async function ensureIdentity(): Promise<string | null> {
       }
     }
     if (!uid) {
-      // When Supabase's captcha protection is on, anonymous sign-in requires a
-      // fresh Turnstile token. Acquire one invisibly — users never see it.
-      const captchaToken = turnstileEnabled ? await acquireTurnstileToken() : undefined
-      const { data: anon, error: anonErr } = await supabase.auth.signInAnonymously(
-        captchaToken ? { options: { captchaToken } } : undefined,
-      )
-      if (anonErr) console.warn('[sync] anonymous sign-in unavailable (enable it in Supabase → Authentication → Sign In / Up):', anonErr.message)
-      uid = anon.user?.id ?? null
+      uid = await signInAnonymouslyWithCaptcha()
     }
     cachedUid = uid
     return uid
@@ -64,6 +57,21 @@ export const syncEnabled = (): boolean => supabaseConfigured
 
 /** True when running inside the Capacitor Android shell (deep links apply). */
 export const isNativePlatform = (): boolean => Capacitor.isNativePlatform()
+
+/**
+ * Signs in anonymously, passing an invisible Turnstile token when captcha
+ * protection is enabled (Supabase rejects token-less anonymous sign-ins then).
+ * Returns the uid, or null on failure.
+ */
+async function signInAnonymouslyWithCaptcha(): Promise<string | null> {
+  if (!supabase) return null
+  const captchaToken = turnstileEnabled ? await acquireTurnstileToken() : undefined
+  const { data: anon, error: anonErr } = await supabase.auth.signInAnonymously(
+    captchaToken ? { options: { captchaToken } } : undefined,
+  )
+  if (anonErr) console.warn('[sync] anonymous sign-in unavailable (enable it in Supabase → Authentication → Sign In / Up):', anonErr.message)
+  return anon.user?.id ?? null
+}
 
 // ── Profile push ────────────────────────────────────────────────────────────
 
@@ -738,13 +746,13 @@ export async function upgradeToAccount(
 ): Promise<{ ok: boolean; error?: string }> {
   if (!supabase) return { ok: false, error: 'Not connected to the sync server.' }
 
-  /** Signs in anonymously if there is no session at all (e.g. after the
-   * Google fallback signed the guest out). Returns false if that fails. */
+  /** Signs in anonymously if there is no session at all (e.g. after sign-out
+   * or the Google fallback). Captcha-aware — same helper the boot path uses.
+   * Returns false if that fails. */
   const ensureSession = async (): Promise<boolean> => {
     const { data } = await supabase!.auth.getSession()
     if (data.session) return true
-    const { data: anon, error } = await supabase!.auth.signInAnonymously()
-    return Boolean(anon.user && !error)
+    return (await signInAnonymouslyWithCaptcha()) !== null
   }
 
   const attempt = async (): Promise<string | null> => {

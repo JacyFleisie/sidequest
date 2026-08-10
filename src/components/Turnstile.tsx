@@ -49,38 +49,45 @@ export async function acquireTurnstileToken(): Promise<string | null> {
     await loadTurnstileScript()
     const turnstile = window.turnstile
     if (!turnstile) return null
-    return await new Promise<string | null>((resolve) => {
-      // Render off-screen so the user never sees it.
-      const host = document.createElement('div')
-      host.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:300px;height:65px'
-      document.body.appendChild(host)
-      let settled = false
-      let widgetId = ''
-      const finish = (token: string | null) => {
-        if (settled) return
-        settled = true
-        resolve(token)
-        try {
-          if (widgetId && window.turnstile) window.turnstile.remove(widgetId)
-        } catch {
-          // best effort
+
+    // Retry once with a fresh widget — Cloudflare can hiccup (a hung solve
+    // previously left the app unable to sign in anonymously at all).
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const token = await new Promise<string | null>((resolve) => {
+        // Render off-screen so the user never sees it.
+        const host = document.createElement('div')
+        host.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:300px;height:65px'
+        document.body.appendChild(host)
+        let settled = false
+        let widgetId = ''
+        const finish = (t: string | null) => {
+          if (settled) return
+          settled = true
+          resolve(t)
+          try {
+            if (widgetId && window.turnstile) window.turnstile.remove(widgetId)
+          } catch {
+            // best effort
+          }
+          host.remove()
         }
-        host.remove()
-      }
-      try {
-        widgetId = turnstile.render(host, {
-          sitekey: TURNSTILE_SITE_KEY,
-          theme: 'dark',
-          callback: (token) => finish(token),
-          'expired-callback': () => finish(null),
-          'error-callback': () => finish(null),
-        })
-      } catch {
-        finish(null)
-        return
-      }
-      window.setTimeout(() => finish(null), 15000)
-    })
+        try {
+          widgetId = turnstile.render(host, {
+            sitekey: TURNSTILE_SITE_KEY,
+            theme: 'dark',
+            callback: (t) => finish(t),
+            'expired-callback': () => finish(null),
+            'error-callback': () => finish(null),
+          })
+        } catch {
+          finish(null)
+          return
+        }
+        window.setTimeout(() => finish(null), 10000)
+      })
+      if (token) return token
+    }
+    return null
   } catch {
     return null
   }
