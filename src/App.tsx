@@ -10,6 +10,7 @@ import ActiveQuest from './components/ActiveQuest'
 import CompletionModal from './components/CompletionModal'
 import Profile from './components/Profile'
 import UpdateBanner from './components/UpdateBanner'
+import UpdatedNotice from './components/UpdatedNotice'
 import { QuestSheet } from './components/QuestSheet'
 import { Button, Sheet } from './components/ui'
 import { ALL_QUESTS, type Chain, type Quest } from './data/quests'
@@ -73,6 +74,7 @@ export default function App() {
   return (
     <div className="app">
       <UpdateBanner />
+      <UpdatedNotice />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/map" element={<MapScreen />} />

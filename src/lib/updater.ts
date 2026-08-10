@@ -52,6 +52,66 @@ export async function getCurrentVersion(): Promise<string> {
   return APP_VERSION
 }
 
+// Where the app remembers the version it last ran, so it can notice "we just updated".
+const LAST_SEEN_VERSION_KEY = 'sidequest-last-seen-version'
+
+/** The version the app saw on its previous launch, or null on a fresh install. */
+export function getLastSeenVersion(): string | null {
+  try {
+    return localStorage.getItem(LAST_SEEN_VERSION_KEY)
+  } catch {
+    return null
+  }
+}
+
+/** Records the current version so the next launch can detect an update. */
+export function rememberVersion(version: string): void {
+  try {
+    localStorage.setItem(LAST_SEEN_VERSION_KEY, version)
+  } catch {
+    // storage unavailable — we just won't be able to detect the next update
+  }
+}
+
+/**
+ * Fetches the release notes for a specific version from GitHub (public repo — no key).
+ * Returns null when the release or its notes don't exist. Never throws.
+ */
+export async function fetchReleaseNotes(version: string): Promise<string | null> {
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO}/releases/tags/v${version}`)
+    if (!res.ok) return null
+    const release = await res.json()
+    const body = typeof release.body === 'string' ? release.body.trim() : ''
+    return body || null
+  } catch {
+    return null
+  }
+}
+
+export interface UpdatedInfo {
+  version: string
+  notes: string | null
+}
+
+/**
+ * Detects whether the app was updated since the last launch — the Android installer
+ * restarts the app on the new version, so an installed version newer than the last
+ * one we saw means "we just updated". Returns null on first install or no change,
+ * and always records the current version so the next launch compares against it.
+ */
+export async function detectJustUpdated(): Promise<UpdatedInfo | null> {
+  const current = await getCurrentVersion()
+  const last = getLastSeenVersion()
+  if (last !== null && compareVersions(current, last) > 0) {
+    const notes = await fetchReleaseNotes(current)
+    rememberVersion(current)
+    return { version: current, notes }
+  }
+  rememberVersion(current)
+  return null
+}
+
 /**
  * Checks GitHub for the latest release. Returns update details when a newer version
  * exists, otherwise null. Never throws — a failed check just means "no update known".

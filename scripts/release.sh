@@ -27,9 +27,17 @@ echo "==> Pushing to GitHub"
 git push origin main --tags
 
 echo "==> Creating GitHub release"
+# Build the release notes from the commits since the previous tag, so the in-app
+# 'What's new' sheet shows real changes instead of a bare changelog link.
+PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+if [ -n "$PREV_TAG" ]; then
+  NOTES=$(git log --pretty=format:'- %s' "$PREV_TAG..HEAD" | sed "s/Generated with Codebuff.*//" | sed '/^- $/d')
+else
+  NOTES=$(git log --pretty=format:'- %s' | sed "s/Generated with Codebuff.*//" | sed '/^- $/d')
+fi
 gh release create "v$V" SideQuest-debug.apk \
   --title "SideQuest v$V" \
-  --generate-notes
+  --notes "$NOTES"
 
 echo ""
 echo "✅ Released v$V — https://github.com/JacyFleisie/sidequest/releases/tag/v$V"
