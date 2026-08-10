@@ -1,15 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ALL_QUESTS, CATEGORY_META } from '../data/quests'
 import {
-  decodeFriendCard,
   encodeFriendCard,
   friendCardUrl,
-  friendId,
   friendProfile,
   rivalry,
   timeAgo,
   type FriendBadge,
-  type FriendCard,
   type FriendProfile,
 } from '../lib/friends'
 import { levelProgress, rankFromXp } from '../lib/game'
@@ -31,24 +28,14 @@ import {
 } from '../lib/sync'
 import { Button, Sheet } from './ui'
 
-const AVATARS = ['🐆', '🦁', '🐘', '🦏', '🦒', '🐧', '🦈', '🦓', '🐢', '🦜', '🐨', '🐺', '🦉', '🦋', '🐊', '🦭']
-
 const LEVEL_EMOJI = ['🌱', '🌿', '🔥', '⚡', '🌟', '💎', '👑', '🦁', '🚀', '🌍', '🏆', '🇿🇦']
 
 const LEVEL_ICON = (level: number): string => LEVEL_EMOJI[Math.min(level - 1, LEVEL_EMOJI.length - 1)]
 
 /** Pulls a friend card out of anything a friend might paste: a full link, a ?friend= param, or the raw code. */
-export const parseFriendPayload = (raw: string): FriendCard | null => {
-  const m = raw.match(/[?&]friend=([A-Za-z0-9_-]+)/)
-  const payload = m ? m[1] : raw.trim()
-  if (!payload) return null
-  return decodeFriendCard(payload)
-}
-
 export default function Friends() {
   const { state, playerName, friends, addFriend, removeFriend } = useGame()
   const [tab, setTab] = useState<'squad' | 'activity'>('squad')
-  const [addOpen, setAddOpen] = useState(false)
   const [selected, setSelected] = useState<Friend | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [incoming, setIncoming] = useState<IncomingRequest[]>([])
@@ -106,32 +93,6 @@ export default function Friends() {
 
   const progress = levelProgress(state.xp)
   const youEmoji = LEVEL_ICON(progress.level)
-
-  const addByName = (name: string, emoji: string): boolean => {
-    const trimmed = name.trim()
-    if (!trimmed) {
-      flash('Give your friend a name first.')
-      return false
-    }
-    const id = friendId(trimmed, emoji)
-    if (friends.some((f) => f.id === id)) {
-      flash('That friend is already on your list.')
-      return false
-    }
-    addFriend({ id, name: trimmed, emoji, addedAt: new Date().toISOString() })
-    flash(`${emoji} ${trimmed} added to your squad!`)
-    return true
-  }
-
-  /** Sends a REAL request to a friend card that carries a uid (synced builds). */
-  const sendRealRequest = async (card: FriendCard): Promise<boolean> => {
-    if (!card.u || !syncEnabled()) return false
-    const myUid = uid ?? (await ensureIdentity())
-    if (!myUid || card.u === myUid) return false
-    const ok = await sendFriendRequest(myUid, card.u)
-    if (ok) flash(`📨 Request sent to ${card.e} ${card.n} — they'll accept on their phone!`)
-    return ok
-  }
 
   /** Sends a real request to a person found via search. */
   const requestPerson = async (person: FoundPerson) => {
@@ -318,14 +279,10 @@ export default function Friends() {
             )}
           </div>
 
-          <button className="add-friend-btn" onClick={() => setAddOpen(true)}>
-            ＋ Add a friend
-          </button>
-
-          {friends.length === 0 ? (
+          {friends.length === 0 && realFriends.length === 0 && incoming.length === 0 ? (
             <div className="empty-state">
-              No friends yet. Tap <b>＋ Add a friend</b> above — or share your card so they can add you. You can
-              challenge each other and compare quests once they're in.
+              No friends yet. <b>Search for them by name</b> above and send a request — or share your card so they
+              can add you. You can challenge each other and compare quests once they're in.
             </div>
           ) : (
             <section className="friends-list">
@@ -426,16 +383,6 @@ export default function Friends() {
         </section>
       )}
 
-      {addOpen && (
-        <AddFriendSheet
-          existingIds={new Set(friends.map((f) => f.id))}
-          onAdd={addByName}
-          onRequest={sendRealRequest}
-          onShare={shareCard}
-          onClose={() => setAddOpen(false)}
-        />
-      )}
-
       {selected && (
         <FriendSheet
           friend={selected}
@@ -452,155 +399,6 @@ export default function Friends() {
 
       {toast && <div className="builder-toast">{toast}</div>}
     </div>
-  )
-}
-
-function AddFriendSheet({
-  existingIds,
-  onAdd,
-  onRequest,
-  onShare,
-  onClose,
-}: {
-  existingIds: Set<string>
-  onAdd: (name: string, emoji: string) => boolean
-  onRequest: (card: FriendCard) => Promise<boolean>
-  onShare: () => void
-  onClose: () => void
-}) {
-  const [mode, setMode] = useState<'name' | 'link'>('name')
-  const [name, setName] = useState('')
-  const [emoji, setEmoji] = useState(AVATARS[0])
-  const [paste, setPaste] = useState('')
-  const [err, setErr] = useState<string | null>(null)
-
-  const card = useMemo(() => (paste.trim() ? parseFriendPayload(paste) : null), [paste])
-
-  const addPasted = async () => {
-    if (!card) {
-      setErr("That doesn't look like a SideQuest card — paste the full link or code from your friend.")
-      return
-    }
-    if (existingIds.has(friendId(card.n, card.e))) {
-      setErr(`${card.e} ${card.n} is already on your list.`)
-      return
-    }
-    // A card with a uid is a real profile — send a proper request.
-    if (await onRequest(card)) {
-      onClose()
-      return
-    }
-    onAdd(card.n, card.e)
-    onClose()
-  }
-
-  const addNamed = () => {
-    setErr(null)
-    if (!name.trim()) {
-      setErr("Give your friend a name first.")
-      return
-    }
-    if (onAdd(name, emoji)) {
-      setName('')
-      onClose()
-    }
-  }
-
-  return (
-    <Sheet onClose={onClose}>
-      <div className="add-sheet">
-        <div className="add-sheet-head">
-          <h2 className="sheet-title">Add a friend</h2>
-          <p className="add-sheet-sub">Send a request — they accept it on their phone.</p>
-        </div>
-
-        <div className="add-mode-switch">
-          <button className={`add-mode-btn ${mode === 'name' ? 'add-mode-active' : ''}`} onClick={() => setMode('name')}>
-            ✍️ By name
-          </button>
-          <button className={`add-mode-btn ${mode === 'link' ? 'add-mode-active' : ''}`} onClick={() => setMode('link')}>
-            🔗 By link
-          </button>
-        </div>
-
-        {mode === 'name' ? (
-          <div className="add-mode-panel">
-            <label className="field-label">Their name</label>
-            <input
-              className="friend-name-input"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value)
-                setErr(null)
-              }}
-              onKeyDown={(e) => e.key === 'Enter' && addNamed()}
-              placeholder="e.g. Lerato"
-              maxLength={20}
-              autoFocus
-            />
-
-            <label className="field-label">Their avatar</label>
-            <div className="emoji-grid">
-              {AVATARS.map((a) => (
-                <button
-                  key={a}
-                  className={`emoji-opt ${a === emoji ? 'emoji-opt-active' : ''}`}
-                  onClick={() => setEmoji(a)}
-                  aria-label={`Choose ${a} avatar`}
-                >
-                  {a}
-                </button>
-              ))}
-            </div>
-
-            {err && <div className="paste-error">{err}</div>}
-
-            <Button variant="gold" className="add-primary" onClick={addNamed}>
-              📨 Send request
-            </Button>
-            <p className="add-note">You'll need their friend code to stay in sync — see “By link”.</p>
-          </div>
-        ) : (
-          <div className="add-mode-panel">
-            <label className="field-label">Paste their link or code</label>
-            <input
-              className="friend-name-input"
-              value={paste}
-              onChange={(e) => {
-                setPaste(e.target.value)
-                setErr(null)
-              }}
-              onKeyDown={(e) => e.key === 'Enter' && addPasted()}
-              placeholder="Paste a friend's link or code…"
-            />
-
-            {paste.trim() && card && (
-              <div className="paste-preview">
-                <span className="paste-avatar">{card.e}</span>
-                <div className="paste-info">
-                  <div className="paste-name">{card.n}</div>
-                  <div className="paste-hint">{card.u ? 'Real SideQuest profile — synced stats' : 'Local profile — add by name'}</div>
-                </div>
-                <button className="paste-add" onClick={() => void addPasted()}>
-                  {card.u ? '📨 Request' : '＋ Add'}
-                </button>
-              </div>
-            )}
-            {err && <div className="paste-error">{err}</div>}
-
-            <Button variant="gold" className="add-primary" onClick={() => void addPasted()} disabled={!card}>
-              📨 Send request
-            </Button>
-          </div>
-        )}
-
-        <button className="text-btn add-share" onClick={onShare}>
-          📤 …or share your own card so they can add you
-        </button>
-
-        <p className="add-trust">🔒 Only friends you accept can see your profile and stats.</p>
-      </div>
-    </Sheet>
   )
 }
 
