@@ -17,15 +17,18 @@ import {
   declineFriendRequest,
   ensureIdentity,
   fetchActiveChallenges,
+  fetchFriendFeed,
   fetchIncomingChallenges,
   fetchIncomingRequests,
   fetchRealFriends,
   findPeople,
   sendChallenge,
   sendFriendRequest,
+  subscribeFriendFeed,
   subscribeIncomingRequests,
   syncEnabled,
   type Challenge,
+  type FeedEvent,
   type FoundPerson,
   type IncomingRequest,
   type RealFriend,
@@ -45,6 +48,7 @@ export default function Friends() {
   const [incoming, setIncoming] = useState<IncomingRequest[]>([])
   const [incomingChallenges, setIncomingChallenges] = useState<Challenge[]>([])
   const [activeChallenges, setActiveChallenges] = useState<Challenge[]>([])
+  const [feedEvents, setFeedEvents] = useState<FeedEvent[]>([])
   const [realFriends, setRealFriends] = useState<RealFriend[]>([])
   const [uid, setUid] = useState<string | null>(null)
   const [synced, setSynced] = useState(false)
@@ -68,18 +72,24 @@ export default function Friends() {
     setIncomingChallenges(await fetchIncomingChallenges(myUid))
     setActiveChallenges(await fetchActiveChallenges(myUid))
   }
+  const refreshFeed = async (myUid: string) => {
+    setFeedEvents(await fetchFriendFeed(myUid))
+  }
 
   useEffect(() => {
     if (!syncEnabled()) return
     let unsub: (() => void) | null = null
+    let unsubFeed: (() => void) | null = null
     let cancelled = false
     void (async () => {
       const myUid = await ensureIdentity()
       if (cancelled || !myUid) return
       setUid(myUid)
       setSynced(true)
-      await Promise.all([refreshRequests(myUid), refreshFriends(myUid), refreshChallenges(myUid)])
+      await Promise.all([refreshRequests(myUid), refreshFriends(myUid), refreshChallenges(myUid), refreshFeed(myUid)])
       unsub = subscribeIncomingRequests(myUid, () => void refreshRequests(myUid))
+      // Live feed: refetch when a friend completes a quest anywhere in the world.
+      unsubFeed = subscribeFriendFeed(myUid, () => void refreshFeed(myUid))
     })()
     const onEvent = () => {
       if (uid) void refreshRequests(uid)
@@ -88,6 +98,7 @@ export default function Friends() {
     return () => {
       cancelled = true
       unsub?.()
+      unsubFeed?.()
       window.removeEventListener('sidequest:friend-request', onEvent)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -245,7 +256,7 @@ export default function Friends() {
           👥 Squad <span className="seg-count">{friends.length}</span>
         </button>
         <button className={`seg-btn ${tab === 'activity' ? 'seg-active' : ''}`} onClick={() => setTab('activity')}>
-          🔔 Activity <span className="seg-count">{feed.length}</span>
+          🔔 Activity <span className="seg-count">{feed.length + feedEvents.length}</span>
         </button>
       </div>
 
@@ -378,10 +389,37 @@ export default function Friends() {
         </>
       ) : (
         <>
-          {feed.length > 0 ? (
+          {feedEvents.length > 0 && (
             <section className="friends-feed">
-              <h2 className="section-title">🔔 Badge buzz</h2>
-              <p className="section-sub">Your friends are out there earning them.</p>
+              <h2 className="section-title">⚡ Live quest feed</h2>
+              <p className="section-sub">Quests your squad just finished, straight from the database.</p>
+              <div className="feed-list">
+                {feedEvents.map((ev) => (
+                  <button
+                    className="feed-row"
+                    key={`${ev.profileId}-${ev.questId}-${ev.completedAt}`}
+                    onClick={() => setSelected({ id: ev.profileId, name: ev.name, emoji: ev.emoji, addedAt: ev.completedAt })}
+                  >
+                    <span className="feed-avatar">{ev.emoji}</span>
+                    <span className="feed-main">
+                      <span className="feed-text">
+                        <strong>{ev.name}</strong> completed <strong>{ev.questTitle}</strong>
+                        {ev.city ? ` in ${ev.city}` : ''}
+                      </span>
+                      <span className="feed-when">
+                        {timeAgo(ev.completedAt)} · +{ev.xp} XP · tap to view {ev.name}'s profile
+                      </span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {feed.length > 0 && (
+            <section className="friends-feed">
+              <h2 className="section-title">🎖️ Badge buzz</h2>
+              <p className="section-sub">Friends crossing badge milestones.</p>
               <div className="feed-list">
                 {feed.map(({ friend, badge }) => (
                   <button className="feed-row" key={`${friend.id}-${badge.id}`} onClick={() => setSelected(friend)}>
@@ -398,10 +436,11 @@ export default function Friends() {
                 ))}
               </div>
             </section>
-          ) : (
+          )}
+
+          {feedEvents.length === 0 && feed.length === 0 && (
             <div className="empty-state">
-              No activity yet. Friend profiles grow as time passes — when one of your squad crosses a badge
-              threshold, it shows up here.
+              No activity yet. When your friends complete quests, they'll show up here live.
             </div>
           )}
 

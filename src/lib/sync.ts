@@ -365,6 +365,78 @@ export function subscribeIncomingRequests(uid: string, cb: () => void): () => vo
   }
 }
 
+// ── Activity feed (friends' completed quests) ───────────────────────────────
+
+export interface FeedEvent {
+  profileId: string
+  name: string
+  emoji: string
+  questId: string
+  questTitle: string
+  city: string
+  completedAt: string
+  xp: number
+}
+
+/**
+ * Fetches the real activity feed: quests completed by the player's friends,
+ * newest first, capped at 30. Only works when signed in (RLS-scoped).
+ */
+export async function fetchFriendFeed(uid: string): Promise<FeedEvent[]> {
+  if (!supabase) return []
+  try {
+    const { data: pairs } = await supabase
+      .from('friendships')
+      .select('user_a_id,user_b_id')
+      .or(`user_a_id.eq.${uid},user_b_id.eq.${uid}`)
+    const friendIds = (pairs ?? []).map((p) => (p.user_a_id === uid ? p.user_b_id : p.user_a_id))
+    if (friendIds.length === 0) return []
+
+    const { data: completions } = await supabase
+      .from('quest_completions')
+      .select('profile_id,quest_id,completed_at,xp')
+      .in('profile_id', friendIds)
+      .order('completed_at', { ascending: false })
+      .limit(30)
+    if (!completions || completions.length === 0) return []
+
+    const { data: profs } = await supabase
+      .from('profiles')
+      .select('id,name,emoji')
+      .in('id', friendIds)
+    const profMap = new Map((profs ?? []).map((p) => [p.id, p]))
+
+    return completions.map((c) => {
+      const q = ALL_QUESTS.find((x) => x.id === c.quest_id)
+      const prof = profMap.get(c.profile_id)
+      return {
+        profileId: c.profile_id,
+        name: prof?.name ?? 'A friend',
+        emoji: prof?.emoji ?? '🧭',
+        questId: c.quest_id,
+        questTitle: q?.title ?? c.quest_id,
+        city: q?.city ?? '',
+        completedAt: c.completed_at,
+        xp: c.xp,
+      }
+    })
+  } catch {
+    return []
+  }
+}
+
+/** Subscribes to friends' new quest completions (live feed updates). */
+export function subscribeFriendFeed(uid: string, cb: () => void): () => void {
+  if (!supabase) return () => {}
+  const channel = supabase
+    .channel(`feed-${uid}`)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'quest_completions' }, cb)
+    .subscribe()
+  return () => {
+    supabase?.removeChannel(channel)
+  }
+}
+
 // ── Challenges ───────────────────────────────────────────────────────────────
 
 export interface Challenge {
