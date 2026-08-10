@@ -3,6 +3,8 @@ import { CATEGORY_META, HOME_BASES, PROVINCES, type Category, type ProvinceId } 
 import { BADGES, completedCountByProvince, levelProgress, playerStats, rankFromXp, totalCompleted, totalQuestsInProvince, type BadgeDef, type Progress } from '../lib/game'
 import { useGame } from '../lib/store'
 import { checkForUpdate, downloadAndInstall, getCurrentVersion, isAndroid, type UpdateInfo } from '../lib/updater'
+import { getAccountInfo, onAuthChange, signOutAccount, type AccountInfo } from '../lib/sync'
+import SignIn from './SignIn'
 import { Bar, Sheet } from './ui'
 
 const LEVEL_EMOJI = ['🌱', '🌿', '🔥', '⚡', '🌟', '💎', '👑', '🦁', '🚀', '🌍', '🏆', '🇿🇦']
@@ -225,6 +227,10 @@ export default function Profile() {
       </section>
 
       <section className="profile-section">
+        <AccountCard />
+      </section>
+
+      <section className="profile-section">
         <UpdateCard />
       </section>
 
@@ -241,6 +247,70 @@ export default function Profile() {
           🗑️ Reset progress
         </button>
       </section>
+    </div>
+  )
+}
+
+function AccountCard() {
+  const [account, setAccount] = useState<AccountInfo | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [showSignIn, setShowSignIn] = useState(false)
+
+  const load = async () => {
+    setLoading(true)
+    setAccount(await getAccountInfo())
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    void load()
+    const unsub = onAuthChange(() => void load())
+    return unsub
+  }, [])
+
+  const doSignOut = async () => {
+    await signOutAccount()
+    window.location.reload()
+  }
+
+  if (loading) {
+    return (
+      <div className="update-card">
+        <h2 className="section-title">🔑 Account</h2>
+        <p className="update-card-status">⏳ Loading…</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="update-card">
+      <h2 className="section-title">🔑 Account</h2>
+      {account && !account.isAnonymous ? (
+        <>
+          <p className="update-card-version">
+            ✅ Signed in as <b>{account.email ?? 'connected user'}</b>
+          </p>
+          <p className="update-card-status" style={{ fontSize: 12, color: 'var(--muted)' }}>
+            Your stats are synced to your account — they survive reinstalls and work on any device.
+          </p>
+          <button className="update-btn" onClick={() => void doSignOut()}>
+            🚪 Sign out
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="update-card-version">
+            👋 {account?.isAnonymous === false ? 'Guest mode' : 'Offline mode'} — progress saved on this device only.
+          </p>
+          <p className="update-card-status" style={{ fontSize: 12, color: 'var(--muted)' }}>
+            Create a free account so your stats and friends follow you across devices and reinstalls.
+          </p>
+          <button className="update-btn update-btn-gold" onClick={() => setShowSignIn(true)}>
+            📧 Create account / Sign in
+          </button>
+        </>
+      )}
+      {showSignIn && <SignIn onClose={() => setShowSignIn(false)} />}
     </div>
   )
 }

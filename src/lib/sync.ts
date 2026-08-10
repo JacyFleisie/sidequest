@@ -365,6 +365,76 @@ export function subscribeIncomingRequests(uid: string, cb: () => void): () => vo
   }
 }
 
+// ── Account (email + password) ───────────────────────────────────────────────
+
+/** Info about the currently signed-in user. */
+export interface AccountInfo {
+  uid: string
+  email: string | null
+  isAnonymous: boolean
+  createdAt: string
+}
+
+/** Returns info about the currently signed-in user, or null when offline. */
+export async function getAccountInfo(): Promise<AccountInfo | null> {
+  if (!supabase) return null
+  const { data } = await supabase.auth.getSession()
+  const user = data.session?.user
+  if (!user) return null
+  return {
+    uid: user.id,
+    email: user.email ?? null,
+    isAnonymous: (user as unknown as Record<string, unknown>).is_anonymous === true,
+    createdAt: user.created_at,
+  }
+}
+
+/** Upgrades the current anonymous user to an email+password account (same uid — no data migration needed). */
+export async function upgradeToAccount(
+  email: string,
+  password: string,
+): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: 'Not connected to the sync server.' }
+  const { error } = await supabase.auth.updateUser({ email, password })
+  if (error) {
+    if (error.message.includes('Database error saving new user'))
+      return { ok: false, error: 'This email may already be in use. Try signing in instead.' }
+    return { ok: false, error: error.message }
+  }
+  cachedUid = null // invalidate so next ensureIdentity() re-reads
+  return { ok: true }
+}
+
+/** Signs in with email + password. */
+export async function signInToAccount(
+  email: string,
+  password: string,
+): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: 'Not connected to the sync server.' }
+  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) return { ok: false, error: error.message }
+  cachedUid = null
+  return { ok: true }
+}
+
+/** Signs out and returns to anonymous mode. */
+export async function signOutAccount(): Promise<void> {
+  if (!supabase) return
+  cachedUid = null
+  await supabase.auth.signOut()
+}
+
+/** Subscribes to auth state changes. Returns an unsubscribe function. */
+export function onAuthChange(cb: (uid: string | null) => void): () => void {
+  if (!supabase) return () => {}
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((_event, session) => {
+    cb(session?.user.id ?? null)
+  })
+  return subscription.unsubscribe
+}
+
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
 /** The player's avatar emoji: their level icon, mirroring the Friends screen. */
