@@ -1152,6 +1152,7 @@ select { background: var(--card-2); color: var(--text); border: 1px solid var(--
   font-size: 12px; margin: 18px 0 6px; text-transform: lowercase;
 }
 .signin-divider::before, .signin-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.signin-captcha { display: flex; justify-content: center; margin: 12px 0 0; min-height: 65px; }
 .signin-title { font-size: 20px; font-weight: 900; margin: 0; }
 .signin-sub { font-size: 13px; color: var(--muted); margin: 0 0 8px; line-height: 1.5; }
 .signin-label { font-size: 12px; font-weight: 700; color: var(--muted); margin-top: 10px; text-transform: uppercase; letter-spacing: 0.5px; }

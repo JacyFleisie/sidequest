@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { getAccountInfo, sendPasswordReset, signInToAccount, signInWithGoogle, upgradeToAccount } from '../lib/sync'
+import Turnstile, { turnstileEnabled } from './Turnstile'
 import { Button, Sheet } from './ui'
 
 /** The official multi-colour Google G, inline so it works offline. */
@@ -24,6 +25,22 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
   const [done, setDone] = useState(false)
   const [resetMode, setResetMode] = useState(false)
   const [resetSent, setResetSent] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  // Remounts the Turnstile widget after each attempt — tokens are single-use.
+  const [attempt, setAttempt] = useState(0)
+
+  const requireCaptcha = (): boolean => {
+    if (turnstileEnabled && !captchaToken) {
+      setError('Complete the security check first.')
+      return false
+    }
+    return true
+  }
+
+  const afterAttempt = () => {
+    setCaptchaToken(null)
+    setAttempt((n) => n + 1)
+  }
 
   const finish = () => {
     setDone(true)
@@ -42,13 +59,15 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
       setError('Password must be at least 6 characters.')
       return
     }
+    if (!requireCaptcha()) return
     setBusy(true)
     const res =
       mode === 'create'
         ? await upgradeToAccount(cleanEmail, password)
-        : await signInToAccount(cleanEmail, password)
+        : await signInToAccount(cleanEmail, password, captchaToken ?? undefined)
     setBusy(false)
     if (!res.ok) {
+      afterAttempt()
       setError(res.error ?? 'Something went wrong — try again.')
       return
     }
@@ -62,10 +81,12 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
       setError('Enter the email you signed up with.')
       return
     }
+    if (!requireCaptcha()) return
     setBusy(true)
-    const res = await sendPasswordReset(cleanEmail)
+    const res = await sendPasswordReset(cleanEmail, captchaToken ?? undefined)
     setBusy(false)
     if (!res.ok) {
+      afterAttempt()
       setError(res.error ?? 'Could not send the reset email — try again.')
       return
     }
@@ -129,6 +150,11 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
                   disabled={busy}
                 />
                 {error && <div className="signin-error">{error}</div>}
+                {turnstileEnabled && (
+                  <div className="signin-captcha">
+                    <Turnstile key={attempt} onToken={setCaptchaToken} onExpire={() => setCaptchaToken(null)} />
+                  </div>
+                )}
                 <Button variant="gold" className="signin-submit" onClick={() => void reset()} disabled={busy}>
                   {busy ? 'Sending…' : 'Send reset link'}
                 </Button>
@@ -181,6 +207,12 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
         />
 
         {error && <div className="signin-error">{error}</div>}
+
+        {turnstileEnabled && (
+          <div className="signin-captcha">
+            <Turnstile key={attempt} onToken={setCaptchaToken} onExpire={() => setCaptchaToken(null)} />
+          </div>
+        )}
 
         <Button variant="gold" className="signin-submit" onClick={() => void submit()} disabled={busy || googleBusy || done}>
           {busy ? 'Working…' : mode === 'create' ? 'Create account' : 'Sign in'}

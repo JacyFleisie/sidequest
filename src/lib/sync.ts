@@ -805,6 +805,9 @@ export async function upgradeToAccount(
   }
 
   const attempt = async (): Promise<string | null> => {
+    // NOTE: updateUser() has no captchaToken option in this SDK version, and
+    // Supabase's captcha protection targets sign-in/sign-up/recovery — the
+    // anonymous→email upgrade isn't one of those endpoints.
     const { error } = await supabase!.auth.updateUser({ email, password })
     return error?.message ?? null
   }
@@ -853,9 +856,14 @@ export async function upgradeToAccount(
 export async function signInToAccount(
   email: string,
   password: string,
+  captchaToken?: string,
 ): Promise<{ ok: boolean; error?: string }> {
   if (!supabase) return { ok: false, error: 'Not connected to the sync server.' }
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+    options: { captchaToken },
+  })
   if (error) return { ok: false, error: error.message }
   cachedUid = null
   return { ok: true }
@@ -863,10 +871,11 @@ export async function signInToAccount(
 
 /** Sends a password-reset email. The link re-opens the app (deep link on
  * Android, the site URL on web) with a recovery session. */
-export async function sendPasswordReset(email: string): Promise<{ ok: boolean; error?: string }> {
+export async function sendPasswordReset(email: string, captchaToken?: string): Promise<{ ok: boolean; error?: string }> {
   if (!supabase) return { ok: false, error: 'Not connected to the sync server.' }
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: isNativePlatform() ? GOOGLE_REDIRECT : undefined,
+    captchaToken,
   })
   if (error) return { ok: false, error: error.message }
   return { ok: true }
