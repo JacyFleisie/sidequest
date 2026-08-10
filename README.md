@@ -13,7 +13,7 @@ enough of class, grab your friends and go find a quest.
 
 [![Version](https://img.shields.io/github/v/release/JacyFleisie/sidequest?color=f5c542&label=version&style=flat-square)](https://github.com/JacyFleisie/sidequest/releases)
 [![Downloads](https://img.shields.io/github/downloads/JacyFleisie/sidequest/total?color=108c43&label=APK%20downloads&style=flat-square)](https://github.com/JacyFleisie/sidequest/releases)
-[![Platform](https://img.shields.io/badge/platform-Android%20%26%20Web-108c43?style=flat-square&logo=android&logoColor=white)](https://github.com/JacyFleisie/sidequest/releases/latest/download/SideQuest-debug.apk)
+[![Platform](https://img.shields.io/badge/platform-Android%20%26%20Web-108c43?style=flat-square&logo=android&logoColor=white)](https://github.com/JacyFleisie/sidequest/releases/latest/download/SideQuest.apk)
 [![Price](https://img.shields.io/badge/price-Free%20forever-2ea44f?style=flat-square)](https://github.com/JacyFleisie/sidequest)
 [![Made in](https://img.shields.io/badge/made%20in-South%20Africa-0a3d91?style=flat-square)](https://github.com/JacyFleisie/sidequest)
 [![React](https://img.shields.io/badge/React-19-61dafb?style=flat-square&logo=react&logoColor=white)](https://react.dev/)
@@ -21,7 +21,7 @@ enough of class, grab your friends and go find a quest.
 
 <br/>
 
-[![Download APK](https://img.shields.io/badge/Download%20APK-108c43?style=for-the-badge&logo=android&logoColor=white)](https://github.com/JacyFleisie/sidequest/releases/latest/download/SideQuest-debug.apk)
+[![Download APK](https://img.shields.io/badge/Download%20APK-108c43?style=for-the-badge&logo=android&logoColor=white)](https://github.com/JacyFleisie/sidequest/releases/latest/download/SideQuest.apk)
 [![Star on GitHub](https://img.shields.io/badge/Star%20on%20GitHub-1f6feb?style=for-the-badge&logo=github&logoColor=white)](https://github.com/JacyFleisie/sidequest)
 
 </div>
@@ -90,7 +90,7 @@ app with full GPS access.
 
 **Install:** download the APK (button above), enable *"Install unknown apps"* for your
 file manager or browser, and open the file — or plug in your phone with USB debugging
-and run `adb install SideQuest-debug.apk`.
+and run `adb install SideQuest.apk`.
 
 Once installed, the app **self-updates for free** via GitHub Releases — on launch it
 checks for a newer version and offers to install it in one tap.
@@ -113,7 +113,7 @@ npm install
 npm run dev          # start the dev server → http://localhost:5173
 npm run typecheck    # type-check
 npm run build        # production build → dist/
-npm run apk          # build the Android APK → SideQuest-debug.apk
+npm run apk          # build the Android APK → SideQuest.apk
 ```
 
 ---

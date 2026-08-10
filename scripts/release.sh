@@ -35,7 +35,7 @@ if [ -n "$PREV_TAG" ]; then
 else
   NOTES=$(git log --pretty=format:'- %s' | sed "s/Generated with Codebuff.*//" | sed '/^- $/d')
 fi
-gh release create "v$V" SideQuest-debug.apk \
+gh release create "v$V" SideQuest.apk \
   --title "SideQuest v$V" \
   --notes "$NOTES"
 

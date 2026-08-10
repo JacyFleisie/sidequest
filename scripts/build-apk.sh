@@ -11,7 +11,7 @@ cd android
 export JAVA_HOME="${JAVA_HOME:-C:/Program Files/Android/Android Studio/jbr}"
 ./gradlew assembleRelease --no-daemon
 cd ..
-cp android/app/build/outputs/apk/release/app-release.apk SideQuest-debug.apk
+cp android/app/build/outputs/apk/release/app-release.apk SideQuest.apk
 echo ""
-echo "APK ready: SideQuest-debug.apk ($(du -h SideQuest-debug.apk | cut -f1))"
+echo "APK ready: SideQuest.apk ($(du -h SideQuest.apk | cut -f1))"
 echo "Signed release build — install over the old version, no data loss."
