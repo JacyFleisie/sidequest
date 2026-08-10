@@ -3,9 +3,11 @@
 This is the plan for making SideQuest's friends/co-op system *actually synced*.
 Today the app has **no backend**: friend stats are generated locally from a
 deterministic seed, and "add friend" writes a name into your own phone. That's
-why stats never match and why adding someone never reaches them. The schema in
-[`db/schema.sql`](../db/schema.sql) is the fix — a portable Postgres database
-that works on **Supabase (free), Neon, Railway, Render, or a $5 VPS** later.
+why stats never match and why adding someone never reaches them.The schema is the fix — a portable Postgres database that works on **Supabase
+(free), Neon, Railway, Render, or a $5 VPS** later. The canonical, versioned copy
+lives in [`supabase/migrations/`](../supabase/migrations/) and deploys
+automatically to Supabase via the GitHub integration (or manually with the
+Supabase CLI).
 
 ## How each table maps to the app
 
