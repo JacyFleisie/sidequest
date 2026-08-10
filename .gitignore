@@ -12,7 +12,7 @@ dist/
 .env.*
 
 # Build artifact (published as a GitHub Release asset instead)
-SideQuest-debug.apk
+*.apk
 
 # Android / Capacitor (generated or machine-specific — recreate with `npm run apk`)
 android/.gradle/
