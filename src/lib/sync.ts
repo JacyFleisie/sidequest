@@ -561,6 +561,34 @@ export async function declineChallenge(uid: string, challengeId: string): Promis
   }
 }
 
+/**
+ * Marks the player as done on any active challenges targeting the given
+ * quest/chain ids. Called right after a quest or chain is completed.
+ */
+export async function completeMatchingChallenges(
+  uid: string,
+  questIds: string[],
+  chainIds: string[],
+): Promise<void> {
+  if (!supabase) return
+  if (questIds.length === 0 && chainIds.length === 0) return
+  try {
+    const { data: active } = await supabase
+      .from('challenges')
+      .select('id,target_type,target_id')
+      .eq('status', 'accepted')
+      .or(`challenger_id.eq.${uid},opponent_id.eq.${uid}`)
+    for (const c of active ?? []) {
+      const matches =
+        (c.target_type === 'quest' && questIds.includes(c.target_id)) ||
+        (c.target_type === 'chain' && chainIds.includes(c.target_id))
+      if (matches) await completeChallengeStep(uid, c.id)
+    }
+  } catch {
+    // Best effort — challenge marking must never block gameplay.
+  }
+}
+
 /** Marks the current user as done on a challenge. If both are done, resolves it. */
 export async function completeChallengeStep(uid: string, challengeId: string): Promise<boolean> {
   if (!supabase) return false

@@ -15,7 +15,13 @@ import { QuestSheet } from './components/QuestSheet'
 import { ALL_QUESTS, type Chain, type Quest } from './data/quests'
 import { decodeChainShare } from './lib/share'
 import { useGame } from './lib/store'
-import { ensureIdentity, subscribeIncomingRequests, syncCompletions, syncProfile } from './lib/sync'
+import {
+  completeMatchingChallenges,
+  ensureIdentity,
+  subscribeIncomingRequests,
+  syncCompletions,
+  syncProfile,
+} from './lib/sync'
 
 export default function App() {
   const { state } = useGame()
@@ -48,8 +54,26 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Push stat changes as they happen (debounced — the game fires many updates).
+  // Push stat changes as they happen (debounced — the game fires many updates),
+  // and auto-mark active challenges whose quest/chain just got completed.
+  const prevCompletedRef = useRef<Set<string> | null>(null)
   useEffect(() => {
+    // Track the completed-set on EVERY run (even before sync is ready) so the
+    // first completion after launch isn't missed by the diff below.
+    const keys = new Set(Object.keys(state.completed))
+    const prev = prevCompletedRef.current
+    if (prev) {
+      const fresh: string[] = []
+      for (const k of keys) if (!prev.has(k)) fresh.push(k)
+      if (fresh.length > 0) {
+        const questIds = fresh.filter((id) => ALL_QUESTS.some((q) => q.id === id))
+        const chainIds = fresh.filter((id) => !ALL_QUESTS.some((q) => q.id === id))
+        const uid = uidRef.current
+        if (uid) void completeMatchingChallenges(uid, questIds, chainIds)
+      }
+    }
+    prevCompletedRef.current = keys
+
     const uid = uidRef.current
     if (!uid || !pushedRef.current) return
     const t = window.setTimeout(() => {
