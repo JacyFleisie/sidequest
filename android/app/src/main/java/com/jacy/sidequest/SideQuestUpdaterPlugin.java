@@ -1,8 +1,16 @@
 package com.jacy.sidequest;
 
+import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.FileProvider;
 
 import com.getcapacitor.JSObject;
@@ -10,6 +18,8 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
+import com.getcapacitor.annotation.Permission;
+import com.getcapacitor.annotation.PermissionCallback;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,10 +31,25 @@ import java.net.URL;
 /**
  * Native side of SideQuest's self-update: downloads the new APK straight to the app's
  * cache dir (no CORS, no base64 round-trip) and hands it to the Android package
- * installer through the FileProvider already declared in the manifest.
+ * installer through the FileProvider already declared in the manifest. Also posts a
+ * system notification when the app has been updated, so the phone's notification tray
+ * celebrates the new version even if the in-app toast was missed.
  */
-@CapacitorPlugin(name = "SideQuestUpdater")
+@CapacitorPlugin(
+    name = "SideQuestUpdater",
+    permissions = {
+        @Permission(alias = "notifications", strings = { Manifest.permission.POST_NOTIFICATIONS })
+    }
+)
 public class SideQuestUpdaterPlugin extends Plugin {
+
+    private static final String CHANNEL_ID = "sidequest_updates";
+    private static final int NOTIFICATION_ID = 42;
+
+    // Version/notes of the update awaiting a permission grant (if the user has to
+    // approve POST_NOTIFICATIONS on Android 13+ before we can post).
+    private String pendingVersion = "";
+    private String pendingNotes = "";
 
     @PluginMethod
     public void downloadApk(PluginCall call) {
@@ -81,6 +106,79 @@ public class SideQuestUpdaterPlugin extends Plugin {
             call.resolve();
         } catch (Exception e) {
             call.reject("Could not open installer: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Posts a "SideQuest updated to vX.Y.Z" notification to the system tray. On Android 13+
+     * the POST_NOTIFICATIONS permission is requested first (one-time system dialog); the
+     * notification is posted once granted. On older Android it posts immediately.
+     */
+    @PluginMethod
+    public void showUpdatedNotification(PluginCall call) {
+        pendingVersion = call.getString("version", "");
+        pendingNotes = call.getString("notes", "");
+
+        ensureChannel();
+
+        if (Build.VERSION.SDK_INT >= 33 && !hasNotificationPermission()) {
+            requestPermissionForAlias("notifications", call, "updatedNotificationPermissionResult");
+            return;
+        }
+        postUpdatedNotification();
+        call.resolve();
+    }
+
+    @PermissionCallback
+    private void updatedNotificationPermissionResult(PluginCall call) {
+        if (hasNotificationPermission()) {
+            postUpdatedNotification();
+        }
+        call.resolve();
+    }
+
+    private boolean hasNotificationPermission() {
+        return getContext().checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void ensureChannel() {
+        if (Build.VERSION.SDK_INT >= 26) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "SideQuest updates",
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription("New SideQuest versions");
+            NotificationManager manager = getContext().getSystemService(NotificationManager.class);
+            if (manager != null) manager.createNotificationChannel(channel);
+        }
+    }
+
+    private void postUpdatedNotification() {
+        if (pendingVersion.isEmpty()) return;
+
+        Intent tapIntent = new Intent(getContext(), getActivity().getClass());
+        tapIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent contentIntent = PendingIntent.getActivity(
+                getContext(), 0, tapIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        String text = pendingNotes != null && !pendingNotes.isEmpty()
+                ? pendingNotes
+                : "Tap to open the new version.";
+        if (text.length() > 240) text = text.substring(0, 240) + "…";
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle("🎉 SideQuest updated to v" + pendingVersion)
+                .setContentText(text)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                .setContentIntent(contentIntent)
+                .setAutoCancel(true);
+
+        try {
+            NotificationManagerCompat.from(getContext()).notify(NOTIFICATION_ID, builder.build());
+        } catch (SecurityException e) {
+            // Permission denied — the in-app toast still covers the celebration.
         }
     }
 }

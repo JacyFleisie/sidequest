@@ -43,4 +43,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!-- Self-update: lets the in-app updater install the new APK (user approves once) -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- Update notifications: 'SideQuest updated to vX' in the phone's notification tray (Android 13+ asks once) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 </manifest>

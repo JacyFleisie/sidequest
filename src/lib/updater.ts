@@ -11,6 +11,7 @@ export const APP_VERSION = '1.0.1'
 interface SideQuestUpdaterPlugin {
   downloadApk(options: { url: string; fileName?: string }): Promise<{ path: string }>
   installApk(options: { fileName?: string }): Promise<void>
+  showUpdatedNotification(options: { version: string; notes: string }): Promise<void>
 }
 
 const SideQuestUpdater = registerPlugin<SideQuestUpdaterPlugin>('SideQuestUpdater')
@@ -106,6 +107,15 @@ export async function detectJustUpdated(): Promise<UpdatedInfo | null> {
   if (last !== null && compareVersions(current, last) > 0) {
     const notes = await fetchReleaseNotes(current)
     rememberVersion(current)
+    // Also drop a system notification in the phone's tray (fire-and-forget — the
+    // in-app toast covers the celebration if the notification can't be posted).
+    if (isAndroid()) {
+      try {
+        await SideQuestUpdater.showUpdatedNotification({ version: current, notes: notes ?? '' })
+      } catch {
+        // permission denied or plugin hiccup — the toast still shows
+      }
+    }
     return { version: current, notes }
   }
   rememberVersion(current)
