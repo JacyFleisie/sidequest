@@ -468,6 +468,7 @@ function AddFriendSheet({
   onShare: () => void
   onClose: () => void
 }) {
+  const [mode, setMode] = useState<'name' | 'link'>('name')
   const [name, setName] = useState('')
   const [emoji, setEmoji] = useState(AVATARS[0])
   const [paste, setPaste] = useState('')
@@ -477,7 +478,7 @@ function AddFriendSheet({
 
   const addPasted = async () => {
     if (!card) {
-      setErr("Couldn't read that — paste the full link or code from your friend.")
+      setErr("That doesn't look like a SideQuest card — paste the full link or code from your friend.")
       return
     }
     if (existingIds.has(friendId(card.n, card.e))) {
@@ -495,6 +496,10 @@ function AddFriendSheet({
 
   const addNamed = () => {
     setErr(null)
+    if (!name.trim()) {
+      setErr("Give your friend a name first.")
+      return
+    }
     if (onAdd(name, emoji)) {
       setName('')
       onClose()
@@ -504,61 +509,96 @@ function AddFriendSheet({
   return (
     <Sheet onClose={onClose}>
       <div className="add-sheet">
-        <h2 className="sheet-title">＋ Add a friend</h2>
-
-        <label className="field-label">Their name</label>
-        <div className="add-name-row">
-          <input
-            className="friend-name-input"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && addNamed()}
-            placeholder="Friend's name…"
-            maxLength={20}
-          />
-          <Button onClick={addNamed}>＋ Add</Button>
+        <div className="add-sheet-head">
+          <h2 className="sheet-title">Add a friend</h2>
+          <p className="add-sheet-sub">Send a request — they accept it on their phone.</p>
         </div>
 
-        <label className="field-label">Their avatar</label>
-        <div className="emoji-grid">
-          {AVATARS.map((a) => (
-            <button
-              key={a}
-              className={`emoji-opt ${a === emoji ? 'emoji-opt-active' : ''}`}
-              onClick={() => setEmoji(a)}
-            >
-              {a}
-            </button>
-          ))}
+        <div className="add-mode-switch">
+          <button className={`add-mode-btn ${mode === 'name' ? 'add-mode-active' : ''}`} onClick={() => setMode('name')}>
+            ✍️ By name
+          </button>
+          <button className={`add-mode-btn ${mode === 'link' ? 'add-mode-active' : ''}`} onClick={() => setMode('link')}>
+            🔗 By link
+          </button>
         </div>
 
-        <div className="add-divider">— or paste their card link / code —</div>
+        {mode === 'name' ? (
+          <div className="add-mode-panel">
+            <label className="field-label">Their name</label>
+            <input
+              className="friend-name-input"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value)
+                setErr(null)
+              }}
+              onKeyDown={(e) => e.key === 'Enter' && addNamed()}
+              placeholder="e.g. Lerato"
+              maxLength={20}
+              autoFocus
+            />
 
-        <input
-          className="friend-name-input"
-          value={paste}
-          onChange={(e) => {
-            setPaste(e.target.value)
-            setErr(null)
-          }}
-          onKeyDown={(e) => e.key === 'Enter' && addPasted()}
-          placeholder="Paste a friend's link or code…"
-        />
+            <label className="field-label">Their avatar</label>
+            <div className="emoji-grid">
+              {AVATARS.map((a) => (
+                <button
+                  key={a}
+                  className={`emoji-opt ${a === emoji ? 'emoji-opt-active' : ''}`}
+                  onClick={() => setEmoji(a)}
+                  aria-label={`Choose ${a} avatar`}
+                >
+                  {a}
+                </button>
+              ))}
+            </div>
 
-        {paste.trim() && card && (
-          <div className="paste-preview">
-            <span className="paste-avatar">{card.e}</span>
-            <span className="paste-name">{card.n}</span>
-            <button className="paste-add" onClick={() => void addPasted()}>
-              {card.u ? '📨 Send request' : '＋ Add'}
-            </button>
+            {err && <div className="paste-error">{err}</div>}
+
+            <Button variant="gold" className="add-primary" onClick={addNamed}>
+              📨 Send request
+            </Button>
+            <p className="add-note">You'll need their friend code to stay in sync — see “By link”.</p>
+          </div>
+        ) : (
+          <div className="add-mode-panel">
+            <label className="field-label">Paste their link or code</label>
+            <input
+              className="friend-name-input"
+              value={paste}
+              onChange={(e) => {
+                setPaste(e.target.value)
+                setErr(null)
+              }}
+              onKeyDown={(e) => e.key === 'Enter' && addPasted()}
+              placeholder="Paste a friend's link or code…"
+            />
+
+            {paste.trim() && card && (
+              <div className="paste-preview">
+                <span className="paste-avatar">{card.e}</span>
+                <div className="paste-info">
+                  <div className="paste-name">{card.n}</div>
+                  <div className="paste-hint">{card.u ? 'Real SideQuest profile — synced stats' : 'Local profile — add by name'}</div>
+                </div>
+                <button className="paste-add" onClick={() => void addPasted()}>
+                  {card.u ? '📨 Request' : '＋ Add'}
+                </button>
+              </div>
+            )}
+            {err && <div className="paste-error">{err}</div>}
+
+            <Button variant="gold" className="add-primary" onClick={() => void addPasted()} disabled={!card}>
+              📨 Send request
+            </Button>
           </div>
         )}
-        {err && <div className="paste-error">{err}</div>}
 
         <button className="text-btn add-share" onClick={onShare}>
           📤 …or share your own card so they can add you
         </button>
+
+        <p className="add-trust">🔒 Only friends you accept can see your profile and stats.</p>
       </div>
     </Sheet>
   )
