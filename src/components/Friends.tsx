@@ -8,18 +8,24 @@ import {
   type FriendProfile,
 } from '../lib/friends'
 import { levelProgress, rankFromXp } from '../lib/game'
-import { chainShareUrl, copyText, shareViaNative } from '../lib/share'
+
 import { useGame, type Friend } from '../lib/store'
 import {
+  acceptChallenge,
   acceptFriendRequest,
+  declineChallenge,
   declineFriendRequest,
   ensureIdentity,
+  fetchActiveChallenges,
+  fetchIncomingChallenges,
   fetchIncomingRequests,
   fetchRealFriends,
   findPeople,
+  sendChallenge,
   sendFriendRequest,
   subscribeIncomingRequests,
   syncEnabled,
+  type Challenge,
   type FoundPerson,
   type IncomingRequest,
   type RealFriend,
@@ -37,6 +43,8 @@ export default function Friends() {
   const [selected, setSelected] = useState<Friend | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [incoming, setIncoming] = useState<IncomingRequest[]>([])
+  const [incomingChallenges, setIncomingChallenges] = useState<Challenge[]>([])
+  const [activeChallenges, setActiveChallenges] = useState<Challenge[]>([])
   const [realFriends, setRealFriends] = useState<RealFriend[]>([])
   const [uid, setUid] = useState<string | null>(null)
   const [synced, setSynced] = useState(false)
@@ -56,6 +64,10 @@ export default function Friends() {
   const refreshFriends = async (myUid: string) => {
     setRealFriends(await fetchRealFriends(myUid))
   }
+  const refreshChallenges = async (myUid: string) => {
+    setIncomingChallenges(await fetchIncomingChallenges(myUid))
+    setActiveChallenges(await fetchActiveChallenges(myUid))
+  }
 
   useEffect(() => {
     if (!syncEnabled()) return
@@ -66,7 +78,7 @@ export default function Friends() {
       if (cancelled || !myUid) return
       setUid(myUid)
       setSynced(true)
-      await Promise.all([refreshRequests(myUid), refreshFriends(myUid)])
+      await Promise.all([refreshRequests(myUid), refreshFriends(myUid), refreshChallenges(myUid)])
       unsub = subscribeIncomingRequests(myUid, () => void refreshRequests(myUid))
     })()
     const onEvent = () => {
@@ -140,17 +152,48 @@ export default function Friends() {
     flash(`Request from ${req.senderEmoji} ${req.senderName} declined.`)
   }
 
+  const handleAcceptChallenge = async (challenge: Challenge) => {
+    const myUid = uid ?? ''
+    const ok = await acceptChallenge(myUid, challenge.id)
+    if (ok) {
+      flash('🏁 Challenge accepted!')
+      setIncomingChallenges((xs) => xs.filter((x) => x.id !== challenge.id))
+      setActiveChallenges((xs) => [{ ...challenge, status: 'accepted' }, ...xs])
+    } else {
+      flash("Couldn't accept — check your connection.")
+    }
+  }
+
+  const handleDeclineChallenge = async (challenge: Challenge) => {
+    const myUid = uid ?? ''
+    const ok = await declineChallenge(myUid, challenge.id)
+    if (ok) {
+      flash('Challenge declined.')
+      setIncomingChallenges((xs) => xs.filter((x) => x.id !== challenge.id))
+    } else {
+      flash("Couldn't decline — check your connection.")
+    }
+  }
+
   const challenge = async (friend: Friend) => {
-    const pool = [...ALL_QUESTS].sort(() => Math.random() - 0.5)
-    const quest = pool[0]
-    const bonus = pool.find((q) => q.id !== quest.id && q.city === quest.city) ?? pool[1]
-    const from = encodeURIComponent(playerName)
-    const url = `${chainShareUrl(quest.title, quest.emoji, [quest.id, bonus.id])}&from=${from}`
-    const text = `${friend.emoji} ${friend.name}: I challenge you to “${quest.title}”. Beat it first! 🏁`
-    const native = await shareViaNative(text, url)
-    if (native) return
-    const ok = await copyText(`${text} ${url}`)
-    flash(ok ? `📋 Challenge sent to ${friend.name}!` : "Couldn't copy the challenge link.")
+    const myUid = uid ?? (await ensureIdentity())
+    if (!myUid) {
+      flash('Sign in to challenge friends.')
+      return
+    }
+    // Pick a random uncompleted quest for the challenge
+    const pool = [...ALL_QUESTS].filter((q) => !state.completed[q.id])
+    if (pool.length === 0) {
+      flash("You've completed every quest! Pick one from the map to re-do.")
+      return
+    }
+    const quest = pool[Math.floor(Math.random() * pool.length)]
+    const ok = await sendChallenge(myUid, friend.id, 'race', 'quest', quest.id, quest.title)
+    if (ok) {
+      flash(`🏁 Challenge sent to ${friend.emoji} ${friend.name}!`)
+    } else {
+      flash("Couldn't send the challenge — check your connection.")
+    }
   }
 
   // Real friends from the DB get their real stats; local-only friends keep the
@@ -255,6 +298,44 @@ export default function Friends() {
             )}
           </div>
 
+          {activeChallenges.length > 0 && (
+            <section className="incoming-requests">
+              <h2 className="section-title">🏁 Active races</h2>
+              <p className="section-sub">Live challenges with your squad.</p>
+              <div className="incoming-list">
+                {activeChallenges.map((c) => {
+                  const isChallenger = c.challengerId === uid
+                  const myDone = isChallenger ? c.challengerDone : c.opponentDone
+                  const theirDone = isChallenger ? c.opponentDone : c.challengerDone
+                  const done = c.status === 'completed'
+                  const won = done && c.winnerId === uid
+                  const lost = done && c.winnerId !== null && c.winnerId !== uid
+                  return (
+                    <div className="challenge-row" key={c.id}>
+                      <div className="challenge-emoji">{done ? (won ? '🏆' : lost ? '😔' : '🏁') : '⚔️'}</div>
+                      <div className="challenge-main">
+                        <div className="challenge-name">
+                          {done
+                            ? won
+                              ? 'You won!'
+                              : lost
+                                ? 'Your opponent won'
+                                : 'Draw'
+                            : `${c.kind === 'race' ? 'Race' : 'Co-op'} — ${c.message ?? 'a quest'}`}
+                        </div>
+                        <div className="challenge-meta">
+                          {done
+                            ? `Resolved ${timeAgo(c.completedAt ?? '')}`
+                            : `${myDone ? '✅ You' : '⏳ You'} · ${theirDone ? '✅ Them' : '⏳ Them'}`}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </section>
+          )}
+
           {friends.length === 0 && realFriends.length === 0 && incoming.length === 0 ? (
             <div className="empty-state">
               No friends yet. <b>Search for them by name</b> above and send a request — once they accept, you can
@@ -327,9 +408,8 @@ export default function Friends() {
           <section className="friends-howto">
             <h2 className="section-title">💡 How friends work</h2>
             <p className="section-sub">
-              Send your card (via the 📤 button on your card) — when a friend opens the link they can add you
-              straight from it. Or swap <b>friend codes</b>: paste one into “＋ Add a friend”. No accounts, no
-              backend — profiles are stable per person and grow over time.
+              Search for friends by name above and send a request. Once they accept, you can <b>challenge each other</b>
+              to quests — first one to complete it wins. All data syncs when you're signed in.
             </p>
           </section>
         </>
@@ -351,6 +431,30 @@ export default function Friends() {
                   ✓ Accept
                 </button>
                 <button className="incoming-decline" onClick={() => void decline(req)}>
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {incomingChallenges.length > 0 && (
+        <section className="incoming-requests">
+          <h2 className="section-title">🏁 Incoming challenges</h2>
+          <p className="section-sub">Someone wants to race you to a quest!</p>
+          <div className="incoming-list">
+            {incomingChallenges.map((c) => (
+              <div className="incoming-row" key={c.id}>
+                <span className="incoming-avatar">⚔️</span>
+                <div className="incoming-main">
+                  <div className="incoming-name">Race: {c.message ?? 'a quest'}</div>
+                  <div className="incoming-meta">{c.kind === 'race' ? 'First to complete wins' : 'Work together'}</div>
+                </div>
+                <button className="incoming-accept" onClick={() => void handleAcceptChallenge(c)}>
+                  ✓ Accept
+                </button>
+                <button className="incoming-decline" onClick={() => void handleDeclineChallenge(c)}>
                   ✕
                 </button>
               </div>

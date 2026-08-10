@@ -365,6 +365,183 @@ export function subscribeIncomingRequests(uid: string, cb: () => void): () => vo
   }
 }
 
+// ── Challenges ───────────────────────────────────────────────────────────────
+
+export interface Challenge {
+  id: string
+  challengerId: string
+  opponentId: string
+  kind: 'race' | 'coop'
+  targetType: 'quest' | 'chain'
+  targetId: string
+  message: string | null
+  status: 'pending' | 'accepted' | 'declined' | 'completed' | 'expired'
+  challengerDone: boolean
+  opponentDone: boolean
+  winnerId: string | null
+  createdAt: string
+  respondedAt: string | null
+  completedAt: string | null
+}
+
+/** Fetches incoming pending challenges. */
+export async function fetchIncomingChallenges(uid: string): Promise<Challenge[]> {
+  if (!supabase) return []
+  try {
+    const { data } = await supabase
+      .from('challenges')
+      .select('*')
+      .eq('opponent_id', uid)
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false })
+    return (data ?? []).map(rowChallenge)
+  } catch {
+    return []
+  }
+}
+
+/** Fetches active/open challenges where the player is involved.
+ * Includes accepted, completed, AND pending challenges the user sent as challenger
+ * (so the challenger can see their outgoing challenges waiting for a response). */
+export async function fetchActiveChallenges(uid: string): Promise<Challenge[]> {
+  if (!supabase) return []
+  try {
+    const { data } = await supabase
+      .from('challenges')
+      .select('*')
+      .in('status', ['accepted', 'completed'])
+      .or(`challenger_id.eq.${uid},opponent_id.eq.${uid}`)
+      .order('created_at', { ascending: false })
+    // Also fetch pending challenges where this user is the challenger
+    const { data: sent } = await supabase
+      .from('challenges')
+      .select('*')
+      .eq('challenger_id', uid)
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false })
+    const all = [...(data ?? []), ...(sent ?? [])]
+    // Deduplicate by id
+    const seen = new Set<string>()
+    return all.filter((r) => {
+      if (seen.has(r.id)) return false
+      seen.add(r.id)
+      return true
+    }).map(rowChallenge)
+  } catch {
+    return []
+  }
+}
+
+/** Sends a challenge request. */
+export async function sendChallenge(
+  uid: string,
+  opponentId: string,
+  kind: string,
+  targetType: string,
+  targetId: string,
+  message?: string,
+): Promise<boolean> {
+  if (!supabase) return false
+  try {
+    const { error } = await supabase.from('challenges').insert({
+      id: crypto.randomUUID(),
+      challenger_id: uid,
+      opponent_id: opponentId,
+      kind,
+      target_type: targetType,
+      target_id: targetId,
+      message: message ?? null,
+    })
+    if (error) return false
+    return true
+  } catch {
+    return false
+  }
+}
+
+/** Accepts a challenge. */
+export async function acceptChallenge(uid: string, challengeId: string): Promise<boolean> {
+  if (!supabase) return false
+  try {
+    const { error } = await supabase
+      .from('challenges')
+      .update({ status: 'accepted', responded_at: new Date().toISOString() })
+      .eq('id', challengeId)
+      .or(`challenger_id.eq.${uid},opponent_id.eq.${uid}`)
+    return !error
+  } catch {
+    return false
+  }
+}
+
+/** Declines a challenge. */
+export async function declineChallenge(uid: string, challengeId: string): Promise<boolean> {
+  if (!supabase) return false
+  try {
+    const { error } = await supabase
+      .from('challenges')
+      .update({ status: 'declined', responded_at: new Date().toISOString() })
+      .eq('id', challengeId)
+      .or(`challenger_id.eq.${uid},opponent_id.eq.${uid}`)
+    return !error
+  } catch {
+    return false
+  }
+}
+
+/** Marks the current user as done on a challenge. If both are done, resolves it. */
+export async function completeChallengeStep(uid: string, challengeId: string): Promise<boolean> {
+  if (!supabase) return false
+  try {
+    const { data: chal } = await supabase
+      .from('challenges')
+      .select('*')
+      .eq('id', challengeId)
+      .single()
+    if (!chal) return false
+
+    const isChallenger = chal.challenger_id === uid
+    const field = isChallenger ? 'challenger_done' : 'opponent_done'
+    if (chal[field]) return true // already marked
+
+    const update: Record<string, string | boolean | null> = {}
+    update[field] = true
+
+    // If both done, resolve
+    const otherField = isChallenger ? 'opponent_done' : 'challenger_done'
+    if (chal[otherField]) {
+      update.winner_id = uid // this player just completed — they win
+      update.status = 'completed'
+      update.completed_at = new Date().toISOString()
+    }
+
+    const { error } = await supabase.from('challenges').update(update).eq('id', challengeId)
+    return !error
+  } catch {
+    return false
+  }
+}
+
+/** Converts a raw DB row to a Challenge. */
+function rowChallenge(row: Record<string, unknown>): Challenge {
+  return {
+    id: row.id as string,
+    challengerId: row.challenger_id as string,
+    opponentId: row.opponent_id as string,
+    kind: row.kind as 'race' | 'coop',
+    targetType: row.target_type as 'quest' | 'chain',
+    targetId: row.target_id as string,
+    message: (row.message as string) ?? null,
+    status: row.status as Challenge['status'],
+    challengerDone: row.challenger_done as boolean,
+    opponentDone: row.opponent_done as boolean,
+    winnerId: (row.winner_id as string) ?? null,
+    createdAt: (row.created_at as string) ?? '',
+    respondedAt: (row.responded_at as string) ?? null,
+    completedAt: (row.completed_at as string) ?? null,
+  }
+}
+
 // ── Account (email + password) ───────────────────────────────────────────────
 
 /** Info about the currently signed-in user. */
