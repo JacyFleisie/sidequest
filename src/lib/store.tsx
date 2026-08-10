@@ -85,6 +85,7 @@ export interface PersistedState {
   activeSession: ActiveSession | null
   lastCompletion: LastCompletion | null
   seenIntro: boolean
+  onboarded: boolean
   customChains: CustomChain[]
   friends: Friend[]
   recentGenerated: string[] // quest ids suggested lately, so the generator avoids repeats
@@ -103,6 +104,7 @@ const DEFAULT_STATE: PersistedState = {
   activeSession: null,
   lastCompletion: null,
   seenIntro: false,
+  onboarded: false,
   customChains: [],
   friends: [],
   recentGenerated: [],
@@ -114,7 +116,11 @@ const load = (): PersistedState => {
   try {
     const raw = localStorage.getItem(KEY)
     if (!raw) return DEFAULT_STATE
-    return { ...DEFAULT_STATE, ...(JSON.parse(raw) as PersistedState) }
+    const parsed = JSON.parse(raw) as Partial<PersistedState>
+    // Existing installs (no `onboarded` field) skip onboarding — only a brand
+    // new install, or one where onboarding was explicitly left unfinished,
+    // shows the flow.
+    return { ...DEFAULT_STATE, ...parsed, onboarded: parsed.onboarded !== false }
   } catch {
     return DEFAULT_STATE
   }
@@ -151,6 +157,7 @@ interface GameApi {
   setHomeBaseId: (id: string) => void
   setStartPlace: (place: StartPlace | null) => void
   setSeenIntro: () => void
+  setOnboarded: () => void
   customChains: CustomChain[]
   recentGenerated: string[]
   recordGenerated: (questIds: string[]) => void
@@ -370,13 +377,10 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
               ...s.memories,
             ].slice(0, 100),
           }
-        }),
-
-      setPlayerName: (name: string) => setState((s) => ({ ...s, playerName: name })),
-
+        }),      setPlayerName: (name: string) => setState((s) => ({ ...s, playerName: name })),
       setHomeBaseId: (id: string) => setState((s) => ({ ...s, homeBaseId: id })),
-
       setStartPlace: (place: StartPlace | null) => setState((s) => ({ ...s, startPlace: place })),
+      setOnboarded: () => setState((s) => ({ ...s, onboarded: true })),
 
       setSeenIntro: () => setState((s) => ({ ...s, seenIntro: true })),
     }

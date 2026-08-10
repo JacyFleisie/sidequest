@@ -6,6 +6,7 @@ import Friends from './components/Friends'
 import Generator from './components/Generator'
 import Home from './components/Home'
 import MapScreen from './components/MapScreen'
+import Onboarding from './components/Onboarding'
 import ActiveQuest from './components/ActiveQuest'
 import CompletionModal from './components/CompletionModal'
 import Profile from './components/Profile'
@@ -117,6 +118,10 @@ export default function App() {
   }, [searchParams])
 
   const challenger = searchParams.get('from')
+
+  // First launch: the onboarding flow owns the whole screen until the player
+  // picks a name and a home base.
+  if (!state.onboarded) return <Onboarding />
 
   return (
     <div className="app">
