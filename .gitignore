@@ -30,3 +30,5 @@ android/app/src/main/assets/public/
 
 # Agent tooling (run docs, logs, temp test fixtures)
 .freebuff/
+sidequest-release.keystore
+android/keystore.properties

@@ -761,6 +761,37 @@ select { background: var(--card-2); color: var(--text); border: 1px solid var(--
 }
 .incoming-decline:hover { color: #ff7b87; border-color: #ff4757; }
 
+.sync-strip {
+  font-size: 12px; font-weight: 800; color: #9adf5f; background: #9adf5f14;
+  border: 1px solid #9adf5f44; border-radius: 12px; padding: 10px 12px; margin-bottom: 12px;
+}
+
+.find-box { margin-bottom: 12px; }
+.find-input {
+  width: 100%; font: inherit; font-size: 14px; color: var(--text);
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 12px 14px; box-sizing: border-box;
+}
+.find-input:focus { outline: none; border-color: var(--gold); }
+.find-hint { font-size: 12px; color: var(--muted); padding: 10px 4px; }
+.find-results { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.find-row {
+  display: flex; align-items: center; gap: 10px; background: var(--card);
+  border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px;
+}
+.find-avatar {
+  width: 38px; height: 38px; flex-shrink: 0; border-radius: 50%; background: var(--card-2);
+  border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 19px;
+}
+.find-main { flex: 1; min-width: 0; }
+.find-name { font-size: 14px; font-weight: 800; }
+.find-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.find-add {
+  font: inherit; font-size: 12px; font-weight: 900; color: #08100a; background: var(--gold);
+  border: none; border-radius: 99px; padding: 8px 12px; cursor: pointer; white-space: nowrap;
+}
+.find-add:hover { filter: brightness(1.1); }
+
 .friends-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
 .friend-card {
   display: flex; gap: 12px; align-items: center; text-align: left; width: 100%;

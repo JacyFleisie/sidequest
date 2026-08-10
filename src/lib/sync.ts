@@ -296,6 +296,34 @@ export async function fetchRealFriends(uid: string): Promise<RealFriend[]> {
   }
 }
 
+// ── Find people ──────────────────────────────────────────────────────────────
+
+export interface FoundPerson {
+  id: string
+  name: string
+  emoji: string
+  xp: number
+  level: number
+}
+
+/** Searches real profiles by name (profiles are publicly readable by design). */
+export async function findPeople(query: string, myUid: string): Promise<FoundPerson[]> {
+  if (!supabase || !query.trim()) return []
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id,name,emoji,xp')
+      .ilike('name', `%${query.trim()}%`)
+      .limit(8)
+    if (error || !data) return []
+    return data
+      .filter((p) => p.id !== myUid)
+      .map((p) => ({ id: p.id, name: p.name, emoji: p.emoji, xp: p.xp, level: levelFromXp(p.xp) }))
+  } catch {
+    return []
+  }
+}
+
 // ── Realtime ────────────────────────────────────────────────────────────────
 
 /**

@@ -21,9 +21,11 @@ import {
   ensureIdentity,
   fetchIncomingRequests,
   fetchRealFriends,
+  findPeople,
   sendFriendRequest,
   subscribeIncomingRequests,
   syncEnabled,
+  type FoundPerson,
   type IncomingRequest,
   type RealFriend,
 } from '../lib/sync'
@@ -52,6 +54,10 @@ export default function Friends() {
   const [incoming, setIncoming] = useState<IncomingRequest[]>([])
   const [realFriends, setRealFriends] = useState<RealFriend[]>([])
   const [uid, setUid] = useState<string | null>(null)
+  const [synced, setSynced] = useState(false)
+  const [search, setSearch] = useState('')
+  const [results, setResults] = useState<FoundPerson[]>([])
+  const [searching, setSearching] = useState(false)
 
   const flash = (msg: string) => {
     setToast(msg)
@@ -74,6 +80,7 @@ export default function Friends() {
       const myUid = await ensureIdentity()
       if (cancelled || !myUid) return
       setUid(myUid)
+      setSynced(true)
       await Promise.all([refreshRequests(myUid), refreshFriends(myUid)])
       unsub = subscribeIncomingRequests(myUid, () => void refreshRequests(myUid))
     })()
@@ -124,6 +131,33 @@ export default function Friends() {
     const ok = await sendFriendRequest(myUid, card.u)
     if (ok) flash(`📨 Request sent to ${card.e} ${card.n} — they'll accept on their phone!`)
     return ok
+  }
+
+  /** Sends a real request to a person found via search. */
+  const requestPerson = async (person: FoundPerson) => {
+    const myUid = uid ?? (await ensureIdentity())
+    if (!myUid || person.id === myUid) return
+    const ok = await sendFriendRequest(myUid, person.id)
+    if (ok) {
+      flash(`📨 Request sent to ${person.emoji} ${person.name}!`)
+      setResults((rs) => rs.filter((r) => r.id !== person.id))
+    } else {
+      flash("Couldn't send the request — check your connection.")
+    }
+  }
+
+  const runSearch = async (q: string) => {
+    setSearch(q)
+    if (!q.trim()) {
+      setResults([])
+      return
+    }
+    const myUid = uid ?? (await ensureIdentity())
+    if (!myUid) return
+    setSearching(true)
+    const found = await findPeople(q, myUid)
+    setResults(found.filter((f) => !friends.some((x) => x.id === f.id)))
+    setSearching(false)
   }
 
   const accept = async (req: IncomingRequest) => {
@@ -247,6 +281,42 @@ export default function Friends() {
               </div>
             </div>
           </section>
+
+          {synced && (
+            <div className="sync-strip">☁️ Synced — find friends by name below, or share your card.</div>
+          )}
+
+          <div className="find-box">
+            <input
+              className="find-input"
+              value={search}
+              onChange={(e) => void runSearch(e.target.value)}
+              placeholder="🔍 Find friends by name…"
+              maxLength={30}
+            />
+            {searching && <div className="find-hint">Searching…</div>}
+            {results.length > 0 && (
+              <div className="find-results">
+                {results.map((p) => (
+                  <div className="find-row" key={p.id}>
+                    <span className="find-avatar">{p.emoji}</span>
+                    <div className="find-main">
+                      <div className="find-name">{p.name}</div>
+                      <div className="find-meta">
+                        Level {p.level} · {p.xp.toLocaleString()} XP
+                      </div>
+                    </div>
+                    <button className="find-add" onClick={() => void requestPerson(p)}>
+                      📨 Request
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            {!searching && search.trim() && results.length === 0 && (
+              <div className="find-hint">No one named “{search}” is on SideQuest yet.</div>
+            )}
+          </div>
 
           <button className="add-friend-btn" onClick={() => setAddOpen(true)}>
             ＋ Add a friend
