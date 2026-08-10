@@ -14,6 +14,10 @@ export const supabase: SupabaseClient | null = supabaseConfigured
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true,
+        // PKCE: the Android deep-link callback then carries ?code= (query),
+        // which is reliable, instead of #access_token= (URL fragment), which
+        // Android deep links can drop. The web popup flow handles PKCE too.
+        flowType: 'pkce',
       },
     })
   : null

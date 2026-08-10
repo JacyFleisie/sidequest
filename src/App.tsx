@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
+import { Capacitor } from '@capacitor/core'
+import { App as CapApp } from '@capacitor/app'
 import { Navigate, Route, Routes, useSearchParams } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
 import ChainBuilder from './components/ChainBuilder'
@@ -19,6 +21,7 @@ import { useGame } from './lib/store'
 import {
   completeMatchingChallenges,
   ensureIdentity,
+  handleAuthCallback,
   subscribeIncomingRequests,
   syncCompletions,
   syncProfile,
@@ -53,6 +56,27 @@ export default function App() {
       unsub?.()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // ── Google OAuth deep-link callback (Android) ──────────────────────────────
+  // Google redirects to com.jacy.sidequest://auth/callback; Android re-opens
+  // the app and hands us the URL. Exchange the PKCE code, then reload so the
+  // whole app re-syncs against the new identity.
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return
+    const handle = (url: string) => {
+      if (!url.includes('auth/callback')) return
+      void handleAuthCallback(url).then((ok) => {
+        if (ok) window.location.href = '/' // hard reload → fresh sync
+      })
+    }
+    const listener = CapApp.addListener('appUrlOpen', (data) => handle(data.url))
+    void CapApp.getLaunchUrl().then((res) => {
+      if (res?.url) handle(res.url)
+    })
+    return () => {
+      void listener.then((l) => l.remove())
+    }
   }, [])
 
   // Push stat changes as they happen (debounced — the game fires many updates),

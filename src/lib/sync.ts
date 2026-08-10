@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core'
 import { supabase, supabaseConfigured } from './supabase'
 import { ALL_QUESTS } from '../data/quests'
 import { BADGES, levelFromXp, type Progress } from './game'
@@ -54,6 +55,9 @@ export async function ensureIdentity(): Promise<string | null> {
 }
 
 export const syncEnabled = (): boolean => supabaseConfigured
+
+/** True when running inside the Capacitor Android shell (deep links apply). */
+export const isNativePlatform = (): boolean => Capacitor.isNativePlatform()
 
 // ── Profile push ────────────────────────────────────────────────────────────
 
@@ -655,6 +659,101 @@ function rowChallenge(row: Record<string, unknown>): Challenge {
   }
 }
 
+// ── Google sign-in (OAuth) ──────────────────────────────────────────────────
+
+/** The deep link the Android app redirects to after Google consent. */
+export const GOOGLE_REDIRECT = 'com.jacy.sidequest://auth/callback'
+
+/**
+ * Signs the player in with Google.
+ *
+ * Web: supabase-js opens a popup and completes the whole flow in the
+ * background — the caller just waits for the session to change.
+ *
+ * Android (Capacitor): starts a PKCE flow and hands the Google consent URL
+ * back so the app can navigate the WebView to it. When Google redirects to
+ * `com.jacy.sidequest://auth/callback`, Android re-opens the app and
+ * `handleAuthCallback` exchanges the code for a session.
+ *
+ * If a session already exists (anonymous guest or email), the Google identity
+ * is LINKED to it — the uid never changes, so every quest, friend and badge
+ * is preserved automatically.
+ */
+export async function signInWithGoogle(): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: 'Not connected to the sync server.' }
+  try {
+    const native = isNativePlatform()
+    // PKCE is set on the client itself (see supabase.ts); per-call options only
+    // carry the deep link and skip the automatic redirect so WE can navigate.
+    const options = native
+      ? { redirectTo: GOOGLE_REDIRECT, skipBrowserRedirect: true }
+      : undefined
+
+    const navigate = (url: string | undefined) => {
+      if (native && url) {
+        // Navigate the WebView to Google's consent page. The callback deep
+        // link fires the app's intent filter and re-opens SideQuest.
+        window.location.href = url
+      }
+    }
+
+    const { data: sess } = await supabase.auth.getSession()
+    if (!sess.session) {
+      const result = await supabase.auth.signInWithOAuth({ provider: 'google', options })
+      if (result.error) return { ok: false, error: result.error.message }
+      navigate(result.data?.url)
+      return { ok: true }
+    }
+
+    // Signed in (anonymous or email) — LINK Google to the current identity so
+    // the uid never changes and every quest, friend and badge is preserved.
+    const result = await supabase.auth.linkIdentity({ provider: 'google', options })
+    if (result.error && /manual linking/i.test(result.error.message)) {
+      // The project has "Allow manual linking" off. Fall back to a fresh
+      // Google identity: local game data lives in localStorage and re-syncs
+      // to the new uid on the next launch automatically.
+      await supabase.auth.signOut()
+      cachedUid = null
+      const retry = await supabase.auth.signInWithOAuth({ provider: 'google', options })
+      if (retry.error) return { ok: false, error: retry.error.message }
+      navigate(retry.data?.url)
+      return { ok: true }
+    }
+    if (result.error) return { ok: false, error: result.error.message }
+    navigate(result.data?.url)
+    return { ok: true }
+  } catch (e) {
+    return { ok: false, error: (e as Error).message }
+  }
+}
+
+/**
+ * Completes a deep-link auth callback (Android only): exchanges the PKCE code
+ * (or stores the implicit tokens) and lets the caller reload the app against
+ * the new identity.
+ */
+export async function handleAuthCallback(url: string): Promise<boolean> {
+  if (!supabase) return false
+  try {
+    if (url.includes('code=')) {
+      const { error } = await supabase.auth.exchangeCodeForSession(url)
+      return !error
+    }
+    if (url.includes('#access_token=')) {
+      const params = new URLSearchParams(url.split('#')[1] ?? '')
+      const { error } = await supabase.auth.setSession({
+        access_token: params.get('access_token') ?? '',
+        refresh_token: params.get('refresh_token') ?? '',
+      })
+      return !error
+    }
+    return false
+  } catch (e) {
+    console.warn('[sync] auth callback failed', (e as Error).message)
+    return false
+  }
+}
+
 // ── Account (email + password) ───────────────────────────────────────────────
 
 /** Info about the currently signed-in user. */
@@ -663,6 +762,8 @@ export interface AccountInfo {
   email: string | null
   isAnonymous: boolean
   createdAt: string
+  /** Identity providers on the account, e.g. ['google'] or ['email']. */
+  providers: string[]
 }
 
 /** Returns info about the currently signed-in user, or null when offline. */
@@ -676,6 +777,8 @@ export async function getAccountInfo(): Promise<AccountInfo | null> {
     email: user.email ?? null,
     isAnonymous: (user as unknown as Record<string, unknown>).is_anonymous === true,
     createdAt: user.created_at,
+    // e.g. ['google'], ['email'], or [] for pure anonymous users.
+    providers: (user.identities ?? []).map((i) => i.provider),
   }
 }
 

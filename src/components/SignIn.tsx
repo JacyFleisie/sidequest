@@ -1,6 +1,18 @@
 import { useState } from 'react'
-import { signInToAccount, upgradeToAccount } from '../lib/sync'
+import { getAccountInfo, signInToAccount, signInWithGoogle, upgradeToAccount } from '../lib/sync'
 import { Button, Sheet } from './ui'
+
+/** The official multi-colour Google G, inline so it works offline. */
+function GoogleG() {
+  return (
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+    </svg>
+  )
+}
 
 export default function SignIn({ onClose }: { onClose: () => void }) {
   const [mode, setMode] = useState<'signin' | 'create'>('create')
@@ -8,7 +20,14 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [googleBusy, setGoogleBusy] = useState(false)
   const [done, setDone] = useState(false)
+
+  const finish = () => {
+    setDone(true)
+    // Reload so the whole app re-syncs against the account identity.
+    window.setTimeout(() => window.location.reload(), 600)
+  }
 
   const submit = async () => {
     setError(null)
@@ -31,9 +50,33 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
       setError(res.error ?? 'Something went wrong — try again.')
       return
     }
-    setDone(true)
-    // Reload so the whole app re-syncs against the account identity.
-    window.setTimeout(() => window.location.reload(), 600)
+    finish()
+  }
+
+  const google = async () => {
+    setError(null)
+    setGoogleBusy(true)
+    const before = await getAccountInfo()
+    const res = await signInWithGoogle()
+    if (!res.ok) {
+      setGoogleBusy(false)
+      setError(res.error ?? 'Google sign-in failed — try again.')
+      return
+    }
+    // On the web the flow finishes in a popup — watch for the session to
+    // change, then reload. Linking keeps the same uid, so also watch for the
+    // Google identity itself. On Android the whole app is backgrounded while
+    // the browser handles Google, so the deep-link callback does the reload.
+    const poll = window.setInterval(async () => {
+      const after = await getAccountInfo()
+      const linked = after && (after.uid !== before?.uid || after.providers.includes('google'))
+      if (linked) {
+        window.clearInterval(poll)
+        setGoogleBusy(false)
+        finish()
+      }
+    }, 700)
+    window.setTimeout(() => window.clearInterval(poll), 120000)
   }
 
   return (
@@ -48,6 +91,13 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
 
         {done && <div className="signin-done">✅ {mode === 'create' ? 'Account created!' : 'Signed in!'} Reloading…</div>}
 
+        <button className="google-btn" onClick={() => void google()} disabled={googleBusy || busy || done}>
+          <GoogleG />
+          {googleBusy ? 'Opening Google…' : 'Continue with Google'}
+        </button>
+
+        <div className="signin-divider">or continue with email</div>
+
         <label className="signin-label" htmlFor="sq-email">
           Email
         </label>
@@ -59,7 +109,7 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
           placeholder="you@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          disabled={busy}
+          disabled={busy || done}
         />
 
         <label className="signin-label" htmlFor="sq-password">
@@ -73,22 +123,24 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
           placeholder={mode === 'create' ? 'At least 6 characters' : 'Your password'}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          disabled={busy}
+          disabled={busy || done}
         />
 
         {error && <div className="signin-error">{error}</div>}
 
-        <Button variant="gold" className="signin-submit" onClick={() => void submit()} disabled={busy}>
+        <Button variant="gold" className="signin-submit" onClick={() => void submit()} disabled={busy || googleBusy || done}>
           {busy ? 'Working…' : mode === 'create' ? 'Create account' : 'Sign in'}
         </Button>
 
-        <button className="signin-switch" onClick={() => { setMode(mode === 'create' ? 'signin' : 'create'); setError(null) }} disabled={busy}>
+        <button
+          className="signin-switch"
+          onClick={() => { setMode(mode === 'create' ? 'signin' : 'create'); setError(null) }}
+          disabled={busy || googleBusy || done}
+        >
           {mode === 'create' ? 'Already have an account? Sign in' : 'New here? Create an account'}
         </button>
 
-        <p className="signin-note">
-          🔒 Private — your data lives in your own Supabase project.
-        </p>
+        <p className="signin-note">🔒 Your stats stay synced across devices — sign in on any phone to pick up where you left off.</p>
       </div>
     </Sheet>
   )

@@ -291,7 +291,9 @@ function AccountCard() {
             ✅ Signed in as <b>{account.email ?? 'connected user'}</b>
           </p>
           <p className="update-card-status" style={{ fontSize: 12, color: 'var(--muted)' }}>
-            Your stats are synced to your account — they survive reinstalls and work on any device.
+            {account.providers.includes('google')
+              ? 'Connected with Google — your stats are synced and survive reinstalls.'
+              : 'Your stats are synced to your account — they survive reinstalls and work on any device.'}
           </p>
           <button className="update-btn" onClick={() => void doSignOut()}>
             🚪 Sign out
