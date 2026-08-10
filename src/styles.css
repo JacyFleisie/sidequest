@@ -889,12 +889,6 @@ select { background: var(--card-2); color: var(--text); border: 1px solid var(--
 }
 .remove-btn:hover { border-color: #ff4757; background: #ff47571a; }
 
-.friend-card-sheet { padding: 14px 22px 10px; text-align: center; }
-.friend-card-note { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 16px 0; }
-.friend-card-added {
-  color: var(--green); font-size: 14px; font-weight: 800; padding: 16px 0; text-align: center;
-}
-
 /* ── Profile ─────────────────────────────────────────────────────────────── */
 .player-card {
   display: flex; gap: 16px; background: linear-gradient(150deg, #17233f, #10182c);

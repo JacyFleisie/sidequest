@@ -12,18 +12,13 @@ import Profile from './components/Profile'
 import UpdateBanner from './components/UpdateBanner'
 import UpdatedNotice from './components/UpdatedNotice'
 import { QuestSheet } from './components/QuestSheet'
-import { Button, Sheet } from './components/ui'
 import { ALL_QUESTS, type Chain, type Quest } from './data/quests'
 import { decodeChainShare } from './lib/share'
-import { decodeFriendCard, friendId, friendProfile } from './lib/friends'
 import { useGame } from './lib/store'
 import { ensureIdentity, subscribeIncomingRequests, syncCompletions, syncProfile } from './lib/sync'
 
-const LEVEL_ICON = (level: number): string =>
-  ['🌱', '🌿', '🔥', '⚡', '🌟', '💎', '👑', '🦁', '🚀', '🌍', '🏆', '🇿🇦'][Math.min(level - 1, 11)]
-
 export default function App() {
-  const { state, addFriend } = useGame()
+  const { state } = useGame()
   const [searchParams, setSearchParams] = useSearchParams()
 
   // ── Sync: sign in anonymously, push real stats, listen for friend requests ──
@@ -99,18 +94,6 @@ export default function App() {
 
   const challenger = searchParams.get('from')
 
-  // A friend card arrives as ?friend=… — offer to add them.
-  const card = useMemo(() => {
-    const raw = searchParams.get('friend')
-    if (!raw) return null
-    const decoded = decodeFriendCard(raw)
-    if (!decoded || !decoded.n.trim()) return null
-    return decoded
-  }, [searchParams])
-
-  const alreadyFriend = card ? state.friends.some((f) => f.id === friendId(card.n, card.e)) : false
-  const cardProfile = card ? friendProfile({ id: friendId(card.n, card.e), name: card.n, emoji: card.e, addedAt: '' }) : null
-
   return (
     <div className="app">
       <UpdateBanner />
@@ -133,38 +116,6 @@ export default function App() {
           banner={challenger ? `🎁 ${challenger} challenged you with this quest!` : '🎁 A friend shared this quest with you!'}
           onClose={() => setSearchParams({})}
         />
-      )}
-      {card && cardProfile && (
-        <Sheet onClose={() => setSearchParams({})}>
-          <div className="friend-card-sheet">
-            <div className="friend-sheet-hero">
-              <span className="friend-sheet-avatar">{card.e}</span>
-              <div className="friend-sheet-name">{card.n}</div>
-              <div className="friend-sheet-level">
-                {LEVEL_ICON(cardProfile.level)} Level {cardProfile.level} · {cardProfile.questsDone} quests · 🔥{' '}
-                {cardProfile.streak}-day streak
-              </div>
-            </div>
-            <p className="friend-card-note">
-              👋 {card.n} wants to be your SideQuest friend. Add them and start challenging each other across South
-              Africa!
-            </p>
-            {alreadyFriend ? (
-              <p className="friend-card-added">✓ Already on your friends list.</p>
-            ) : (
-              <Button
-                variant="gold"
-                className="accept-btn"
-                onClick={() => {
-                  addFriend({ id: friendId(card.n, card.e), name: card.n, emoji: card.e, addedAt: new Date().toISOString() })
-                  setSearchParams({})
-                }}
-              >
-                ＋ Add {card.n} as a friend
-              </Button>
-            )}
-          </div>
-        </Sheet>
       )}
     </div>
   )
