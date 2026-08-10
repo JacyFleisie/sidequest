@@ -715,6 +715,12 @@ export async function upgradeToAccount(
   if (errMsg) {
     if (errMsg.includes('Database error saving new user'))
       return { ok: false, error: 'This email may already be in use. Try signing in instead.' }
+    if (/email rate limit/i.test(errMsg))
+      return {
+        ok: false,
+        error:
+          'Supabase is rate-limiting emails right now — wait about an hour, or raise the limit in Supabase → Authentication → Rate Limits (Email).',
+      }
     return { ok: false, error: errMsg }
   }
   cachedUid = null // invalidate so next ensureIdentity() re-reads
