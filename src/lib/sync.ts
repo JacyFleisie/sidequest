@@ -27,6 +27,19 @@ export async function ensureIdentity(): Promise<string | null> {
   try {
     const { data } = await supabase.auth.getSession()
     let uid = data.session?.user.id ?? null
+    if (uid) {
+      // Validate the session server-side. If the auth user was deleted (e.g. a
+      // database wipe) the device still holds a dead token, and every API call
+      // fails with "User from sub claim JWT does not exist". Self-heal: clear
+      // it and fall through to a fresh anonymous identity. Network errors are
+      // NOT healed (offline should keep the cached session).
+      const { error } = await supabase.auth.getUser()
+      if (error && /sub claim|does not exist/i.test(error.message)) {
+        console.warn('[sync] stale session detected, starting fresh identity')
+        await supabase.auth.signOut()
+        uid = null
+      }
+    }
     if (!uid) {
       const { data: anon, error: anonErr } = await supabase.auth.signInAnonymously()
       if (anonErr) console.warn('[sync] anonymous sign-in unavailable (enable it in Supabase → Authentication → Sign In / Up):', anonErr.message)
@@ -666,17 +679,43 @@ export async function getAccountInfo(): Promise<AccountInfo | null> {
   }
 }
 
-/** Upgrades the current anonymous user to an email+password account (same uid — no data migration needed). */
+/**
+ * Upgrades the current anonymous user to an email+password account (same uid —
+ * no data migration needed). If the session is stale — e.g. the underlying auth
+ * user was deleted by a database wipe while the device kept its old token — it
+ * starts a fresh anonymous identity and retries, so account creation never
+ * dead-ends on "User from sub claim JWT does not exist".
+ */
 export async function upgradeToAccount(
   email: string,
   password: string,
 ): Promise<{ ok: boolean; error?: string }> {
   if (!supabase) return { ok: false, error: 'Not connected to the sync server.' }
-  const { error } = await supabase.auth.updateUser({ email, password })
-  if (error) {
-    if (error.message.includes('Database error saving new user'))
+
+  const attempt = async (): Promise<string | null> => {
+    const { error } = await supabase!.auth.updateUser({ email, password })
+    return error?.message ?? null
+  }
+
+  let errMsg = await attempt()
+  if (errMsg && (errMsg.includes('does not exist') || errMsg.includes('sub claim'))) {
+    // The signed-in identity was deleted out from under us. Clear it, get a
+    // brand-new anonymous identity, and try the upgrade again.
+    try {
+      await supabase.auth.signOut()
+    } catch {
+      // best effort — the session may already be gone
+    }
+    cachedUid = null
+    const { data: anon } = await supabase.auth.signInAnonymously()
+    if (!anon.user) return { ok: false, error: 'Could not start a fresh session — try again.' }
+    errMsg = await attempt()
+  }
+
+  if (errMsg) {
+    if (errMsg.includes('Database error saving new user'))
       return { ok: false, error: 'This email may already be in use. Try signing in instead.' }
-    return { ok: false, error: error.message }
+    return { ok: false, error: errMsg }
   }
   cachedUid = null // invalidate so next ensureIdentity() re-reads
   return { ok: true }
