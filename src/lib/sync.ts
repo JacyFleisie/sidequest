@@ -842,6 +842,26 @@ export async function signInToAccount(
   return { ok: true }
 }
 
+/** Sends a password-reset email. The link re-opens the app (deep link on
+ * Android, the site URL on web) with a recovery session. */
+export async function sendPasswordReset(email: string): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: 'Not connected to the sync server.' }
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: isNativePlatform() ? GOOGLE_REDIRECT : undefined,
+  })
+  if (error) return { ok: false, error: error.message }
+  return { ok: true }
+}
+
+/** Sets a new password while in a recovery session (after the email link). */
+export async function updatePassword(newPassword: string): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: 'Not connected to the sync server.' }
+  const { error } = await supabase.auth.updateUser({ password: newPassword })
+  if (error) return { ok: false, error: error.message }
+  cachedUid = null
+  return { ok: true }
+}
+
 /** Signs out and returns to anonymous mode. */
 export async function signOutAccount(): Promise<void> {
   if (!supabase) return

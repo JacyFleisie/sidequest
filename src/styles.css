@@ -1169,5 +1169,12 @@ select { background: var(--card-2); color: var(--text); border: 1px solid var(--
   border: none; cursor: pointer; padding: 10px 0 0; text-align: center;
 }
 .signin-switch:disabled { opacity: 0.5; }
+.signin-forgot {
+  font: inherit; font-size: 13px; color: var(--muted); background: none;
+  border: none; cursor: pointer; padding: 8px 0 0; text-align: right;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.signin-forgot:hover { color: var(--gold); }
+.signin-forgot:disabled { opacity: 0.5; }
 .signin-note { font-size: 12px; color: var(--muted); text-align: center; margin: 14px 0 0; }
 .signin-done { font-size: 14px; font-weight: 700; color: #5d9; text-align: center; padding: 12px; }

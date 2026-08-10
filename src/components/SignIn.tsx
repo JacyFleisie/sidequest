@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { getAccountInfo, signInToAccount, signInWithGoogle, upgradeToAccount } from '../lib/sync'
+import { getAccountInfo, sendPasswordReset, signInToAccount, signInWithGoogle, upgradeToAccount } from '../lib/sync'
 import { Button, Sheet } from './ui'
 
 /** The official multi-colour Google G, inline so it works offline. */
@@ -22,6 +22,8 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
   const [error, setError] = useState<string | null>(null)
   const [googleBusy, setGoogleBusy] = useState(false)
   const [done, setDone] = useState(false)
+  const [resetMode, setResetMode] = useState(false)
+  const [resetSent, setResetSent] = useState(false)
 
   const finish = () => {
     setDone(true)
@@ -51,6 +53,23 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
       return
     }
     finish()
+  }
+
+  const reset = async () => {
+    setError(null)
+    const cleanEmail = email.trim().toLowerCase()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      setError('Enter the email you signed up with.')
+      return
+    }
+    setBusy(true)
+    const res = await sendPasswordReset(cleanEmail)
+    setBusy(false)
+    if (!res.ok) {
+      setError(res.error ?? 'Could not send the reset email — try again.')
+      return
+    }
+    setResetSent(true)
   }
 
   const google = async () => {
@@ -91,6 +110,41 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
 
         {done && <div className="signin-done">✅ {mode === 'create' ? 'Account created!' : 'Signed in!'} Reloading…</div>}
 
+        {resetMode ? (
+          <>
+            {resetSent ? (
+              <div className="signin-done">📧 Reset link sent!</div>
+            ) : (
+              <>
+                <p className="signin-sub">Enter your account email and we'll send you a link to set a new password.</p>
+                <label className="signin-label" htmlFor="sq-reset-email">Email</label>
+                <input
+                  id="sq-reset-email"
+                  className="signin-input"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={busy}
+                />
+                {error && <div className="signin-error">{error}</div>}
+                <Button variant="gold" className="signin-submit" onClick={() => void reset()} disabled={busy}>
+                  {busy ? 'Sending…' : 'Send reset link'}
+                </Button>
+                <button className="signin-switch" onClick={() => setResetMode(false)} disabled={busy}>
+                  ← Back to sign in
+                </button>
+              </>
+            )}
+            {resetSent && (
+              <button className="signin-switch" onClick={() => { setResetMode(false); setResetSent(false); setError(null) }}>
+                ← Back to sign in
+              </button>
+            )}
+          </>
+        ) : (
+          <>
         <button className="google-btn" onClick={() => void google()} disabled={googleBusy || busy || done}>
           <GoogleG />
           {googleBusy ? 'Opening Google…' : 'Continue with Google'}
@@ -132,6 +186,16 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
           {busy ? 'Working…' : mode === 'create' ? 'Create account' : 'Sign in'}
         </Button>
 
+        {mode === 'signin' && (
+          <button
+            className="signin-forgot"
+            onClick={() => { setResetMode(true); setError(null) }}
+            disabled={busy || googleBusy || done}
+          >
+            Forgot password?
+          </button>
+        )}
+
         <button
           className="signin-switch"
           onClick={() => { setMode(mode === 'create' ? 'signin' : 'create'); setError(null) }}
@@ -139,6 +203,8 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
         >
           {mode === 'create' ? 'Already have an account? Sign in' : 'New here? Create an account'}
         </button>
+          </>
+        )}
 
         <p className="signin-note">🔒 Your stats stay synced across devices — sign in on any phone to pick up where you left off.</p>
       </div>

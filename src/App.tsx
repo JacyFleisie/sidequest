@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Capacitor } from '@capacitor/core'
 import { App as CapApp } from '@capacitor/app'
 import { Navigate, Route, Routes, useSearchParams } from 'react-router-dom'
+import { supabase } from './lib/supabase'
 import BottomNav from './components/BottomNav'
 import ChainBuilder from './components/ChainBuilder'
 import Friends from './components/Friends'
@@ -12,6 +13,7 @@ import Onboarding from './components/Onboarding'
 import ActiveQuest from './components/ActiveQuest'
 import CompletionModal from './components/CompletionModal'
 import Profile from './components/Profile'
+import ResetPassword from './components/ResetPassword'
 import UpdateBanner from './components/UpdateBanner'
 import UpdatedNotice from './components/UpdatedNotice'
 import { QuestSheet } from './components/QuestSheet'
@@ -30,6 +32,18 @@ import {
 export default function App() {
   const { state } = useGame()
   const [searchParams, setSearchParams] = useSearchParams()
+  const [recovery, setRecovery] = useState(false)
+
+  // ── Password reset: a recovery email link starts a recovery session ───────
+  useEffect(() => {
+    if (!supabase) return
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') setRecovery(true)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
 
   // ── Sync: sign in anonymously, push real stats, listen for friend requests ──
   const uidRef = useRef<string | null>(null)
@@ -170,6 +184,7 @@ export default function App() {
           onClose={() => setSearchParams({})}
         />
       )}
+      {recovery && <ResetPassword onClose={() => setRecovery(false)} />}
     </div>
   )
 }
