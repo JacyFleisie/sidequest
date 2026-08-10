@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ALL_QUESTS, CATEGORY_META } from '../data/quests'
 import {
-  encodeFriendCard,
-  friendCardUrl,
   friendProfile,
   rivalry,
   timeAgo,
@@ -142,21 +140,6 @@ export default function Friends() {
     flash(`Request from ${req.senderEmoji} ${req.senderName} declined.`)
   }
 
-  const shareCard = async () => {
-    const myUid = uid ?? (await ensureIdentity())
-    const url = friendCardUrl(playerName, youEmoji, myUid ?? undefined)
-    const native = await shareViaNative(`Join me on SideQuest — ${playerName} 🇿🇦`, url)
-    if (native) return
-    const ok = await copyText(url)
-    flash(ok ? '📋 Your friend card link is copied — send it!' : "Couldn't copy the link.")
-  }
-
-  const copyCode = async () => {
-    const code = encodeFriendCard(playerName, youEmoji)
-    const ok = await copyText(code)
-    flash(ok ? `📋 Your friend code is copied — friends paste it into “Add a friend”.` : "Couldn't copy the code.")
-  }
-
   const challenge = async (friend: Friend) => {
     const pool = [...ALL_QUESTS].sort(() => Math.random() - 0.5)
     const quest = pool[0]
@@ -232,19 +215,12 @@ export default function Friends() {
               <div className="you-meta">
                 Lv {progress.level} · {state.xp.toLocaleString()} XP · {playerQuests} quests · 🔥 {state.streak}-day streak
               </div>
-              <div className="you-actions">
-                <button className="you-btn you-btn-gold" onClick={shareCard}>
-                  📤 Share my card
-                </button>
-                <button className="you-btn" onClick={copyCode}>
-                  📋 Copy my code
-                </button>
-              </div>
+
             </div>
           </section>
 
           {synced && (
-            <div className="sync-strip">☁️ Synced — find friends by name below, or share your card.</div>
+            <div className="sync-strip">☁️ Synced — search for friends by name below.</div>
           )}
 
           <div className="find-box">
@@ -281,8 +257,8 @@ export default function Friends() {
 
           {friends.length === 0 && realFriends.length === 0 && incoming.length === 0 ? (
             <div className="empty-state">
-              No friends yet. <b>Search for them by name</b> above and send a request — or share your card so they
-              can add you. You can challenge each other and compare quests once they're in.
+              No friends yet. <b>Search for them by name</b> above and send a request — once they accept, you can
+              challenge each other and compare quests.
             </div>
           ) : (
             <section className="friends-list">
