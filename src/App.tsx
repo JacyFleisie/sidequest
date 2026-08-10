@@ -138,7 +138,7 @@ export default function App() {
         <Sheet onClose={() => setSearchParams({})}>
           <div className="friend-card-sheet">
             <div className="friend-sheet-hero">
-              <span className="friend-sheet-emoji">{card.e}</span>
+              <span className="friend-sheet-avatar">{card.e}</span>
               <div className="friend-sheet-name">{card.n}</div>
               <div className="friend-sheet-level">
                 {LEVEL_ICON(cardProfile.level)} Level {cardProfile.level} · {cardProfile.questsDone} quests · 🔥{' '}

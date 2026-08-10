@@ -330,9 +330,10 @@ export async function findPeople(query: string, myUid: string): Promise<FoundPer
  * Subscribes to new incoming friend requests. Returns an unsubscribe function.
  * No-ops (returns a no-op) when offline.
  */
-export function subscribeIncomingRequests(uid: string, cb: () => void): () => void {
-  if (!supabase) return () => {}
-  const channel = supabase
+const requestChannels = new Map<string, ReturnType<typeof createRequestChannel>>()
+
+function createRequestChannel(uid: string, cb: () => void) {
+  const channel = supabase!
     .channel(`requests-${uid}`)
     .on(
       'postgres_changes',
@@ -340,8 +341,27 @@ export function subscribeIncomingRequests(uid: string, cb: () => void): () => vo
       cb,
     )
     .subscribe()
+  return { channel, cb }
+}
+
+export function subscribeIncomingRequests(uid: string, cb: () => void): () => void {
+  if (!supabase) return () => {}
+  // Re-subscribing (e.g. a React hot reload or re-mount) must not re-add callbacks
+  // to an already-subscribed channel — that throws. Reuse the existing channel
+  // and just swap the callback instead.
+  const existing = requestChannels.get(uid)
+  if (existing) {
+    existing.cb = cb
+    return () => {
+      requestChannels.delete(uid)
+      supabase?.removeChannel(existing.channel)
+    }
+  }
+  const entry = createRequestChannel(uid, cb)
+  requestChannels.set(uid, entry)
   return () => {
-    supabase?.removeChannel(channel)
+    requestChannels.delete(uid)
+    supabase?.removeChannel(entry.channel)
   }
 }
 

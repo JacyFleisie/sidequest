@@ -46,7 +46,7 @@ export interface FriendProfile {
 }
 
 const RELATIVE = (minutesAgo: number): string => {
-  if (minutesAgo < 60) return `${Math.max(1, minutesAgo)} min ago`
+  if (minutesAgo < 60) return `${Math.max(1, Math.round(minutesAgo))} min ago`
   if (minutesAgo < 60 * 24) return `${Math.floor(minutesAgo / 60)}h ago`
   const days = Math.floor(minutesAgo / (60 * 24))
   if (days === 1) return 'yesterday'

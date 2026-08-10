@@ -420,7 +420,7 @@ function FriendSheet({
     <Sheet onClose={onClose}>
       <div className="friend-sheet">
         <div className="friend-sheet-hero">
-          <span className="friend-sheet-emoji">{friend.emoji}</span>
+          <span className="friend-sheet-avatar">{friend.emoji}</span>
           <div className="friend-sheet-name">{friend.name}</div>
           <div className="friend-sheet-level">
             {LEVEL_ICON(profile.level)} Level {profile.level} · {rank.rank.emoji} {rank.rank.name} ·{' '}
@@ -449,7 +449,7 @@ function FriendSheet({
 
         {profile.badgeEvents.length > 0 && (
           <div className="friend-just-earned">
-            <h3 className="chain-steps-title">🎖️ Just earned</h3>
+            <h3 className="sheet-section-title">🎖️ Just earned</h3>
             {profile.badgeEvents.map((b) => (
               <div className="friend-just-earned-row" key={b.id}>
                 <span className="friend-just-earned-badge">
@@ -468,29 +468,36 @@ function FriendSheet({
         )}
 
         <div className="friend-activity">
-          <h3 className="chain-steps-title">🕑 Recent quests</h3>
-          {profile.recent.map((a) => {
-            const q = ALL_QUESTS.find((x) => x.id === a.questId)
-            const meta = q ? CATEGORY_META[q.category] : null
-            return (
-              <div className="friend-activity-row" key={a.questId + a.when}>
-                <div className="friend-activity-emoji">{a.emoji}</div>
-                <div className="friend-activity-main">
-                  <div className="friend-activity-title">{a.title}</div>
-                  <div className="friend-activity-meta">
-                    {a.city} · {meta ? `${meta.emoji} ${meta.label}` : ''}
+          <h3 className="sheet-section-title">🕑 Recent quests</h3>
+          {profile.recent.length === 0 ? (
+            <p className="sheet-empty-note">
+              {friend.name} is on the synced build but hasn't shared quest history yet — their stats will fill in
+              as they play.
+            </p>
+          ) : (
+            profile.recent.map((a) => {
+              const q = ALL_QUESTS.find((x) => x.id === a.questId)
+              const meta = q ? CATEGORY_META[q.category] : null
+              return (
+                <div className="friend-activity-row" key={a.questId + a.when}>
+                  <div className="friend-activity-emoji">{a.emoji}</div>
+                  <div className="friend-activity-main">
+                    <div className="friend-activity-title">{a.title}</div>
+                    <div className="friend-activity-meta">
+                      {a.city} · {meta ? `${meta.emoji} ${meta.label}` : ''}
+                    </div>
                   </div>
+                  <div className="friend-activity-when">{a.when}</div>
                 </div>
-                <div className="friend-activity-when">{a.when}</div>
-              </div>
-            )
-          })}
+              )
+            })
+          )}
         </div>
 
         <Button variant="gold" className="accept-btn" onClick={onChallenge}>
           🏁 Challenge to a quest
         </Button>
-        <button className="abandon-btn" onClick={onRemove}>
+        <button className="remove-btn" onClick={onRemove}>
           🗑️ Remove friend
         </button>
       </div>
