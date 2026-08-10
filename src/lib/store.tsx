@@ -72,7 +72,7 @@ export interface Friend {
   addedAt: string
 }
 
-interface PersistedState {
+export interface PersistedState {
   version: number
   playerName: string
   homeBaseId: string

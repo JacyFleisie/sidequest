@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Navigate, Route, Routes, useSearchParams } from 'react-router-dom'
 import BottomNav from './components/BottomNav'
 import ChainBuilder from './components/ChainBuilder'
@@ -17,6 +17,7 @@ import { ALL_QUESTS, type Chain, type Quest } from './data/quests'
 import { decodeChainShare } from './lib/share'
 import { decodeFriendCard, friendId, friendProfile } from './lib/friends'
 import { useGame } from './lib/store'
+import { ensureIdentity, subscribeIncomingRequests, syncCompletions, syncProfile } from './lib/sync'
 
 const LEVEL_ICON = (level: number): string =>
   ['🌱', '🌿', '🔥', '⚡', '🌟', '💎', '👑', '🦁', '🚀', '🌍', '🏆', '🇿🇦'][Math.min(level - 1, 11)]
@@ -24,6 +25,45 @@ const LEVEL_ICON = (level: number): string =>
 export default function App() {
   const { state, addFriend } = useGame()
   const [searchParams, setSearchParams] = useSearchParams()
+
+  // ── Sync: sign in anonymously, push real stats, listen for friend requests ──
+  const uidRef = useRef<string | null>(null)
+  const pushedRef = useRef(false)
+  useEffect(() => {
+    let unsub: (() => void) | null = null
+    let cancelled = false
+    void (async () => {
+      const uid = await ensureIdentity()
+      if (cancelled) return
+      uidRef.current = uid
+      if (!uid) return
+      // Push everything on launch (idempotent), then keep the profile fresh.
+      await syncCompletions(uid, state)
+      await syncProfile(uid, state)
+      pushedRef.current = true
+      unsub = subscribeIncomingRequests(uid, () => {
+        // A request arrived — refetch and surface it via the friends screen.
+        window.dispatchEvent(new CustomEvent('sidequest:friend-request'))
+      })
+    })()
+    return () => {
+      cancelled = true
+      unsub?.()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Push stat changes as they happen (debounced — the game fires many updates).
+  useEffect(() => {
+    const uid = uidRef.current
+    if (!uid || !pushedRef.current) return
+    const t = window.setTimeout(() => {
+      void syncProfile(uid, state)
+      void syncCompletions(uid, state)
+    }, 1500)
+    return () => window.clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.xp, state.streak, state.playerName, state.completed])
 
   // A friend's shared chain arrives as ?chain=… — decode it once and show it.
   const shared = useMemo(() => {

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ALL_QUESTS, CATEGORY_META } from '../data/quests'
 import {
   decodeFriendCard,
@@ -15,6 +15,18 @@ import {
 import { levelProgress, rankFromXp } from '../lib/game'
 import { chainShareUrl, copyText, shareViaNative } from '../lib/share'
 import { useGame, type Friend } from '../lib/store'
+import {
+  acceptFriendRequest,
+  declineFriendRequest,
+  ensureIdentity,
+  fetchIncomingRequests,
+  fetchRealFriends,
+  sendFriendRequest,
+  subscribeIncomingRequests,
+  syncEnabled,
+  type IncomingRequest,
+  type RealFriend,
+} from '../lib/sync'
 import { Button, Sheet } from './ui'
 
 const AVATARS = ['🐆', '🦁', '🐘', '🦏', '🦒', '🐧', '🦈', '🦓', '🐢', '🦜', '🐨', '🐺', '🦉', '🦋', '🐊', '🦭']
@@ -37,11 +49,45 @@ export default function Friends() {
   const [addOpen, setAddOpen] = useState(false)
   const [selected, setSelected] = useState<Friend | null>(null)
   const [toast, setToast] = useState<string | null>(null)
+  const [incoming, setIncoming] = useState<IncomingRequest[]>([])
+  const [realFriends, setRealFriends] = useState<RealFriend[]>([])
+  const [uid, setUid] = useState<string | null>(null)
 
   const flash = (msg: string) => {
     setToast(msg)
     window.setTimeout(() => setToast(null), 2600)
   }
+
+  // ── Real sync: incoming requests + real friends from Supabase ──────────────
+  const refreshRequests = async (myUid: string) => {
+    setIncoming(await fetchIncomingRequests(myUid))
+  }
+  const refreshFriends = async (myUid: string) => {
+    setRealFriends(await fetchRealFriends(myUid))
+  }
+
+  useEffect(() => {
+    if (!syncEnabled()) return
+    let unsub: (() => void) | null = null
+    let cancelled = false
+    void (async () => {
+      const myUid = await ensureIdentity()
+      if (cancelled || !myUid) return
+      setUid(myUid)
+      await Promise.all([refreshRequests(myUid), refreshFriends(myUid)])
+      unsub = subscribeIncomingRequests(myUid, () => void refreshRequests(myUid))
+    })()
+    const onEvent = () => {
+      if (uid) void refreshRequests(uid)
+    }
+    window.addEventListener('sidequest:friend-request', onEvent)
+    return () => {
+      cancelled = true
+      unsub?.()
+      window.removeEventListener('sidequest:friend-request', onEvent)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const playerQuests = useMemo(
     () =>
@@ -70,8 +116,40 @@ export default function Friends() {
     return true
   }
 
+  /** Sends a REAL request to a friend card that carries a uid (synced builds). */
+  const sendRealRequest = async (card: FriendCard): Promise<boolean> => {
+    if (!card.u || !syncEnabled()) return false
+    const myUid = uid ?? (await ensureIdentity())
+    if (!myUid || card.u === myUid) return false
+    const ok = await sendFriendRequest(myUid, card.u)
+    if (ok) flash(`📨 Request sent to ${card.e} ${card.n} — they'll accept on their phone!`)
+    return ok
+  }
+
+  const accept = async (req: IncomingRequest) => {
+    const ok = await acceptFriendRequest(uid ?? '', req.id)
+    if (!ok) {
+      flash("Couldn't accept — check your connection.")
+      return
+    }
+    addFriend({ id: req.senderId, name: req.senderName, emoji: req.senderEmoji, addedAt: new Date().toISOString() })
+    setIncoming((xs) => xs.filter((x) => x.id !== req.id))
+    flash(`${req.senderEmoji} ${req.senderName} is now your friend! 🎉`)
+  }
+
+  const decline = async (req: IncomingRequest) => {
+    const ok = await declineFriendRequest(uid ?? '', req.id)
+    if (!ok) {
+      flash("Couldn't decline — check your connection.")
+      return
+    }
+    setIncoming((xs) => xs.filter((x) => x.id !== req.id))
+    flash(`Request from ${req.senderEmoji} ${req.senderName} declined.`)
+  }
+
   const shareCard = async () => {
-    const url = friendCardUrl(playerName, youEmoji)
+    const myUid = uid ?? (await ensureIdentity())
+    const url = friendCardUrl(playerName, youEmoji, myUid ?? undefined)
     const native = await shareViaNative(`Join me on SideQuest — ${playerName} 🇿🇦`, url)
     if (native) return
     const ok = await copyText(url)
@@ -97,10 +175,30 @@ export default function Friends() {
     flash(ok ? `📋 Challenge sent to ${friend.name}!` : "Couldn't copy the challenge link.")
   }
 
-  const profiles = useMemo(
-    () => new Map(friends.map((f) => [f.id, { friend: f, profile: friendProfile(f) }])),
-    [friends],
-  )
+  // Real friends from the DB get their real stats; local-only friends keep the
+  // deterministic demo profile until they also join the synced world.
+  const profiles = useMemo(() => {
+    const map = new Map(friends.map((f) => [f.id, { friend: f, profile: friendProfile(f) }]))
+    for (const r of realFriends) {
+      const f: Friend = { id: r.id, name: r.name, emoji: r.emoji, addedAt: new Date().toISOString() }
+      map.set(r.id, {
+        friend: f,
+        profile: {
+          xp: r.xp,
+          level: r.level,
+          streak: r.streak,
+          questsDone: r.questsDone,
+          badges: r.badges,
+          provinces: 1,
+          lastActive: r.lastActiveAt ? timeAgo(r.lastActiveAt) : 'online',
+          recent: [],
+          favourite: null,
+          badgeEvents: [],
+        },
+      })
+    }
+    return map
+  }, [friends, realFriends])
 
   const sorted = [...profiles.values()].sort((a, b) => b.profile.xp - a.profile.xp)
   const leaderId = sorted[0]?.friend.id
@@ -234,10 +332,35 @@ export default function Friends() {
         </>
       )}
 
+      {incoming.length > 0 && (
+        <section className="incoming-requests">
+          <h2 className="section-title">📨 Friend requests</h2>
+          <p className="section-sub">These people want to be your friend — accept to sync real stats.</p>
+          <div className="incoming-list">
+            {incoming.map((req) => (
+              <div className="incoming-row" key={req.id}>
+                <span className="incoming-avatar">{req.senderEmoji}</span>
+                <div className="incoming-main">
+                  <div className="incoming-name">{req.senderName}</div>
+                  <div className="incoming-meta">{req.senderXp.toLocaleString()} XP · Level {levelProgress(req.senderXp).level}</div>
+                </div>
+                <button className="incoming-accept" onClick={() => void accept(req)}>
+                  ✓ Accept
+                </button>
+                <button className="incoming-decline" onClick={() => void decline(req)}>
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {addOpen && (
         <AddFriendSheet
           existingIds={new Set(friends.map((f) => f.id))}
           onAdd={addByName}
+          onRequest={sendRealRequest}
           onShare={shareCard}
           onClose={() => setAddOpen(false)}
         />
@@ -265,11 +388,13 @@ export default function Friends() {
 function AddFriendSheet({
   existingIds,
   onAdd,
+  onRequest,
   onShare,
   onClose,
 }: {
   existingIds: Set<string>
   onAdd: (name: string, emoji: string) => boolean
+  onRequest: (card: FriendCard) => Promise<boolean>
   onShare: () => void
   onClose: () => void
 }) {
@@ -280,13 +405,18 @@ function AddFriendSheet({
 
   const card = useMemo(() => (paste.trim() ? parseFriendPayload(paste) : null), [paste])
 
-  const addPasted = () => {
+  const addPasted = async () => {
     if (!card) {
       setErr("Couldn't read that — paste the full link or code from your friend.")
       return
     }
     if (existingIds.has(friendId(card.n, card.e))) {
       setErr(`${card.e} ${card.n} is already on your list.`)
+      return
+    }
+    // A card with a uid is a real profile — send a proper request.
+    if (await onRequest(card)) {
+      onClose()
       return
     }
     onAdd(card.n, card.e)
@@ -349,8 +479,8 @@ function AddFriendSheet({
           <div className="paste-preview">
             <span className="paste-avatar">{card.e}</span>
             <span className="paste-name">{card.n}</span>
-            <button className="paste-add" onClick={addPasted}>
-              ＋ Add
+            <button className="paste-add" onClick={() => void addPasted()}>
+              {card.u ? '📨 Send request' : '＋ Add'}
             </button>
           </div>
         )}
