@@ -795,14 +795,32 @@ export async function upgradeToAccount(
 ): Promise<{ ok: boolean; error?: string }> {
   if (!supabase) return { ok: false, error: 'Not connected to the sync server.' }
 
+  /** Signs in anonymously if there is no session at all (e.g. after the
+   * Google fallback signed the guest out). Returns false if that fails. */
+  const ensureSession = async (): Promise<boolean> => {
+    const { data } = await supabase!.auth.getSession()
+    if (data.session) return true
+    const { data: anon, error } = await supabase!.auth.signInAnonymously()
+    return Boolean(anon.user && !error)
+  }
+
   const attempt = async (): Promise<string | null> => {
     const { error } = await supabase!.auth.updateUser({ email, password })
     return error?.message ?? null
   }
 
+  // updateUser requires a session — make sure we have one (anonymous is fine).
+  if (!(await ensureSession())) {
+    return { ok: false, error: 'Could not start a session — try again.' }
+  }
+
   let errMsg = await attempt()
-  if (errMsg && (errMsg.includes('does not exist') || errMsg.includes('sub claim'))) {
-    // The signed-in identity was deleted out from under us. Clear it, get a
+  if (
+    errMsg &&
+    (/does not exist|sub claim/i.test(errMsg) || /session missing/i.test(errMsg))
+  ) {
+    // The signed-in identity is stale or gone (a DB wipe deleted the auth
+    // user, or the session was cleared out from under us). Clear it, get a
     // brand-new anonymous identity, and try the upgrade again.
     try {
       await supabase.auth.signOut()
@@ -810,8 +828,9 @@ export async function upgradeToAccount(
       // best effort — the session may already be gone
     }
     cachedUid = null
-    const { data: anon } = await supabase.auth.signInAnonymously()
-    if (!anon.user) return { ok: false, error: 'Could not start a fresh session — try again.' }
+    if (!(await ensureSession())) {
+      return { ok: false, error: 'Could not start a fresh session — try again.' }
+    }
     errMsg = await attempt()
   }
 
