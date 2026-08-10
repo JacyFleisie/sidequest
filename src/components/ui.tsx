@@ -7,14 +7,16 @@ export const Button = ({
   variant = 'primary',
   disabled,
   className = '',
+  type = 'button',
 }: {
   children: ReactNode
   onClick?: () => void
   variant?: 'primary' | 'ghost' | 'gold'
   disabled?: boolean
   className?: string
+  type?: 'button' | 'submit'
 }) => (
-  <button className={`btn btn-${variant} ${className}`} onClick={onClick} disabled={disabled}>
+  <button type={type} className={`btn btn-${variant} ${className}`} onClick={onClick} disabled={disabled}>
     {children}
   </button>
 )

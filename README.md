@@ -35,8 +35,6 @@ to lion-watching in the Kruger and a waterfall in KZN, from the Cradle of Humank
 a game reserve inside Krugersdorp — every quest you finish maps a little more of the
 country.
 
-No accounts. No subscriptions. No paid APIs. Just you, your friends, and the map.
-
 ---
 
 ## ✨ Features
@@ -74,7 +72,7 @@ celebrates when your friends unlock achievements.
 
 ### 🔧 Chain Builder
 Assemble your own multi-stop quest from the whole catalog, reorder stops, and share
-it as a link that carries the entire quest inside the URL. No backend needed.
+it as a link that carries the entire quest inside the URL.
 
 ### 📱 Real-World Quests
 Quests are **location-gated**: you can only finish one when your device GPS puts you
@@ -115,6 +113,10 @@ npm run build        # production build → dist/
 npm run apk          # build the Android APK → SideQuest.apk
 ```
 
+**No `.env` setup needed** — `npm run dev` / `npm run build` auto-generate
+`.env` from the committed `.env.defaults` (public values: Supabase URL,
+publishable key, Turnstile site key). New machines just clone and go.
+
 ---
 
 ## 🧰 Tech Stack
@@ -125,7 +127,8 @@ npm run apk          # build the Android APK → SideQuest.apk
 | Map | Leaflet + react-leaflet (OSM/CARTO tiles, auto-fallback) |
 | Routing | react-router |
 | Native shell | Capacitor 8 (`com.jacy.sidequest`) |
-| State | Plain React + `localStorage` — no backend, no accounts |
+| Backend | Supabase — accounts, profiles, friends & challenges sync |
+| State | Plain React + `localStorage` (offline) synced to your account |
 | Styling | Hand-rolled CSS, mobile-first with a bottom nav |
 
 ---
@@ -144,11 +147,13 @@ scripts/               # build-apk, bump-version, release
 
 ---
 
-## 🔒 Privacy & Cost
+## 🔒 Privacy & Accounts
 
-- **No accounts, no backend, no tracking** — all state lives on your device.
-- **No paid services**: OpenStreetMap tiles, browser geolocation, Open-Meteo
-  weather, and GitHub Releases for updates. Zero API keys, zero billing.
+- **Accounts & sync run on Supabase** — email + password sign-in, protected by
+  Cloudflare Turnstile. Your quests, stats and friends follow you across devices.
+- **Your GPS stays on-device** — quest completion checks your device's location
+  locally, and live positions are never uploaded (only your chosen home base and
+  quest stats sync).
 - The GitHub repo is public (that's what makes the auto-update work).
 
 ---
@@ -157,7 +162,7 @@ scripts/               # build-apk, bump-version, release
 
 - [ ] True mobile GPS breadcrumbs for real distance tracking
 - [ ] Photo quest memories (stored on-device)
-- [ ] SA-only account gate when a real backend lands
+- [ ] SA-only sign-up gate (restrict account creation to South Africa)
 - [ ] Live events & community-submitted quests
 
 ---

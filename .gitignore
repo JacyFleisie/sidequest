@@ -10,6 +10,8 @@ dist/
 .DS_Store
 .env
 .env.*
+# ...except the committed template of PUBLIC values (see scripts/sync-env.mjs)
+!.env.defaults
 
 # Build artifact (published as a GitHub Release asset instead)
 *.apk

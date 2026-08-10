@@ -13,7 +13,7 @@ export default function ResetPassword({ onClose }: { onClose: () => void }) {
   const submit = async () => {
     setError(null)
     if (password.length < 6) {
-      setError('Password must be at least 6 characters.')
+      setError('Password needs at least 6 characters.')
       return
     }
     if (password !== confirm) {
@@ -39,6 +39,7 @@ export default function ResetPassword({ onClose }: { onClose: () => void }) {
   return (
     <Sheet onClose={onClose}>
       <div className="signin-sheet">
+        <div className="signin-brand">🗺️ SideQuest</div>
         <h2 className="signin-title">🔑 Set a new password</h2>
         <p className="signin-sub">
           {done
@@ -77,7 +78,7 @@ export default function ResetPassword({ onClose }: { onClose: () => void }) {
               }}
             />
 
-            {error && <div className="signin-error">{error}</div>}
+            {error && <div className="signin-error">⚠️ {error}</div>}
 
             <Button variant="gold" className="signin-submit" onClick={() => void submit()} disabled={busy}>
               {busy ? 'Working…' : 'Update password'}
