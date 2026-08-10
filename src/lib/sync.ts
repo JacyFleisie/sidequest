@@ -2,6 +2,7 @@ import { Capacitor } from '@capacitor/core'
 import { supabase, supabaseConfigured } from './supabase'
 import { ALL_QUESTS } from '../data/quests'
 import { BADGES, levelFromXp, type Progress } from './game'
+import { acquireTurnstileToken, turnstileEnabled } from '../components/Turnstile'
 import type { CompletedEntry, PersistedState } from './store'
 
 // ============================================================================
@@ -42,7 +43,12 @@ export async function ensureIdentity(): Promise<string | null> {
       }
     }
     if (!uid) {
-      const { data: anon, error: anonErr } = await supabase.auth.signInAnonymously()
+      // When Supabase's captcha protection is on, anonymous sign-in requires a
+      // fresh Turnstile token. Acquire one invisibly — users never see it.
+      const captchaToken = turnstileEnabled ? await acquireTurnstileToken() : undefined
+      const { data: anon, error: anonErr } = await supabase.auth.signInAnonymously(
+        captchaToken ? { options: { captchaToken } } : undefined,
+      )
       if (anonErr) console.warn('[sync] anonymous sign-in unavailable (enable it in Supabase → Authentication → Sign In / Up):', anonErr.message)
       uid = anon.user?.id ?? null
     }
@@ -685,9 +691,12 @@ export async function signInWithGoogle(): Promise<{ ok: boolean; error?: string 
     const native = isNativePlatform()
     // PKCE is set on the client itself (see supabase.ts); per-call options only
     // carry the deep link and skip the automatic redirect so WE can navigate.
-    const options = native
-      ? { redirectTo: GOOGLE_REDIRECT, skipBrowserRedirect: true }
-      : undefined
+    // OAuth requests are captcha-protected too, so attach a fresh token.
+    const options = {
+      redirectTo: native ? GOOGLE_REDIRECT : undefined,
+      skipBrowserRedirect: native,
+      captchaToken: turnstileEnabled ? await acquireTurnstileToken() : undefined,
+    }
 
     const navigate = (url: string | undefined) => {
       if (native && url) {
