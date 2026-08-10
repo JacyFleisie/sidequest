@@ -6,7 +6,7 @@
 
 **Your life is the main story. South Africa is your map.**
 
-A free real-world adventure game for students — when the bell rings, or you've just had
+A real-world adventure game for students — when the bell rings, or you've just had
 enough of class, grab your friends and go find a quest.
 
 <br/>
@@ -14,7 +14,6 @@ enough of class, grab your friends and go find a quest.
 [![Version](https://img.shields.io/github/v/release/JacyFleisie/sidequest?color=f5c542&label=version&style=flat-square)](https://github.com/JacyFleisie/sidequest/releases)
 [![Downloads](https://img.shields.io/github/downloads/JacyFleisie/sidequest/total?color=108c43&label=APK%20downloads&style=flat-square)](https://github.com/JacyFleisie/sidequest/releases)
 [![Platform](https://img.shields.io/badge/platform-Android%20%26%20Web-108c43?style=flat-square&logo=android&logoColor=white)](https://github.com/JacyFleisie/sidequest/releases/latest/download/SideQuest.apk)
-[![Price](https://img.shields.io/badge/price-Free%20forever-2ea44f?style=flat-square)](https://github.com/JacyFleisie/sidequest)
 [![Made in](https://img.shields.io/badge/made%20in-South%20Africa-0a3d91?style=flat-square)](https://github.com/JacyFleisie/sidequest)
 [![React](https://img.shields.io/badge/React-19-61dafb?style=flat-square&logo=react&logoColor=white)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -51,7 +50,7 @@ instead of crashing to a blank screen.
 
 ### 📍 Your Starting Point
 Set your base from a 19-city picker, or hit **"Use my location"** and the app
-geolocates you (free, no API), snaps to the nearest base, and marks exactly where you
+geolocates you (no API key), snaps to the nearest base, and marks exactly where you
 are with a pulsing pin.
 
 ### 🎲 The SideQuest Generator
@@ -92,7 +91,7 @@ app with full GPS access.
 file manager or browser, and open the file — or plug in your phone with USB debugging
 and run `adb install SideQuest.apk`.
 
-Once installed, the app **self-updates for free** via GitHub Releases — on launch it
+Once installed, the app **self-updates** via GitHub Releases — on launch it
 checks for a newer version and offers to install it in one tap.
 
 **Ship a new version from your machine:**
@@ -123,7 +122,7 @@ npm run apk          # build the Android APK → SideQuest.apk
 | Layer | Choice |
 | --- | --- |
 | Frontend | React 19 · TypeScript · Vite |
-| Map | Leaflet + react-leaflet (free OSM/CARTO tiles, auto-fallback) |
+| Map | Leaflet + react-leaflet (OSM/CARTO tiles, auto-fallback) |
 | Routing | react-router |
 | Native shell | Capacitor 8 (`com.jacy.sidequest`) |
 | State | Plain React + `localStorage` — no backend, no accounts |
@@ -148,9 +147,9 @@ scripts/               # build-apk, bump-version, release
 ## 🔒 Privacy & Cost
 
 - **No accounts, no backend, no tracking** — all state lives on your device.
-- **Every service is free**: OpenStreetMap tiles, browser geolocation, Open-Meteo
+- **No paid services**: OpenStreetMap tiles, browser geolocation, Open-Meteo
   weather, and GitHub Releases for updates. Zero API keys, zero billing.
-- The GitHub repo is public (that's what makes the free auto-update work).
+- The GitHub repo is public (that's what makes the auto-update work).
 
 ---
 
@@ -165,6 +164,6 @@ scripts/               # build-apk, bump-version, release
 
 <div align="center">
 
-*Made with ❤️ in South Africa · by Jacy · Free forever*
+*Made with ❤️ in South Africa · by Jacy*
 
 </div>

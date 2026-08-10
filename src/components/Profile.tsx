@@ -303,7 +303,7 @@ function AccountCard() {
             👋 {account?.isAnonymous === false ? 'Guest mode' : 'Offline mode'} — progress saved on this device only.
           </p>
           <p className="update-card-status" style={{ fontSize: 12, color: 'var(--muted)' }}>
-            Create a free account so your stats and friends follow you across devices and reinstalls.
+            Create an account so your stats and friends follow you across devices and reinstalls.
           </p>
           <button className="update-btn update-btn-gold" onClick={() => setShowSignIn(true)}>
             📧 Create account / Sign in

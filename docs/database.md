@@ -70,7 +70,7 @@ Postgres LISTEN/NOTIFY if you self-host later.
 ## Open questions (decide before building)
 
 - **Auth:** Supabase Auth (email/magic link/anonymous) vs. a simpler device-ID
-  profile. Anonymous + "claim your profile later" is friendliest for a free app.
+  profile. Anonymous + "claim your profile later" is friendliest for a small app.
 - **Conflict rule:** two devices completing the same quest — last-write-wins on
   `completed_at`, or first-write-wins? Schema defaults to the app's current
   first-wins behaviour.

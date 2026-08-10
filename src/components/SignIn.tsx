@@ -87,7 +87,7 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
         </button>
 
         <p className="signin-note">
-          🔒 Free and private — your data is stored on your own Supabase project. No ads, ever.
+          🔒 Private — your data lives in your own Supabase project.
         </p>
       </div>
     </Sheet>

@@ -96,8 +96,7 @@ export default function Home() {
       </section>
 
       <p className="home-foot">
-        Home base: {startPlace?.label ?? HOME_BASES.find((b) => b.id === homeBaseId)?.label ?? homeBaseId} · Free
-        forever · Made in South Africa 🇿🇦
+        Home base: {startPlace?.label ?? HOME_BASES.find((b) => b.id === homeBaseId)?.label ?? homeBaseId} · Made in South Africa 🇿🇦
       </p>
     </div>
   )
