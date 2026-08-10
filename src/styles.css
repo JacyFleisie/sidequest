@@ -1137,21 +1137,6 @@ select { background: var(--card-2); color: var(--text); border: 1px solid var(--
 
 /* ── Sign-in / account sheet ────────────────────────────────────────── */
 .signin-sheet { display: flex; flex-direction: column; gap: 4px; }
-.google-btn {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  width: 100%; background: #fff; color: #1f1f1f; font-weight: 700; font-size: 15px;
-  border-radius: 12px; padding: 13px 16px; margin-top: 6px;
-  border: 1px solid #d4d4d4; transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s;
-}
-.google-btn:hover { box-shadow: 0 4px 16px #0006; }
-.google-btn:active { transform: scale(0.98); }
-.google-btn:disabled { opacity: 0.6; cursor: default; }
-.google-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
-.signin-divider {
-  display: flex; align-items: center; gap: 12px; color: var(--muted);
-  font-size: 12px; margin: 18px 0 6px; text-transform: lowercase;
-}
-.signin-divider::before, .signin-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 .signin-captcha { display: flex; justify-content: center; margin: 12px 0 0; min-height: 65px; }
 .signin-title { font-size: 20px; font-weight: 900; margin: 0; }
 .signin-sub { font-size: 13px; color: var(--muted); margin: 0 0 8px; line-height: 1.5; }

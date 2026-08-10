@@ -665,81 +665,15 @@ function rowChallenge(row: Record<string, unknown>): Challenge {
   }
 }
 
-// ── Google sign-in (OAuth) ──────────────────────────────────────────────────
+// ── Auth deep-link callback (Android password reset) ────────────────────────
 
-/** The deep link the Android app redirects to after Google consent. */
-export const GOOGLE_REDIRECT = 'com.jacy.sidequest://auth/callback'
-
-/**
- * Signs the player in with Google.
- *
- * Web: supabase-js opens a popup and completes the whole flow in the
- * background — the caller just waits for the session to change.
- *
- * Android (Capacitor): starts a PKCE flow and hands the Google consent URL
- * back so the app can navigate the WebView to it. When Google redirects to
- * `com.jacy.sidequest://auth/callback`, Android re-opens the app and
- * `handleAuthCallback` exchanges the code for a session.
- *
- * If a session already exists (anonymous guest or email), the Google identity
- * is LINKED to it — the uid never changes, so every quest, friend and badge
- * is preserved automatically.
- */
-export async function signInWithGoogle(): Promise<{ ok: boolean; error?: string }> {
-  if (!supabase) return { ok: false, error: 'Not connected to the sync server.' }
-  try {
-    const native = isNativePlatform()
-    // PKCE is set on the client itself (see supabase.ts); per-call options only
-    // carry the deep link and skip the automatic redirect so WE can navigate.
-    // OAuth requests are captcha-protected too, so attach a fresh token.
-    const options = {
-      redirectTo: native ? GOOGLE_REDIRECT : undefined,
-      skipBrowserRedirect: native,
-      captchaToken: turnstileEnabled ? await acquireTurnstileToken() : undefined,
-    }
-
-    const navigate = (url: string | undefined) => {
-      if (native && url) {
-        // Navigate the WebView to Google's consent page. The callback deep
-        // link fires the app's intent filter and re-opens SideQuest.
-        window.location.href = url
-      }
-    }
-
-    const { data: sess } = await supabase.auth.getSession()
-    if (!sess.session) {
-      const result = await supabase.auth.signInWithOAuth({ provider: 'google', options })
-      if (result.error) return { ok: false, error: result.error.message }
-      navigate(result.data?.url)
-      return { ok: true }
-    }
-
-    // Signed in (anonymous or email) — LINK Google to the current identity so
-    // the uid never changes and every quest, friend and badge is preserved.
-    const result = await supabase.auth.linkIdentity({ provider: 'google', options })
-    if (result.error && /manual linking/i.test(result.error.message)) {
-      // The project has "Allow manual linking" off. Fall back to a fresh
-      // Google identity: local game data lives in localStorage and re-syncs
-      // to the new uid on the next launch automatically.
-      await supabase.auth.signOut()
-      cachedUid = null
-      const retry = await supabase.auth.signInWithOAuth({ provider: 'google', options })
-      if (retry.error) return { ok: false, error: retry.error.message }
-      navigate(retry.data?.url)
-      return { ok: true }
-    }
-    if (result.error) return { ok: false, error: result.error.message }
-    navigate(result.data?.url)
-    return { ok: true }
-  } catch (e) {
-    return { ok: false, error: (e as Error).message }
-  }
-}
+/** The deep link password-reset emails redirect to on Android. */
+export const AUTH_REDIRECT = 'com.jacy.sidequest://auth/callback'
 
 /**
  * Completes a deep-link auth callback (Android only): exchanges the PKCE code
  * (or stores the implicit tokens) and lets the caller reload the app against
- * the new identity.
+ * the new identity. Used by the password-reset email link.
  */
 export async function handleAuthCallback(url: string): Promise<boolean> {
   if (!supabase) return false
@@ -883,7 +817,7 @@ export async function signInToAccount(
 export async function sendPasswordReset(email: string, captchaToken?: string): Promise<{ ok: boolean; error?: string }> {
   if (!supabase) return { ok: false, error: 'Not connected to the sync server.' }
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: isNativePlatform() ? GOOGLE_REDIRECT : undefined,
+    redirectTo: isNativePlatform() ? AUTH_REDIRECT : undefined,
     captchaToken,
   })
   if (error) return { ok: false, error: error.message }
