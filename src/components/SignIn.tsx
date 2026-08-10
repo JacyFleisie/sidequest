@@ -29,6 +29,10 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
     setAttempt((n) => n + 1)
   }
 
+  // The invisible captcha solves in the background (~2–4s). Until it has a
+  // token, the submit buttons stay disabled so users never hit a wall.
+  const captchaPending = turnstileEnabled && !captchaToken
+
   const finish = () => {
     setDone(true)
     // Reload so the whole app re-syncs against the account identity.
@@ -116,8 +120,8 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
                     <Turnstile key={attempt} onToken={setCaptchaToken} onExpire={() => setCaptchaToken(null)} />
                   </div>
                 )}
-                <Button variant="gold" className="signin-submit" onClick={() => void reset()} disabled={busy}>
-                  {busy ? 'Sending…' : 'Send reset link'}
+                <Button variant="gold" className="signin-submit" onClick={() => void reset()} disabled={busy || captchaPending}>
+                  {busy ? 'Sending…' : captchaPending ? 'Verifying…' : 'Send reset link'}
                 </Button>
                 <button className="signin-switch" onClick={() => setResetMode(false)} disabled={busy}>
                   ← Back to sign in
@@ -168,8 +172,8 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
           </div>
         )}
 
-        <Button variant="gold" className="signin-submit" onClick={() => void submit()} disabled={busy || done}>
-          {busy ? 'Working…' : mode === 'create' ? 'Create account' : 'Sign in'}
+        <Button variant="gold" className="signin-submit" onClick={() => void submit()} disabled={busy || done || captchaPending}>
+          {busy ? 'Working…' : captchaPending ? 'Verifying…' : mode === 'create' ? 'Create account' : 'Sign in'}
         </Button>
 
         {mode === 'signin' && (
