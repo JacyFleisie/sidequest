@@ -154,16 +154,13 @@ scripts/               # build-apk, bump-version, release
 - **Your GPS stays on-device** — quest completion checks your device's location
   locally, and live positions are never uploaded (only your chosen home base and
   quest stats sync).
-- The GitHub repo is public (that's what makes the auto-update work).
 
 ---
 
 ## 🏁 Roadmap
 
-- [ ] True mobile GPS breadcrumbs for real distance tracking
+- [-] True mobile GPS breadcrumbs for real distance tracking
 - [ ] Photo quest memories (stored on-device)
-- [ ] SA-only sign-up gate (restrict account creation to South Africa)
-- [ ] Live events & community-submitted quests
 
 ---
 
