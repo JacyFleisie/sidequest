@@ -18,7 +18,6 @@ Supabase CLI).
 | Completed quests (`state.completed`) | `quest_completions` | The Activity feed and rivalry comparisons use real completion data |
 | Finished chains (`chain-*` entries) | `chain_completions` | Multi-stop quests (official + user-built) count properly |
 | Badges ("friend got a badge" feed) | `badge_earnings` | Friends subscribe to new rows and see real badge events |
-| ⚔️ Challenge a friend | `challenges` | Real invites with accept/decline, race vs co-op, and a winner |
 
 ## The request flow (before → after)
 
@@ -56,8 +55,8 @@ it (the partial unique index keeps at most one live request per pair).
 Supabase realtime channels map directly: subscribe to
 `friend_requests (recipient_id = me, status = 'pending')` for incoming requests,
 `badge_earnings (profile_id = my_friends)` for badge events, and
-`challenges (opponent_id = me)` for incoming dares. Same model works with
-Postgres LISTEN/NOTIFY if you self-host later.
+`quest_completions` for the live feed. Same model works with Postgres
+LISTEN/NOTIFY if you self-host later.
 
 ## Migration path (cheap upgrade)
 
