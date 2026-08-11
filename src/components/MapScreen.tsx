@@ -9,7 +9,9 @@ import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { ALL_QUESTS, CATEGORY_META, CHAINS, HOME_BASES, type Category, type Chain, type Quest } from '../data/quests'
 import { categoryColor, getUserLocation, nearestBase, reverseGeocodeLabel } from '../lib/game'
 import { useGame, type StartPlace } from '../lib/store'
+import { usePullToRefresh } from '../lib/usePullToRefresh'
 import LocationPicker from './LocationPicker'
+import PullHint from './PullHint'
 import { QuestSheet } from './QuestSheet'
 import SearchBox, { type PlaceHit } from './SearchBox'
 import { Chip } from './ui'
@@ -248,6 +250,32 @@ export default function MapScreen() {
   const [locError, setLocError] = useState<string | null>(null)
   const mapRef = useRef<L.Map | null>(null)
 
+  // Pull-to-refresh: drag down from the top strip of the map to reload the
+  // tiles (the map view is preserved so a refresh never jumps the camera).
+  const pageRef = useRef<HTMLDivElement | null>(null)
+  const [mapKey, setMapKey] = useState(0)
+  const viewRef = useRef<{ center: [number, number]; zoom: number }>({ center: [-29.5, 24.5], zoom: 5 })
+  const refresh = async () => {
+    setMapKey((k) => k + 1)
+    // Hold the spinner long enough to feel like a reload.
+    await new Promise((r) => window.setTimeout(r, 600))
+  }
+  const { pull, refreshing } = usePullToRefresh(pageRef, refresh, { startYMax: 140 })
+
+  // Remember where the camera is so a refresh remounts the map at the same spot.
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map) return
+    const onMove = () => {
+      const c = map.getCenter()
+      viewRef.current = { center: [c.lat, c.lng], zoom: map.getZoom() }
+    }
+    map.on('moveend', onMove)
+    return () => {
+      map.off('moveend', onMove)
+    }
+  }, [mapKey])
+
   const base = HOME_BASES.find((b) => b.id === homeBaseId) ?? HOME_BASES[0]
   const startPos = startPlace ?? { lat: base.lat, lng: base.lng }
   const startLabel = startPlace?.label ?? base.label
@@ -295,10 +323,12 @@ export default function MapScreen() {
   }
 
   return (
-    <div className="map-screen">
+    <div className="map-screen" ref={pageRef}>
+      <PullHint pull={pull} refreshing={refreshing} overlay />
       <MapContainer
-        center={[-29.5, 24.5]}
-        zoom={5}
+        key={mapKey}
+        center={viewRef.current.center}
+        zoom={viewRef.current.zoom}
         minZoom={4}
         maxZoom={17}
         zoomControl={false}

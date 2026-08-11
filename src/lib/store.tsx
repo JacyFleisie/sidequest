@@ -77,6 +77,8 @@ export interface PersistedState {
   playerName: string
   homeBaseId: string
   startPlace: StartPlace | null
+  /** The feed's own location, independent of the map's startPlace. */
+  feedPlace: StartPlace | null
   xp: number
   streak: number
   lastQuestDate: string | null
@@ -97,6 +99,7 @@ const DEFAULT_STATE: PersistedState = {
   playerName: 'SideQuester',
   homeBaseId: 'jhb',
   startPlace: null,
+  feedPlace: null,
   xp: 0,
   streak: 0,
   lastQuestDate: null,
@@ -141,6 +144,7 @@ interface GameApi {
   playerName: string
   homeBaseId: string
   startPlace: StartPlace | null
+  feedPlace: StartPlace | null
   xp: number
   streak: number
   completed: Record<string, CompletedEntry>
@@ -154,6 +158,7 @@ interface GameApi {
   setPlayerName: (name: string) => void
   setHomeBaseId: (id: string) => void
   setStartPlace: (place: StartPlace | null) => void
+  setFeedPlace: (place: StartPlace | null) => void
   setSeenIntro: () => void
   customChains: CustomChain[]
   customQuests: Quest[]
@@ -214,6 +219,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       playerName: state.playerName,
       homeBaseId: state.homeBaseId,
       startPlace: state.startPlace,
+      feedPlace: state.feedPlace,
       xp: state.xp,
       streak: state.streak,
       completed: state.completed,
@@ -402,6 +408,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         }),      setPlayerName: (name: string) => setState((s) => ({ ...s, playerName: name })),
       setHomeBaseId: (id: string) => setState((s) => ({ ...s, homeBaseId: id })),
       setStartPlace: (place: StartPlace | null) => setState((s) => ({ ...s, startPlace: place })),
+      setFeedPlace: (place: StartPlace | null) => setState((s) => ({ ...s, feedPlace: place })),
 
       setSeenIntro: () => setState((s) => ({ ...s, seenIntro: true })),
     }

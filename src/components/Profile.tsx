@@ -3,8 +3,10 @@ import { CATEGORY_META, HOME_BASES, PROVINCES, type Category, type ProvinceId } 
 import { BADGES, completedCountByProvince, levelProgress, playerStats, rankFromXp, totalCompleted, totalQuestsInProvince, type BadgeDef, type Progress } from '../lib/game'
 import { useGame } from '../lib/store'
 import { checkForUpdate, downloadAndInstall, getCurrentVersion, isAndroid, type UpdateInfo } from '../lib/updater'
-import { getAccountInfo, onAuthChange, signOutAccount, type AccountInfo } from '../lib/sync'
+import { ensureIdentity, getAccountInfo, onAuthChange, signOutAccount, syncCompletions, syncProfile, type AccountInfo } from '../lib/sync'
+import { usePullToRefresh } from '../lib/usePullToRefresh'
 import EditProfile from './EditProfile'
+import PullHint from './PullHint'
 import SignIn from './SignIn'
 import { Bar, Sheet } from './ui'
 
@@ -12,10 +14,22 @@ const LEVEL_EMOJI = ['🌱', '🌿', '🔥', '⚡', '🌟', '💎', '👑', '�
 
 export default function Profile() {
   const { state, playerName, homeBaseId, setHomeBaseId, startPlace, setStartPlace } = useGame()
+  const pageRef = useRef<HTMLDivElement | null>(null)
   const [showEditProfile, setShowEditProfile] = useState(false)
   const [selectedBadge, setSelectedBadge] = useState<BadgeDef | null>(null)
   const [savedToast, setSavedToast] = useState<string | null>(null)
   const toastTimer = useRef<number | null>(null)
+
+  // Pull down to re-sync your stats from the server.
+  const refresh = () => {
+    void (async () => {
+      const uid = await ensureIdentity()
+      if (!uid) return
+      await syncProfile(uid, state)
+      await syncCompletions(uid, state)
+    })()
+  }
+  const { pull, refreshing } = usePullToRefresh(pageRef, refresh)
 
   const usernameSaved = (name: string) => {
     setShowEditProfile(false)
@@ -43,7 +57,8 @@ export default function Profile() {
     totalMin === 0 ? '0 m' : totalMin >= 60 ? `${Math.floor(totalMin / 60)} h${totalMin % 60 ? ` ${totalMin % 60} m` : ''}` : `${totalMin} m`
 
   return (
-    <div className="page profile">
+    <div className="page profile" ref={pageRef}>
+      <PullHint pull={pull} refreshing={refreshing} />
       <header className="page-head">
         <h1 className="page-title">🏆 Your Profile</h1>
         <p className="page-sub">Every quest you complete maps a little more of South Africa.</p>

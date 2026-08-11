@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ensureIdentity, isUsernameAvailable, sendPasswordReset, signInToAccount, upgradeToAccount, usernameError } from '../lib/sync'
 import { useGame } from '../lib/store'
 import Turnstile, { turnstileEnabled } from './Turnstile'
@@ -19,6 +19,39 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
   // Remounts the Turnstile widget after each attempt — tokens are single-use.
   const [attempt, setAttempt] = useState(0)
+  const uidRef = useRef<string | null>(null)
+  const [check, setCheck] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle')
+
+  useEffect(() => {
+    let alive = true
+    void ensureIdentity().then((uid) => {
+      if (alive) uidRef.current = uid
+    })
+    return () => {
+      alive = false
+    }
+  }, [])
+
+  // Live availability on the sign-up form — debounced, only in create mode and
+  // only when the name is valid, so a taken username is visible before submit.
+  useEffect(() => {
+    if (mode !== 'create') {
+      setCheck('idle')
+      return
+    }
+    const name = username.trim()
+    if (usernameError(name) || !uidRef.current) {
+      setCheck('idle')
+      return
+    }
+    setCheck('checking')
+    const t = window.setTimeout(() => {
+      void isUsernameAvailable(uidRef.current!, name).then((free) =>
+        setCheck(free ? 'available' : 'taken'),
+      )
+    }, 400)
+    return () => window.clearTimeout(t)
+  }, [username, mode])
 
   const requireCaptcha = (): boolean => {
     if (turnstileEnabled && !captchaToken) {
@@ -53,8 +86,13 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
         setError(nameInvalid)
         return
       }
-      // Usernames are unique — check availability before spending the captcha
-      // token, so a taken name never wastes an attempt.
+      // The live check already caught a taken name as they typed — short-circuit.
+      if (check === 'taken') {
+        setError('That username is already taken — pick another.')
+        return
+      }
+      // Usernames are unique — re-check before spending the captcha token, so
+      // a taken name never wastes an attempt (authoritative server round-trip).
       const uid = await ensureIdentity()
       if (uid && !(await isUsernameAvailable(uid, cleanName))) {
         setError('That username is already taken — pick another.')
@@ -179,9 +217,16 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
                   placeholder="Your quest name"
                   maxLength={20}
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={(e) => { setUsername(e.target.value); setError(null) }}
                   disabled={busy || done}
                 />
+                {mode === 'create' && check !== 'idle' && !error && (
+                  <p className={`edit-profile-check edit-profile-${check}`}>
+                    {check === 'checking' && '⏳ Checking availability…'}
+                    {check === 'available' && `✓ @${username.trim()} is available`}
+                    {check === 'taken' && `✕ @${username.trim()} is already taken`}
+                  </p>
+                )}
               </>
             )}
 
@@ -252,7 +297,7 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
             <button
               type="button"
               className="signin-switch"
-              onClick={() => { setMode(mode === 'create' ? 'signin' : 'create'); setError(null) }}
+              onClick={() => { setMode(mode === 'create' ? 'signin' : 'create'); setError(null); setCheck('idle') }}
               disabled={busy || done}
             >
               {mode === 'create' ? 'Already have an account? Sign in' : 'New here? Create an account'}

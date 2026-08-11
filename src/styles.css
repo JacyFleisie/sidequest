@@ -1147,6 +1147,13 @@ select { background: var(--card-2); color: var(--text); border: 1px solid var(--
 .feed-pull-refreshing { opacity: 1; color: var(--gold); }
 .feed-pull-spin { display: inline-block; font-size: 16px; animation: feed-spin 0.8s linear infinite; }
 @keyframes feed-spin { to { transform: rotate(360deg); } }
+/* Floating variant (the map, which has no document flow) — a pill that sits
+   over the tiles under the top bar. */
+.pull-overlay {
+  position: absolute; top: 64px; left: 50%; transform: translateX(-50%);
+  z-index: 1001; background: #0d1220dd; border: 1px solid #ffffff22;
+  border-radius: 99px; padding: 4px 18px; box-shadow: 0 4px 16px #000a;
+}
 
 /* ── Feed: create-quest button + friend quests ──────────────────────────── */
 .page-head-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
@@ -1216,17 +1223,24 @@ select { background: var(--card-2); color: var(--text); border: 1px solid var(--
 
 /* ── Update banner + update card ─────────────────────────────────────── */
 .update-banner {
-  position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 900;
-  display: flex; align-items: center; gap: 10px; max-width: calc(100% - 24px);
-  background: #16200bd9; border: 1px solid #9adf5f66; border-radius: 14px;
-  padding: 10px 14px; backdrop-filter: blur(10px); box-shadow: 0 8px 24px #000a;
+  position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 900;
+  display: flex; align-items: center; gap: 14px; max-width: calc(100% - 20px);
+  background: #16200be8; border: 2px solid #9adf5f99; border-radius: 16px;
+  padding: 14px 18px; backdrop-filter: blur(10px);
+  box-shadow: 0 10px 32px #000a;
+  animation: update-pulse 2.4s ease-in-out infinite;
 }
-.update-banner-text { font-size: 13px; color: var(--text); display: flex; flex-direction: column; }
+@keyframes update-pulse {
+  0%, 100% { box-shadow: 0 10px 32px #000a, 0 0 14px #9adf5f26; }
+  50% { box-shadow: 0 10px 32px #000a, 0 0 34px #9adf5f59; }
+}
+.update-banner-text { font-size: 16px; color: var(--text); display: flex; flex-direction: column; line-height: 1.3; }
 .update-banner-text b { color: #9adf5f; }
-.update-banner-sub { font-size: 11px; color: var(--muted); }
+.update-banner-sub { font-size: 13px; color: var(--muted); }
 .update-banner-btn {
-  font: inherit; font-size: 13px; font-weight: 800; color: #08100a; background: #9adf5f;
-  border: none; border-radius: 99px; padding: 8px 16px; cursor: pointer; white-space: nowrap;
+  font: inherit; font-size: 15px; font-weight: 800; color: #08100a; background: #9adf5f;
+  border: none; border-radius: 99px; padding: 11px 22px; cursor: pointer; white-space: nowrap;
+  box-shadow: 0 4px 14px #9adf5f33;
 }
 .update-banner-btn:hover { background: #b3f07a; }
 

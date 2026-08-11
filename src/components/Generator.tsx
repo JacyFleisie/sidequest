@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ALL_QUESTS,
   CATEGORY_META,
@@ -10,9 +10,11 @@ import {
   type Quest,
   type Vibe,
 } from '../data/quests'
-import { getUserLocation, haversineKm, nearestBase, reverseGeocodeLabel } from '../lib/game'
+import { getUserLocation, haversineKm, reverseGeocodeLabel } from '../lib/game'
 import { taglineOfTheDay } from '../lib/taglines'
 import { useGame, type StartPlace } from '../lib/store'
+import { usePullToRefresh } from '../lib/usePullToRefresh'
+import PullHint from './PullHint'
 import {
   deleteCustomQuest,
   ensureIdentity,
@@ -58,15 +60,12 @@ const CATEGORIES = Object.entries(CATEGORY_META) as [Category, { label: string; 
 const VIBES = Object.entries(VIBE_META) as [Vibe, { label: string; emoji: string }][]
 
 const PAGE = 12
-const PULL_THRESHOLD = 64
-const PULL_MAX = 110
 
 export default function Generator() {
   const {
     homeBaseId,
-    setHomeBaseId,
-    startPlace,
-    setStartPlace,
+    feedPlace,
+    setFeedPlace,
     startQuest,
     customQuests: myCustomQuests,
     deleteCustomQuest: deleteLocalQuest,
@@ -74,90 +73,31 @@ export default function Generator() {
   const [category, setCategory] = useState<Category | null>(null)
   const [vibe, setVibe] = useState<Vibe | null>(null)
 
-  // Pull-to-refresh: dragging down at the very top of the feed reshuffles it
-  // (like refreshing an Instagram feed). Touch events, non-passive so we can
-  // cancel the browser's overscroll while the pull is active.
+  // Pull-to-refresh: dragging down at the very top reshuffles the feed AND
+  // refetches community quests from the server (like refreshing Instagram).
   const feedRef = useRef<HTMLDivElement | null>(null)
-  const [pull, setPull] = useState(0)
-  const [refreshing, setRefreshing] = useState(false)
-  useEffect(() => {
-    const el = feedRef.current
-    if (!el) return
-    let startY = 0
-    let active = false
-    let pulled = 0
-    const inOverlay = (t: EventTarget | null) =>
-      t instanceof Element && Boolean(t.closest('.sheet-overlay, .loc-popover, [role="dialog"]'))
-    const onStart = (e: TouchEvent) => {
-      if (window.scrollY > 0 || inOverlay(e.target)) return
-      startY = e.touches[0].clientY
-      active = true
-      pulled = 0
-      setPull(0)
-    }
-    const onMove = (e: TouchEvent) => {
-      if (!active) return
-      const dy = e.touches[0].clientY - startY
-      if (dy <= 0) {
-        pulled = 0
-        setPull(0)
-        return
-      }
-      pulled = Math.min(dy, PULL_MAX)
-      setPull(pulled)
-      if (pulled > 4) e.preventDefault()
-    }
-    const end = () => {
-      if (!active) return
-      active = false
-      setPull(0)
-      if (pulled >= PULL_THRESHOLD) {
-        setRefreshing(true)
-        setShuffleKey((k) => k + 1)
-        window.setTimeout(() => setRefreshing(false), 700)
-      }
-      pulled = 0
-    }
-    el.addEventListener('touchstart', onStart, { passive: true })
-    el.addEventListener('touchmove', onMove, { passive: false })
-    el.addEventListener('touchend', end)
-    el.addEventListener('touchcancel', end)
-    return () => {
-      el.removeEventListener('touchstart', onStart)
-      el.removeEventListener('touchmove', onMove)
-      el.removeEventListener('touchend', end)
-      el.removeEventListener('touchcancel', end)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
   const [remoteQuests, setRemoteQuests] = useState<Quest[]>([])
   const [myUid, setMyUid] = useState<string | null>(null)
   const [createOpen, setCreateOpen] = useState(false)
 
   // Load community quests (mine from other devices + everyone else's) and
   // subscribe so new ones appear live. Registration keeps questById() working
-  // everywhere.
-  useEffect(() => {
-    let alive = true
-    const load = async () => {
-      const uid = await ensureIdentity()
-      if (!alive) return
-      setMyUid(uid)
-      const rows = uid ? await fetchCustomQuests(uid) : []
-      const shaped = rows.map(rowToQuest)
-      if (!alive) return
-      setRemoteQuests(shaped)
-      registerCustomQuests(shaped)
-    }
-    void load()
-    const unsub = subscribeCustomQuests(() => {
-      void load()
-    })
-    return () => {
-      alive = false
-      unsub()
-    }
+  // everywhere. `loadRemote` doubles as the refresh action.
+  const loadRemote = useCallback(async () => {
+    const uid = await ensureIdentity()
+    setMyUid(uid)
+    const rows = uid ? await fetchCustomQuests(uid) : []
+    const shaped = rows.map(rowToQuest)
+    setRemoteQuests(shaped)
+    registerCustomQuests(shaped)
   }, [])
+
+  useEffect(() => {
+    void loadRemote()
+    return subscribeCustomQuests(() => {
+      void loadRemote()
+    })
+  }, [loadRemote])
 
   // Locally-created quests must resolve immediately (ActiveQuest, completion…).
   useEffect(() => {
@@ -170,25 +110,34 @@ export default function Generator() {
   const [shuffleKey, setShuffleKey] = useState(() => (Math.random() * 0xffffffff) >>> 0)
   const [shown, setShown] = useState(PAGE)
 
-  const base = HOME_BASES.find((b) => b.id === homeBaseId) ?? HOME_BASES[0]
-  const startLabel = startPlace?.label ?? base.label
-  const startLat = startPlace?.lat ?? base.lat
-  const startLng = startPlace?.lng ?? base.lng
-
-  const pickStart = (place: StartPlace) => {
-    setStartPlace(place)
-    setHomeBaseId(nearestBase(place.lat, place.lng).id)
+  // Every filter/location change auto-refreshes: new random order, pagination
+  // reset, and a fresh pull of community quests from the server.
+  const refresh = useCallback(() => {
+    setShuffleKey((k) => k + 1)
     setShown(PAGE)
+    void loadRemote()
+  }, [loadRemote])
+
+  const { pull, refreshing } = usePullToRefresh(feedRef, refresh)
+
+  // The feed's location is its OWN — independent of the map's start point.
+  // Defaults to the home base; picking one here pins it just for the feed.
+  const base = HOME_BASES.find((b) => b.id === homeBaseId) ?? HOME_BASES[0]
+  const feedLabel = feedPlace?.label ?? base.label
+  const feedLat = feedPlace?.lat ?? base.lat
+  const feedLng = feedPlace?.lng ?? base.lng
+
+  const pickFeedPlace = (place: StartPlace) => {
+    setFeedPlace(place)
+    refresh()
   }
 
   const useMyLocation = () => {
     getUserLocation(
       async (latitude, longitude) => {
         const label = await reverseGeocodeLabel(latitude, longitude)
-        const nearest = nearestBase(latitude, longitude)
-        setStartPlace({ label, lat: latitude, lng: longitude })
-        setHomeBaseId(nearest.id)
-        setShown(PAGE)
+        setFeedPlace({ label, lat: latitude, lng: longitude })
+        refresh()
       },
       () => {},
     )
@@ -247,7 +196,7 @@ export default function Generator() {
 
   const fmtDistance = (q: Quest): string => {
     if (q.anywhere) return 'Anywhere'
-    const km = haversineKm(startLat, startLng, q.lat, q.lng)
+    const km = haversineKm(feedLat, feedLng, q.lat, q.lng)
     if (km < 0.5) return 'right nearby'
     return km < 10 ? `${km.toFixed(1)} km away` : `${Math.round(km)} km away`
   }
@@ -263,27 +212,12 @@ export default function Generator() {
     setAnywhereOnly(false)
     setCommunityOnly(false)
     setTrending(false)
-    setShuffleKey((k) => k + 1)
-    setShown(PAGE)
+    refresh()
   }
 
   return (
     <div className="page feed" ref={feedRef}>
-      <div
-        className={`feed-pull ${refreshing ? 'feed-pull-refreshing' : pull > 0 ? 'feed-pull-visible' : ''}`}
-        style={{
-          height: refreshing ? 52 : pull,
-          transition: pull > 0 && !refreshing ? 'none' : 'height 0.25s ease, opacity 0.2s ease',
-        }}
-      >
-        {refreshing ? (
-          <span className="feed-pull-spin">⟳</span>
-        ) : pull >= PULL_THRESHOLD ? (
-          '⬆️ Release to shuffle'
-        ) : (
-          '⬇️ Pull to shuffle'
-        )}
-      </div>
+      <PullHint pull={pull} refreshing={refreshing} />
       <header className="page-head">
         <div className="page-head-row">
           <div className="page-head-main">
@@ -297,15 +231,15 @@ export default function Generator() {
       </header>
 
       <div className="feed-start">
-        <label className="field-label">Starting from</label>
+        <label className="field-label">📍 Feed location</label>
         <LocationPicker
-          currentLabel={startLabel}
-          custom={Boolean(startPlace)}
-          onPick={pickStart}
+          currentLabel={feedLabel}
+          custom={Boolean(feedPlace)}
+          onPick={pickFeedPlace}
           onUseMyLocation={useMyLocation}
-          onReset={() => setStartPlace(null)}
+          onReset={() => setFeedPlace(null)}
         />
-        <div className="feed-meta">{ordered.length} quests</div>
+        <div className="feed-meta">{ordered.length} quests · from {feedLabel}</div>
       </div>
 
       <div className="feed-filters">
@@ -320,8 +254,7 @@ export default function Generator() {
               onClick={() => {
                 setCategory(category === c ? null : c)
                 setTrending(false)
-                setShuffleKey((k) => k + 1)
-                setShown(PAGE)
+                refresh()
               }}
             />
           ))}
@@ -331,8 +264,7 @@ export default function Generator() {
             active={anywhereOnly}
             onClick={() => {
               setAnywhereOnly((v) => !v)
-              setShuffleKey((k) => k + 1)
-              setShown(PAGE)
+              refresh()
             }}
           />
           <Chip
@@ -341,8 +273,7 @@ export default function Generator() {
             active={communityOnly}
             onClick={() => {
               setCommunityOnly((v) => !v)
-              setShuffleKey((k) => k + 1)
-              setShown(PAGE)
+              refresh()
             }}
           />
           <Chip
@@ -351,7 +282,7 @@ export default function Generator() {
             active={trending}
             onClick={() => {
               setTrending((t) => !t)
-              setShown(PAGE)
+              refresh()
             }}
           />
         </div>
@@ -364,8 +295,7 @@ export default function Generator() {
               active={vibe === v}
               onClick={() => {
                 setVibe(vibe === v ? null : v)
-                setShuffleKey((k) => k + 1)
-                setShown(PAGE)
+                refresh()
               }}
             />
           ))}

@@ -23,11 +23,8 @@ import { useGame } from './lib/store'
 import {
   completeMatchingChallenges,
   ensureIdentity,
-  fetchIncomingChallenges,
   fetchIncomingRequests,
-  fetchProfileName,
   handleAuthCallback,
-  subscribeChallenges,
   subscribeIncomingRequests,
   syncCompletions,
   syncProfile,
@@ -64,7 +61,6 @@ export default function App() {
   const pushedRef = useRef(false)
   useEffect(() => {
     let unsub: (() => void) | null = null
-    let unsubChallenges: (() => void) | null = null
     let cancelled = false
     void (async () => {
       const uid = await ensureIdentity()
@@ -98,21 +94,10 @@ export default function App() {
           if (latest) pushToast(`${latest.senderEmoji} ${latest.senderName} sent you a friend request`)
         })()
       })
-      unsubChallenges = subscribeChallenges(uid, () => {
-        // A new dare arrived — toast it immediately.
-        void (async () => {
-          const chals = await fetchIncomingChallenges(uid)
-          const latest = chals[0]
-          if (!latest) return
-          const name = await fetchProfileName(latest.challengerId)
-          pushToast(`⚔️ ${name ?? 'A friend'} challenged you to ${latest.targetType === 'chain' ? 'a quest chain' : 'a quest'}!`)
-        })()
-      })
     })()
     return () => {
       cancelled = true
       unsub?.()
-      unsubChallenges?.()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

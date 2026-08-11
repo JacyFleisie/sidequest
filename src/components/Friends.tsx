@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ALL_QUESTS, CATEGORY_META } from '../data/quests'
 import {
   friendProfile,
@@ -11,29 +11,25 @@ import { levelProgress, rankFromXp } from '../lib/game'
 
 import { useGame, type Friend } from '../lib/store'
 import {
-  acceptChallenge,
   acceptFriendRequest,
-  declineChallenge,
   declineFriendRequest,
   ensureIdentity,
-  fetchActiveChallenges,
   fetchFriendFeed,
-  fetchIncomingChallenges,
   fetchIncomingRequests,
   fetchRealFriends,
   findPeople,
-  sendChallenge,
   sendFriendRequest,
   subscribeFriendFeed,
   subscribeIncomingRequests,
   syncEnabled,
-  type Challenge,
   type FeedEvent,
   type FoundPerson,
   type IncomingRequest,
   type RealFriend,
 } from '../lib/sync'
-import { Button, Sheet } from './ui'
+import { usePullToRefresh } from '../lib/usePullToRefresh'
+import { Sheet } from './ui'
+import PullHint from './PullHint'
 
 const LEVEL_EMOJI = ['🌱', '🌿', '🔥', '⚡', '🌟', '💎', '👑', '🦁', '🚀', '🌍', '🏆', '🇿🇦']
 
@@ -46,8 +42,6 @@ export default function Friends() {
   const [selected, setSelected] = useState<Friend | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [incoming, setIncoming] = useState<IncomingRequest[]>([])
-  const [incomingChallenges, setIncomingChallenges] = useState<Challenge[]>([])
-  const [activeChallenges, setActiveChallenges] = useState<Challenge[]>([])
   const [feedEvents, setFeedEvents] = useState<FeedEvent[]>([])
   const [realFriends, setRealFriends] = useState<RealFriend[]>([])
   const [uid, setUid] = useState<string | null>(null)
@@ -68,10 +62,6 @@ export default function Friends() {
   const refreshFriends = async (myUid: string) => {
     setRealFriends(await fetchRealFriends(myUid))
   }
-  const refreshChallenges = async (myUid: string) => {
-    setIncomingChallenges(await fetchIncomingChallenges(myUid))
-    setActiveChallenges(await fetchActiveChallenges(myUid))
-  }
   const refreshFeed = async (myUid: string) => {
     setFeedEvents(await fetchFriendFeed(myUid))
   }
@@ -86,7 +76,7 @@ export default function Friends() {
       if (cancelled || !myUid) return
       setUid(myUid)
       setSynced(true)
-      await Promise.all([refreshRequests(myUid), refreshFriends(myUid), refreshChallenges(myUid), refreshFeed(myUid)])
+      await Promise.all([refreshRequests(myUid), refreshFriends(myUid), refreshFeed(myUid)])
       unsub = subscribeIncomingRequests(myUid, () => void refreshRequests(myUid))
       // Live feed: refetch when a friend completes a quest anywhere in the world.
       unsubFeed = subscribeFriendFeed(myUid, () => void refreshFeed(myUid))
@@ -163,50 +153,6 @@ export default function Friends() {
     flash(`Request from ${req.senderEmoji} ${req.senderName} declined.`)
   }
 
-  const handleAcceptChallenge = async (challenge: Challenge) => {
-    const myUid = uid ?? ''
-    const ok = await acceptChallenge(myUid, challenge.id)
-    if (ok) {
-      flash('🏁 Challenge accepted!')
-      setIncomingChallenges((xs) => xs.filter((x) => x.id !== challenge.id))
-      setActiveChallenges((xs) => [{ ...challenge, status: 'accepted' }, ...xs])
-    } else {
-      flash("Couldn't accept — check your connection.")
-    }
-  }
-
-  const handleDeclineChallenge = async (challenge: Challenge) => {
-    const myUid = uid ?? ''
-    const ok = await declineChallenge(myUid, challenge.id)
-    if (ok) {
-      flash('Challenge declined.')
-      setIncomingChallenges((xs) => xs.filter((x) => x.id !== challenge.id))
-    } else {
-      flash("Couldn't decline — check your connection.")
-    }
-  }
-
-  const challenge = async (friend: Friend) => {
-    const myUid = uid ?? (await ensureIdentity())
-    if (!myUid) {
-      flash('Sign in to challenge friends.')
-      return
-    }
-    // Pick a random uncompleted quest for the challenge
-    const pool = [...ALL_QUESTS].filter((q) => !state.completed[q.id])
-    if (pool.length === 0) {
-      flash("You've completed every quest! Pick one from the map to re-do.")
-      return
-    }
-    const quest = pool[Math.floor(Math.random() * pool.length)]
-    const ok = await sendChallenge(myUid, friend.id, 'race', 'quest', quest.id, quest.title)
-    if (ok) {
-      flash(`🏁 Challenge sent to ${friend.emoji} ${friend.name}!`)
-    } else {
-      flash("Couldn't send the challenge — check your connection.")
-    }
-  }
-
   // Real friends from the DB get their real stats; local-only friends keep the
   // deterministic demo profile until they also join the synced world.
   const profiles = useMemo(() => {
@@ -243,12 +189,20 @@ export default function Friends() {
     return events.sort((a, b) => b.badge.earnedAt.localeCompare(a.badge.earnedAt)).slice(0, 10)
   }, [profiles])
 
+  const pageRef = useRef<HTMLDivElement | null>(null)
+  const refreshAll = () => {
+    if (!uid) return
+    void Promise.all([refreshRequests(uid), refreshFriends(uid), refreshFeed(uid)])
+  }
+  const { pull, refreshing } = usePullToRefresh(pageRef, refreshAll)
+
   return (
-    <div className="page friends">
+    <div className="page friends" ref={pageRef}>
+      <PullHint pull={pull} refreshing={refreshing} />
       <header className="page-head">
         <div className="bored-banner">👥 YOUR SQUAD</div>
         <h1 className="page-title">Friends</h1>
-        <p className="page-sub">Add your crew, compare quests, and challenge each other across South Africa.</p>
+        <p className="page-sub">Add your crew, compare quests, and keep up with each other's quests across South Africa.</p>
       </header>
 
       <div className="seg">
@@ -309,48 +263,10 @@ export default function Friends() {
             )}
           </div>
 
-          {activeChallenges.length > 0 && (
-            <section className="incoming-requests">
-              <h2 className="section-title">🏁 Active races</h2>
-              <p className="section-sub">Live challenges with your squad.</p>
-              <div className="incoming-list">
-                {activeChallenges.map((c) => {
-                  const isChallenger = c.challengerId === uid
-                  const myDone = isChallenger ? c.challengerDone : c.opponentDone
-                  const theirDone = isChallenger ? c.opponentDone : c.challengerDone
-                  const done = c.status === 'completed'
-                  const won = done && c.winnerId === uid
-                  const lost = done && c.winnerId !== null && c.winnerId !== uid
-                  return (
-                    <div className="challenge-row" key={c.id}>
-                      <div className="challenge-emoji">{done ? (won ? '🏆' : lost ? '😔' : '🏁') : '⚔️'}</div>
-                      <div className="challenge-main">
-                        <div className="challenge-name">
-                          {done
-                            ? won
-                              ? 'You won!'
-                              : lost
-                                ? 'Your opponent won'
-                                : 'Draw'
-                            : `${c.kind === 'race' ? 'Race' : 'Co-op'} — ${c.message ?? 'a quest'}`}
-                        </div>
-                        <div className="challenge-meta">
-                          {done
-                            ? `Resolved ${timeAgo(c.completedAt ?? '')}`
-                            : `${myDone ? '✅ You' : '⏳ You'} · ${theirDone ? '✅ Them' : '⏳ Them'}`}
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </section>
-          )}
-
           {friends.length === 0 && realFriends.length === 0 && incoming.length === 0 ? (
             <div className="empty-state">
-              No friends yet. <b>Search for them by name</b> above and send a request — once they accept, you can
-              challenge each other and compare quests.
+              No friends yet. <b>Search for them by name</b> above and send a request — once they accept, their quests
+              and stats sync in here.
             </div>
           ) : (
             <section className="friends-list">
@@ -447,8 +363,8 @@ export default function Friends() {
           <section className="friends-howto">
             <h2 className="section-title">💡 How friends work</h2>
             <p className="section-sub">
-              Search for friends by name above and send a request. Once they accept, you can <b>challenge each other</b>
-              to quests — first one to complete it wins. All data syncs when you're signed in.
+              Search for friends by name above and send a request. Once they accept, their quests and badges sync in
+              live. Pull down anywhere to refresh.
             </p>
           </section>
         </>
@@ -478,35 +394,10 @@ export default function Friends() {
         </section>
       )}
 
-      {incomingChallenges.length > 0 && (
-        <section className="incoming-requests">
-          <h2 className="section-title">🏁 Incoming challenges</h2>
-          <p className="section-sub">Someone wants to race you to a quest!</p>
-          <div className="incoming-list">
-            {incomingChallenges.map((c) => (
-              <div className="incoming-row" key={c.id}>
-                <span className="incoming-avatar">⚔️</span>
-                <div className="incoming-main">
-                  <div className="incoming-name">Race: {c.message ?? 'a quest'}</div>
-                  <div className="incoming-meta">{c.kind === 'race' ? 'First to complete wins' : 'Work together'}</div>
-                </div>
-                <button className="incoming-accept" onClick={() => void handleAcceptChallenge(c)}>
-                  ✓ Accept
-                </button>
-                <button className="incoming-decline" onClick={() => void handleDeclineChallenge(c)}>
-                  ✕
-                </button>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
       {selected && (
         <FriendSheet
           friend={selected}
           profile={profiles.get(selected.id)!.profile}
-          onChallenge={() => challenge(selected)}
           onRemove={() => {
             removeFriend(selected.id)
             setSelected(null)
@@ -524,13 +415,11 @@ export default function Friends() {
 function FriendSheet({
   friend,
   profile,
-  onChallenge,
   onRemove,
   onClose,
 }: {
   friend: Friend
   profile: FriendProfile
-  onChallenge: () => void
   onRemove: () => void
   onClose: () => void
 }) {
@@ -614,9 +503,6 @@ function FriendSheet({
           )}
         </div>
 
-        <Button variant="gold" className="accept-btn" onClick={onChallenge}>
-          🏁 Challenge to a quest
-        </Button>
         <button className="remove-btn" onClick={onRemove}>
           🗑️ Remove friend
         </button>

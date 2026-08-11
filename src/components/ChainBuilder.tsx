@@ -1,9 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { ALL_QUESTS, CATEGORY_META, type Category, type Quest } from '../data/quests'
 import { fmtCost, fmtDuration } from '../lib/game'
 import { chainShareUrl, copyText, shareViaNative } from '../lib/share'
 import { useGame, type CustomChain } from '../lib/store'
+import { usePullToRefresh } from '../lib/usePullToRefresh'
 import { Button, Chip, QuestStats } from './ui'
+import PullHint from './PullHint'
 
 const EMOJIS = ['🎯', '🗺️', '🚗', '🍔', '🌳', '🏆', '🎲', '🔥', '🦁', '🏖️', '⛰️', '🎨']
 
@@ -17,6 +19,14 @@ export default function ChainBuilder() {
   const [query, setQuery] = useState('')
   const [cat, setCat] = useState<Category | 'all'>('all')
   const [toast, setToast] = useState<string | null>(null)
+  // Pull-to-refresh reshuffles the suggestion list so browsing feels fresh.
+  const pageRef = useRef<HTMLDivElement | null>(null)
+  const [seed, setSeed] = useState(0)
+  const refresh = async () => {
+    setSeed((s) => s + 1)
+    await new Promise((r) => window.setTimeout(r, 500))
+  }
+  const { pull, refreshing } = usePullToRefresh(pageRef, refresh)
 
   const flash = (msg: string) => {
     setToast(msg)
@@ -27,7 +37,7 @@ export default function ChainBuilder() {
 
   const pool = useMemo(() => {
     const q = query.trim().toLowerCase()
-    return ALL_QUESTS.filter((x) => {
+    const list = ALL_QUESTS.filter((x) => {
       if (cat !== 'all' && x.category !== cat) return false
       if (!q) return true
       return (
@@ -37,7 +47,19 @@ export default function ChainBuilder() {
         x.category.includes(q)
       )
     }).sort((a, b) => a.city.localeCompare(b.city))
-  }, [query, cat])
+    // seed > 0 = user pulled to refresh: deterministic shuffle of the list.
+    if (seed === 0) return list
+    let s = (seed * 2654435761) >>> 0
+    const rnd = () => {
+      s = (s * 1664525 + 1013904223) >>> 0
+      return s / 4294967296
+    }
+    for (let i = list.length - 1; i > 0; i--) {
+      const j = Math.floor(rnd() * (i + 1))
+      ;[list[i], list[j]] = [list[j], list[i]]
+    }
+    return list
+  }, [query, cat, seed])
 
   const add = (quest: Quest) => {
     if (addedIds.has(quest.id)) return
@@ -123,7 +145,8 @@ export default function ChainBuilder() {
   }
 
   return (
-    <div className="page builder">
+    <div className="page builder" ref={pageRef}>
+      <PullHint pull={pull} refreshing={refreshing} />
       <header className="page-head">
         <div className="bored-banner">🔧 ASSEMBLE YOUR OWN</div>
         <h1 className="page-title">Chain Builder</h1>

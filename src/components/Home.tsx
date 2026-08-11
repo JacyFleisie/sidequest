@@ -1,12 +1,28 @@
+import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { HOME_BASES } from '../data/quests'
 import { levelProgress, rankFromXp, totalCompleted, type Progress } from '../lib/game'
 import { taglineOfTheDay } from '../lib/taglines'
 import { useGame } from '../lib/store'
+import { ensureIdentity, syncCompletions, syncProfile } from '../lib/sync'
+import { usePullToRefresh } from '../lib/usePullToRefresh'
+import PullHint from './PullHint'
 
 export default function Home() {
   const navigate = useNavigate()
   const { state, homeBaseId, startPlace } = useGame()
+
+  // Pull down to re-sync stats from the server (a fresh launch-equivalent).
+  const pageRef = useRef<HTMLDivElement | null>(null)
+  const refresh = () => {
+    void (async () => {
+      const uid = await ensureIdentity()
+      if (!uid) return
+      await syncProfile(uid, state)
+      await syncCompletions(uid, state)
+    })()
+  }
+  const { pull, refreshing } = usePullToRefresh(pageRef, refresh)
 
   const completedIds = Object.keys(state.completed).filter((id) => !id.startsWith('chain-') && !id.startsWith('s-'))
   const completedChainIds = Object.keys(state.completed).filter((id) => id.startsWith('chain-') || id.startsWith('s-'))
@@ -22,7 +38,8 @@ export default function Home() {
   const level = levelProgress(state.xp).level
 
   return (
-    <div className="page home">
+    <div className="page home" ref={pageRef}>
+      <PullHint pull={pull} refreshing={refreshing} />
       <header className="home-hero">
         <div className="intro-logo">📍</div>
         <h1 className="intro-title">
@@ -90,7 +107,7 @@ export default function Home() {
             <span className="home-action-emoji">👥</span>
             <span className="home-action-main">
               <span className="home-action-title">Squad</span>
-              <span className="home-action-sub">Friends, rivalries & challenges</span>
+              <span className="home-action-sub">Friends, rivalries & live activity</span>
             </span>
           </button>
         </div>
