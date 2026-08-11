@@ -33,8 +33,9 @@ export async function initPushNotifications(): Promise<void> {
     }
     if (status !== 'granted') return
 
-    await PushNotifications.register()
-
+    // Listeners MUST be attached before register(): FCM can deliver the token
+    // the moment register() resolves, and a listener attached after would miss
+    // it — leaving the device registered but the app never storing the token.
     PushNotifications.addListener('registration', async (token) => {
       if (!token.value) return
       const uid = await ensureIdentity()
@@ -45,6 +46,8 @@ export async function initPushNotifications(): Promise<void> {
       // e.g. google-services.json not added yet — the app works, just no pushes.
       console.warn('[push] FCM registration failed', err.error)
     })
+
+    await PushNotifications.register()
 
     // Tapping a notification opens the app. Updates surface via the in-app
     // banner (it re-checks GitHub on launch/resume); friend requests and
