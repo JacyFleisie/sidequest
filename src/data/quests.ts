@@ -77,6 +77,8 @@ export interface Quest {
   vibe: Vibe[]
   description: string
   purpose?: string
+  /** True when the quest has no real location — doable anywhere (e.g. social quests). */
+  anywhere?: boolean
   completionLine: string
   xp: number
   trending?: boolean

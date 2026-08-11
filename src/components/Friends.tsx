@@ -538,10 +538,11 @@ function FriendSheet({
   return (
     <Sheet onClose={onClose}>
       <div className="friend-sheet">
+        <div className="sheet-eyebrow">👥 Friend</div>
         <div className="friend-sheet-hero">
           <span className="friend-sheet-avatar">{friend.emoji}</span>
           <div className="friend-sheet-name">{friend.name}</div>
-          <div className="friend-sheet-level">
+          <div className="friend-sheet-level-pill">
             {LEVEL_ICON(profile.level)} Level {profile.level} · {rank.rank.emoji} {rank.rank.name} ·{' '}
             {profile.xp.toLocaleString()} XP
           </div>

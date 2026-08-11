@@ -23,9 +23,17 @@ const q = (d: Omit<Quest, 'provinceName'>): Quest => ({
   provinceName: PROV_NAMES[d.province],
 })
 
+// Social & school quests have no real location — they're doable anywhere.
+// (Coordinates stay as a harmless anchor for map-less features; the app treats
+// `anywhere` quests as always in range and labels them "Anywhere".)
+const qAny = (d: Omit<Quest, 'provinceName'>): Quest => ({
+  ...q(d),
+  anywhere: true,
+})
+
 export const SOCIAL_QUESTS: Quest[] = [
   // ── SOCIAL: people quests (free) ───────────────────────────────────────────
-  q({
+  qAny({
     id: 'scream-field', title: 'Scream in the Middle of a Sports Field', emoji: '🏟️',
     category: 'free', province: 'GP', city: 'Johannesburg', region: 'jhb',
     lat: -26.1959, lng: 28.0303,
@@ -36,7 +44,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 100, tags: ['social', 'silly', 'free', 'stress relief'],
     completedCount: 880,
   }),
-  q({
+  qAny({
     id: 'compliment-5', title: 'Compliment 5 Strangers', emoji: '💬',
     category: 'free', province: 'GP', city: 'Sandton', region: 'jhb',
     lat: -26.1073, lng: 28.0556,
@@ -47,7 +55,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 120, tags: ['social', 'confidence', 'free'],
     completedCount: 760,
   }),
-  q({
+  qAny({
     id: 'directions-lie', title: 'Ask for Directions to Somewhere You Know', emoji: '🧭',
     category: 'free', province: 'GP', city: 'Sandton', region: 'jhb',
     lat: -26.1073, lng: 28.0556,
@@ -58,7 +66,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 110, tags: ['social', 'silly', 'free'],
     completedCount: 640,
   }),
-  q({
+  qAny({
     id: 'high-five-10', title: 'High-Five 10 Strangers', emoji: '🖐️',
     category: 'free', province: 'KZN', city: 'Durban', region: 'durban',
     lat: -29.8587, lng: 31.0259,
@@ -69,7 +77,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 120, tags: ['social', 'free', 'beach'],
     completedCount: 590,
   }),
-  q({
+  qAny({
     id: 'conga-line', title: 'Start a Conga Line', emoji: '🕺',
     category: 'free', province: 'WC', city: 'Cape Town', region: 'cape-town',
     lat: -33.9221, lng: 18.4203,
@@ -80,7 +88,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 150, tags: ['social', 'chaos', 'free', 'night'],
     completedCount: 420,
   }),
-  q({
+  qAny({
     id: 'pet-portraits', title: 'Photograph 3 Strangers\' Pets', emoji: '🐕',
     category: 'free', province: 'GP', city: 'Pretoria', region: 'pretoria',
     lat: -25.7465, lng: 28.1871,
@@ -91,7 +99,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 120, tags: ['social', 'pets', 'free'],
     completedCount: 510,
   }),
-  q({
+  qAny({
     id: 'life-story', title: 'Learn Someone\'s Life Story in 5 Minutes', emoji: '🫖',
     category: 'free', province: 'GP', city: 'Johannesburg', region: 'jhb',
     lat: -26.2041, lng: 28.0473,
@@ -102,7 +110,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 130, tags: ['social', 'stories', 'free'],
     completedCount: 380,
   }),
-  q({
+  qAny({
     id: 'handshake-teacher', title: 'Teach a Stranger Your Secret Handshake', emoji: '🤝',
     category: 'free', province: 'EC', city: 'Gqeberha', region: 'gebeha',
     lat: -33.9618, lng: 25.6204,
@@ -113,7 +121,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 120, tags: ['social', 'silly', 'free'],
     completedCount: 340,
   }),
-  q({
+  qAny({
     id: 'order-accents', title: 'Order Something in a Wild Accent', emoji: '🎭',
     category: 'free', province: 'KZN', city: 'Durban', region: 'durban',
     lat: -29.8579, lng: 31.0293,
@@ -124,7 +132,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 110, tags: ['social', 'silly', 'free', 'food'],
     completedCount: 450,
   }),
-  q({
+  qAny({
     id: 'public-dance-off', title: 'Public Dance-Off', emoji: '💃',
     category: 'free', province: 'WC', city: 'Cape Town', region: 'cape-town',
     lat: -33.9018, lng: 18.4176,
@@ -135,7 +143,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 130, tags: ['social', 'dance', 'free'],
     completedCount: 400,
   }),
-  q({
+  qAny({
     id: 'shop-owner-chat', title: 'Interview a Shop Owner About Their Day', emoji: '🏪',
     category: 'free', province: 'FS', city: 'Bloemfontein', region: 'bloemfontein',
     lat: -29.1193, lng: 26.2134,
@@ -146,7 +154,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 110, tags: ['social', 'local', 'free'],
     completedCount: 300,
   }),
-  q({
+  qAny({
     id: 'group-selfie', title: 'Group Selfie with Strangers', emoji: '🤳',
     category: 'free', province: 'GP', city: 'Sandton', region: 'jhb',
     lat: -26.1073, lng: 28.0556,
@@ -157,7 +165,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 120, tags: ['social', 'free'],
     completedCount: 360,
   }),
-  q({
+  qAny({
     id: 'wave-10', title: 'Wave at Everyone for 10 Minutes', emoji: '👋',
     category: 'free', province: 'NW', city: 'Rustenburg', region: 'rustenburg',
     lat: -25.667, lng: 27.242,
@@ -168,7 +176,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 100, tags: ['social', 'silly', 'free'],
     completedCount: 470,
   }),
-  q({
+  qAny({
     id: 'stranger-pick', title: 'Let a Stranger Choose Your Next Move', emoji: '🎯',
     category: 'free', province: 'GP', city: 'Pretoria', region: 'pretoria',
     lat: -25.7552, lng: 28.2256,
@@ -179,7 +187,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 130, tags: ['social', 'adventure', 'free'],
     completedCount: 280,
   }),
-  q({
+  qAny({
     id: 'help-carry', title: 'Help Someone Carry Something', emoji: '🛒',
     category: 'free', province: 'KZN', city: 'Durban', region: 'durban',
     lat: -29.8587, lng: 31.0259,
@@ -190,7 +198,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 110, tags: ['social', 'kindness', 'free'],
     completedCount: 520,
   }),
-  q({
+  qAny({
     id: 'outfit-compliment', title: 'Compliment a Stranger\'s Outfit', emoji: '👗',
     category: 'free', province: 'WC', city: 'Cape Town', region: 'cape-town',
     lat: -33.9249, lng: 18.4241,
@@ -201,7 +209,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 100, tags: ['social', 'free'],
     completedCount: 610,
   }),
-  q({
+  qAny({
     id: 'sidequest-question', title: 'Ask 3 People What Their SideQuest Would Be', emoji: '❓',
     category: 'free', province: 'GP', city: 'Johannesburg', region: 'jhb',
     lat: -26.1985, lng: 28.062,
@@ -212,7 +220,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 120, tags: ['social', 'free', 'ideas'],
     completedCount: 330,
   }),
-  q({
+  qAny({
     id: 'rps-tournament', title: 'Rock-Paper-Scissors Tournament', emoji: '✊',
     category: 'free', province: 'LP', city: 'Polokwane', region: 'polokwane',
     lat: -23.9045, lng: 29.4689,
@@ -223,7 +231,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 110, tags: ['social', 'competitive', 'free'],
     completedCount: 390,
   }),
-  q({
+  qAny({
     id: 'free-hugs', title: 'Free Hugs (or High-Fives If You\'re Shy)', emoji: '🤗',
     category: 'free', province: 'MP', city: 'Mbombela', region: 'mbombela',
     lat: -25.4653, lng: 30.9888,
@@ -234,7 +242,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 120, tags: ['social', 'free', 'kindness'],
     completedCount: 440,
   }),
-  q({
+  qAny({
     id: 'stranger-photo', title: 'Ask a Stranger to Photograph You', emoji: '📸',
     category: 'free', province: 'WC', city: 'Cape Town', region: 'cape-town',
     lat: -33.9028, lng: 18.4219,
@@ -245,7 +253,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 100, tags: ['social', 'free', 'photo'],
     completedCount: 570,
   }),
-  q({
+  qAny({
     id: 'questions-only', title: 'Speak Only in Questions for 30 Minutes', emoji: '⁉️',
     category: 'free', province: 'FS', city: 'Bloemfontein', region: 'bloemfontein',
     lat: -29.1193, lng: 26.2134,
@@ -256,7 +264,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 110, tags: ['social', 'silly', 'free'],
     completedCount: 350,
   }),
-  q({
+  qAny({
     id: 'nice-note', title: 'Leave a Nice Note Somewhere', emoji: '💌',
     category: 'free', province: 'KZN', city: 'Durban', region: 'durban',
     lat: -29.8579, lng: 31.0293,
@@ -267,7 +275,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 100, tags: ['social', 'kindness', 'free'],
     completedCount: 490,
   }),
-  q({
+  qAny({
     id: 'karaoke-corner', title: 'Impromptu Karaoke on a Street Corner', emoji: '🎤',
     category: 'free', province: 'GP', city: 'Pretoria', region: 'pretoria',
     lat: -25.7552, lng: 28.2256,
@@ -278,7 +286,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 140, tags: ['social', 'music', 'free'],
     completedCount: 260,
   }),
-  q({
+  qAny({
     id: 'two-truths-lie', title: 'Two Truths, One Lie', emoji: '🎭',
     category: 'free', province: 'NC', city: 'Kimberley', region: 'kimberley',
     lat: -28.7378, lng: 24.759,
@@ -289,7 +297,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 100, tags: ['social', 'games', 'free'],
     completedCount: 310,
   }),
-  q({
+  qAny({
     id: 'smile-10', title: 'Smile at 10 People', emoji: '😊',
     category: 'free', province: 'WC', city: 'Cape Town', region: 'cape-town',
     lat: -33.9249, lng: 18.4241,
@@ -300,7 +308,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 90, tags: ['social', 'free', 'chill'],
     completedCount: 680,
   }),
-  q({
+  qAny({
     id: 'busk-10', title: 'Busk for 10 Minutes', emoji: '🎸',
     category: 'free', province: 'KZN', city: 'Durban', region: 'durban',
     lat: -29.8587, lng: 31.0259,
@@ -311,7 +319,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 140, tags: ['social', 'performance', 'free'],
     completedCount: 230,
   }),
-  q({
+  qAny({
     id: 'elder-advice', title: 'Ask an Elder for Life Advice', emoji: '🧓',
     category: 'free', province: 'GP', city: 'Johannesburg', region: 'jhb',
     lat: -26.2041, lng: 28.0473,
@@ -322,7 +330,7 @@ export const SOCIAL_QUESTS: Quest[] = [
     xp: 110, tags: ['social', 'stories', 'free'],
     completedCount: 420,
   }),
-  q({
+  qAny({
     id: 'intro-five', title: 'Introduce Yourself to 5 People', emoji: '🗣️',
     category: 'free', province: 'NW', city: 'Rustenburg', region: 'rustenburg',
     lat: -25.667, lng: 27.242,
@@ -332,6 +340,184 @@ export const SOCIAL_QUESTS: Quest[] = [
     completionLine: 'You met five humans by choice. Introvert nightmare, social butterfly dream.',
     xp: 110, tags: ['social', 'confidence', 'free'],
     completedCount: 500,
+  }),
+
+  // ── SCHOOL: in-school social quests (free, break-time sized) ───────────────
+  qAny({
+    id: 'tuckshop-kindness', title: 'Make the Tuckshop Lady Smile', emoji: '🥪',
+    category: 'free', province: 'GP', city: 'Johannesburg', region: 'jhb',
+    lat: -26.2041, lng: 28.0473,
+    durationMin: 15, cost: 0, players: [1, 2], difficulty: 1,
+    vibe: ['social'],
+    description: 'Say hello, ask how her morning is going, and make her laugh once. She serves half the school every single day — she deserves it.',
+    completionLine: 'The tuckshop lady smiled and your break officially started.',
+    xp: 90, tags: ['school', 'kindness', 'social', 'free'],
+    completedCount: 420,
+  }),
+  qAny({
+    id: 'teacher-first-job', title: 'Ask a Teacher About Their First Job', emoji: '🧑‍🏫',
+    category: 'free', province: 'GP', city: 'Pretoria', region: 'pretoria',
+    lat: -25.7465, lng: 28.1871,
+    durationMin: 20, cost: 0, players: [1, 2], difficulty: 1,
+    vibe: ['social', 'chill'],
+    description: 'Ask any teacher what their first job was before teaching. Nobody expects the answer to be \'deckhand on a tuna boat\'.',
+    completionLine: 'You now know your history teacher once drove a delivery van. New respect unlocked.',
+    xp: 100, tags: ['school', 'social', 'stories', 'free'],
+    completedCount: 360,
+  }),
+  qAny({
+    id: 'new-kid-hi', title: 'Say Hi to Someone Who Looks New', emoji: '👋',
+    category: 'free', province: 'WC', city: 'Cape Town', region: 'cape-town',
+    lat: -33.9249, lng: 18.4241,
+    durationMin: 15, cost: 0, players: [1, 2], difficulty: 2,
+    vibe: ['social'],
+    description: 'Spot the person who looks a bit lost — new to the school, eating alone, checking their phone — and just go say hi. That\'s the whole quest.',
+    completionLine: 'You were someone\'s first friend today without even trying.',
+    xp: 120, tags: ['school', 'kindness', 'social', 'free'],
+    completedCount: 280,
+  }),
+  qAny({
+    id: 'names-in-grade', title: 'Learn 3 Names in a Grade Above You', emoji: '🗣️',
+    category: 'free', province: 'KZN', city: 'Durban', region: 'durban',
+    lat: -29.8587, lng: 31.0259,
+    durationMin: 20, cost: 0, players: [1, 4], difficulty: 2,
+    vibe: ['social'],
+    description: 'Walk into a break crowd from a grade you do not know and learn three names. You only have to remember them for the rest of the day.',
+    completionLine: 'Three new names, three new faces you can greet tomorrow like it\'s nothing.',
+    xp: 110, tags: ['school', 'social', 'confidence', 'free'],
+    completedCount: 320,
+  }),
+  qAny({
+    id: 'corridor-backwards', title: 'Walk Backwards Down a Corridor', emoji: '🚶',
+    category: 'free', province: 'GP', city: 'Johannesburg', region: 'jhb',
+    lat: -26.1959, lng: 28.0303,
+    durationMin: 10, cost: 0, players: [1, 2], difficulty: 1,
+    vibe: ['social', 'funny'],
+    description: 'Pick a quiet corridor and walk its full length backwards. If anyone asks, you are \'practising for something\'. Keep a straight face.',
+    completionLine: 'You walked a corridor backwards and nobody even blinked. Legend status: achieved.',
+    xp: 90, tags: ['school', 'silly', 'social', 'free'],
+    completedCount: 450,
+  }),
+  qAny({
+    id: 'lunch-trade', title: 'Trade Your Lunch Snack', emoji: '🍫',
+    category: 'free', province: 'FS', city: 'Bloemfontein', region: 'bloemfontein',
+    lat: -29.1193, lng: 26.2134,
+    durationMin: 15, cost: 0, players: [1, 2], difficulty: 1,
+    vibe: ['social', 'food'],
+    description: 'Trade your snack for something you have never tried. The rules: no backsies, and you have to actually eat what you get.',
+    completionLine: 'You swapped your chips for a koeksister and clearly won lunch.',
+    xp: 100, tags: ['school', 'food', 'social', 'free'],
+    completedCount: 380,
+  }),
+  qAny({
+    id: 'skip-to-class', title: 'Skip (Not Walk) to Your Next Class', emoji: '🏃',
+    category: 'free', province: 'GP', city: 'Sandton', region: 'jhb',
+    lat: -26.1073, lng: 28.0556,
+    durationMin: 10, cost: 0, players: [1, 4], difficulty: 2,
+    vibe: ['social', 'funny'],
+    description: 'From the moment the bell rings until you reach your classroom door, you skip. Full commitment. Let the corridor judge.',
+    completionLine: 'You skipped past three teachers and one of them smiled back. That counts as a win.',
+    xp: 110, tags: ['school', 'silly', 'social', 'free'],
+    completedCount: 410,
+  }),
+  qAny({
+    id: 'librarian-book', title: 'Make the Librarian Recommend a Book', emoji: '📚',
+    category: 'free', province: 'WC', city: 'Cape Town', region: 'cape-town',
+    lat: -33.9028, lng: 18.4219,
+    durationMin: 30, cost: 0, players: [1, 2], difficulty: 1,
+    vibe: ['social', 'chill'],
+    description: 'Ask the librarian to recommend a book based on \'your life right now\'. Read the first chapter before the day ends.',
+    completionLine: 'The librarian read you perfectly — the first chapter already has you hooked.',
+    xp: 100, tags: ['school', 'library', 'reading', 'free'],
+    completedCount: 340,
+  }),
+  qAny({
+    id: 'staring-contest', title: 'Staring Contest Until Someone Laughs', emoji: '👀',
+    category: 'free', province: 'KZN', city: 'Durban', region: 'durban',
+    lat: -29.8579, lng: 31.0293,
+    durationMin: 10, cost: 0, players: [2, 4], difficulty: 1,
+    vibe: ['social', 'funny'],
+    description: 'Face a friend across the desk and stare until one of you breaks. First laugh loses. Try to hold it through a whole period.',
+    completionLine: 'You held it for four minutes before the giggles won. Worth every second.',
+    xp: 90, tags: ['school', 'silly', 'games', 'free'],
+    completedCount: 430,
+  }),
+  qAny({
+    id: 'groundsman-tree', title: 'Ask the Groundsman About the Oldest Tree', emoji: '🌳',
+    category: 'free', province: 'MP', city: 'Mbombela', region: 'mbombela',
+    lat: -25.4653, lng: 30.9888,
+    durationMin: 20, cost: 0, players: [1, 2], difficulty: 1,
+    vibe: ['social', 'chill'],
+    description: 'Find the groundsman or ground staff and ask about the oldest thing on the school grounds. You will get a story nobody else has.',
+    completionLine: 'The oak on the quad has been there since the school opened. Now you know.',
+    xp: 100, tags: ['school', 'stories', 'social', 'free'],
+    completedCount: 300,
+  }),
+  qAny({
+    id: 'school-fact', title: 'Tell Someone a Fact About Your School', emoji: '🏫',
+    category: 'free', province: 'LP', city: 'Polokwane', region: 'polokwane',
+    lat: -23.9045, lng: 29.4689,
+    durationMin: 15, cost: 0, players: [1, 4], difficulty: 1,
+    vibe: ['social'],
+    description: 'Find one true, interesting fact about your school — founding year, a famous old pupil, something hidden in the building — and tell it to someone.',
+    completionLine: 'You became the school fact person for exactly one break. Enjoy it.',
+    xp: 90, tags: ['school', 'social', 'free'],
+    completedCount: 350,
+  }),
+  qAny({
+    id: 'paper-football', title: 'Run a Paper Football Tournament', emoji: '⚽',
+    category: 'free', province: 'NW', city: 'Rustenburg', region: 'rustenburg',
+    lat: -25.667, lng: 27.242,
+    durationMin: 30, cost: 0, players: [2, 8], difficulty: 2,
+    vibe: ['social', 'competitive'],
+    description: 'Fold a paper ball, make a goal from two rulers, and run a quick bracket at break. Losers provide the next paper ball.',
+    completionLine: 'The break-time trophy was a pencil. The glory was eternal.',
+    xp: 120, tags: ['school', 'games', 'competitive', 'free'],
+    completedCount: 290,
+  }),
+  qAny({
+    id: 'compliment-other-grade', title: 'Compliment Someone in a Different Grade', emoji: '💬',
+    category: 'free', province: 'NC', city: 'Kimberley', region: 'kimberley',
+    lat: -28.7378, lng: 24.759,
+    durationMin: 10, cost: 0, players: [1, 2], difficulty: 2,
+    vibe: ['social'],
+    description: 'Find someone you only know by face — different grade, different class — and give them one specific, genuine compliment.',
+    completionLine: 'You made a near-stranger\'s day with one sentence. No notes.',
+    xp: 110, tags: ['school', 'kindness', 'social', 'free'],
+    completedCount: 330,
+  }),
+  qAny({
+    id: 'water-bottle-pyramid', title: 'Build a Water Bottle Pyramid', emoji: '🥤',
+    category: 'free', province: 'EC', city: 'Gqeberha', region: 'gebeha',
+    lat: -33.9618, lng: 25.6204,
+    durationMin: 15, cost: 0, players: [2, 6], difficulty: 1,
+    vibe: ['social', 'funny'],
+    description: 'Stack empty water bottles into a pyramid on a break table. Keep it standing until the bell rings. Bonus points for a tower.',
+    completionLine: 'Your pyramid survived an entire break and one very curious janitor.',
+    xp: 90, tags: ['school', 'silly', 'games', 'free'],
+    completedCount: 370,
+  }),
+  qAny({
+    id: 'window-wave', title: 'Wave at a Friend Through a Window', emoji: '🪟',
+    category: 'free', province: 'GP', city: 'Johannesburg', region: 'jhb',
+    lat: -26.1985, lng: 28.062,
+    durationMin: 10, cost: 0, players: [1, 2], difficulty: 1,
+    vibe: ['social', 'funny'],
+    description: 'Next time you are in one building and your friend is in another, wave until they see you. Make it a full, theatrical wave.',
+    completionLine: 'You made eye contact across the quad and it felt like a movie scene.',
+    xp: 90, tags: ['school', 'silly', 'social', 'free'],
+    completedCount: 400,
+  }),
+  qAny({
+    id: 'class-handshake', title: 'Invent a Class Secret Handshake', emoji: '🤝',
+    category: 'free', province: 'WC', city: 'Cape Town', region: 'cape-town',
+    lat: -33.9249, lng: 18.4241,
+    durationMin: 20, cost: 0, players: [2, 6], difficulty: 2,
+    vibe: ['social', 'funny'],
+    description: 'Invent a secret handshake with your desk neighbour — a bump, a spin, a snap. Use it every time you pass each other for the rest of the day.',
+    completionLine: 'You now have a handshake with your desk neighbour that no one else can do.',
+    xp: 110, tags: ['school', 'silly', 'social', 'free'],
+    completedCount: 310,
   }),
 
   // ── GENERAL VARIETY: fresh activities & spots ──────────────────────────────

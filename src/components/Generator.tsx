@@ -1,62 +1,32 @@
 import { useMemo, useState } from 'react'
-import { HOME_BASES, VIBE_META, chainStats, type Vibe } from '../data/quests'
-import { fmtCost, fmtDuration, generateQuest, getUserLocation, nearestBase, reverseGeocodeLabel, type GeneratorInput } from '../lib/game'
+import { ALL_QUESTS, CATEGORY_META, HOME_BASES, VIBE_META, type Category, type Quest, type Vibe } from '../data/quests'
+import { getUserLocation, haversineKm, nearestBase, reverseGeocodeLabel } from '../lib/game'
 import { useGame, type StartPlace } from '../lib/store'
 import LocationPicker from './LocationPicker'
-import { Button, QuestStats, Stat } from './ui'
+import { Button, Chip, QuestStats } from './ui'
 
-type PeopleValue = 1 | 2 | 4 | 8
-type TimeValue = 15 | 30 | 120 | 300 | 600
-type DistanceValue = '500m' | '2km' | '5km' | '20km' | 'anywhere'
-
-const PEOPLE = [
-  { emoji: '👤', label: 'Just me', value: 1 },
-  { emoji: '👥', label: '2', value: 2 },
-  { emoji: '👥👥', label: '3–5', value: 4 },
-  { emoji: '👨‍👩‍👧‍👦', label: '6+', value: 8 },
-]
-const TIME = [
-  { emoji: '⚡', label: '15 min', value: 15 },
-  { emoji: '🕐', label: '30 min', value: 30 },
-  { emoji: '🕑', label: '1–2 hrs', value: 120 },
-  { emoji: '🌇', label: '3–5 hrs', value: 300 },
-  { emoji: '🌙', label: 'Whole day', value: 600 },
-]
-const BUDGET = [
-  { emoji: '🤑', label: 'R0', value: 0 },
-  { emoji: '💰', label: 'R50', value: 50 },
-  { emoji: '💵', label: 'R100', value: 100 },
-  { emoji: '💳', label: 'R250', value: 250 },
-  { emoji: '💸', label: "Doesn't matter", value: Infinity },
-]
-const DISTANCE = [
-  { emoji: '📍', label: '500 m', value: '500m' },
-  { emoji: '📍', label: '2 km', value: '2km' },
-  { emoji: '📍', label: '5 km', value: '5km' },
-  { emoji: '🚗', label: '20 km', value: '20km' },
-  { emoji: '🛣️', label: 'Anywhere', value: 'anywhere' },
-]
+const CATEGORIES = Object.entries(CATEGORY_META) as [Category, { label: string; color: string; emoji: string }][]
 const VIBES = Object.entries(VIBE_META) as [Vibe, { label: string; emoji: string }][]
 
-const STEP_LABELS = ['People', 'Time', 'Budget', 'Distance', 'Vibe']
+const PAGE = 12
 
 export default function Generator() {
-  const { homeBaseId, setHomeBaseId, startPlace, setStartPlace, startGenerated, startQuest, startChain, recentGenerated, recordGenerated } = useGame()
-  const [step, setStep] = useState(0)
-  const [people, setPeople] = useState<PeopleValue>(4)
-  const [time, setTime] = useState<TimeValue>(120)
-  const [budget, setBudget] = useState<number>(100)
-  const [distance, setDistance] = useState<DistanceValue>('5km')
+  const { homeBaseId, setHomeBaseId, startPlace, setStartPlace, startQuest } = useGame()
+  const [category, setCategory] = useState<Category | null>(null)
   const [vibe, setVibe] = useState<Vibe | null>(null)
-  const [result, setResult] = useState<ReturnType<typeof generateQuest> | null>(null)
+  const [trending, setTrending] = useState(false)
+  const [shuffleKey, setShuffleKey] = useState(0)
+  const [shown, setShown] = useState(PAGE)
 
   const base = HOME_BASES.find((b) => b.id === homeBaseId) ?? HOME_BASES[0]
   const startLabel = startPlace?.label ?? base.label
-  const startCoords = startPlace ?? { label: base.label, lat: base.lat, lng: base.lng }
+  const startLat = startPlace?.lat ?? base.lat
+  const startLng = startPlace?.lng ?? base.lng
 
   const pickStart = (place: StartPlace) => {
     setStartPlace(place)
     setHomeBaseId(nearestBase(place.lat, place.lng).id)
+    setShown(PAGE)
   }
 
   const useMyLocation = () => {
@@ -66,205 +36,75 @@ export default function Generator() {
         const nearest = nearestBase(latitude, longitude)
         setStartPlace({ label, lat: latitude, lng: longitude })
         setHomeBaseId(nearest.id)
+        setShown(PAGE)
       },
       () => {},
     )
   }
 
-  const input: GeneratorInput = useMemo(
-    () => ({
-      people,
-      maxMinutes: time,
-      budget,
-      distanceTier: distance,
-      vibe: vibe ?? 'random',
-      base,
-      exclude: recentGenerated.length > 0 ? new Set(recentGenerated) : undefined,
-      customCoords: startPlace
-        ? { lat: startPlace.lat, lng: startPlace.lng, label: startPlace.label }
-        : undefined,
-    }),
-    [people, time, budget, distance, vibe, base, startPlace, recentGenerated],
+  // Optional filters: tap a category or vibe and the feed shows only that.
+  const filtered = useMemo(
+    () =>
+      ALL_QUESTS.filter(
+        (q) => (!category || q.category === category) && (!vibe || q.vibe.includes(vibe)),
+      ),
+    [category, vibe],
   )
 
-  const findQuest = (override?: Partial<GeneratorInput>) => {
-    const result = generateQuest({ ...input, ...override })
-    // Remember what we suggested so the next roll doesn't repeat it.
-    const suggested = [
-      ...(result.generated?.quests ?? []).map((q) => q.id),
-      ...result.singles.map((q) => q.id),
-    ]
-    if (suggested.length > 0) recordGenerated(suggested)
-    setResult(result)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  if (result) {
-    return (
-      <div className="page generator-result">
-        <header className="page-head">
-          <button className="text-btn" onClick={() => setResult(null)}>
-            ← Tweak choices
-          </button>
-          <h1 className="page-title">🎮 YOUR SIDEQUEST</h1>
-          <p className="page-sub">
-            {result.matchedCount} quests found {result.nearbyLabel === 'South Africa' ? 'across South Africa' : `near ${result.nearbyLabel}`}
-          </p>
-        </header>
-
-        {result.generated && (
-          <section className="generated-card">
-            <div className="generated-head">
-              <span className="generated-emoji">{result.generated.emoji}</span>
-              <div>
-                <h2 className="generated-title">{result.generated.title}</h2>
-                <p className="generated-sub">A chain of {result.generated.quests.length} SideQuests · starting in {startCoords.label}</p>
-              </div>
-            </div>
-            <div className="generated-steps">
-              {result.generated.quests.map((q, i) => (
-                <div className="gen-step" key={q.id}>
-                  <div className="gen-step-num">{i + 1}</div>
-                  <div className="gen-step-main">
-                    <div className="gen-step-title">
-                      {q.emoji} {q.title}
-                    </div>
-                    <div className="gen-step-meta">
-                      {q.city} · {fmtDuration(q.durationMin)} · {fmtCost(q.cost)}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="generated-stats">
-              <Stat icon="⏱️" label="Total time" value={fmtDuration(result.generated.durationMin)} />
-              <Stat icon="💰" label="Per person" value={fmtCost(result.generated.cost)} />
-              <Stat icon="👥" label="Players" value={`${result.generated.players[0]}–${result.generated.players[1]}`} />
-              <Stat icon="🏆" label="XP" value={`+${result.generated.xp}`} />
-            </div>
-            <Button
-              className="accept-btn"
-              onClick={() =>
-                startGenerated(result.generated!.quests, result.generated!.title, result.generated!.emoji)
-              }
-            >
-              ⚡ ACCEPT QUEST
-            </Button>
-          </section>
-        )}
-
-        {result.featured && (
-          <section className="featured-card">
-            <div className="featured-head">
-              <span className="featured-emoji">{result.featured.emoji}</span>
-              <div>
-                <h2 className="featured-title">🇿🇦 Featured: {result.featured.title}</h2>
-                <p className="featured-sub">
-                  {result.featured.city} · {result.featured.steps.length} stops · hand-crafted multi-stop quest
-                </p>
-              </div>
-            </div>
-            <QuestStats
-              durationMin={chainStats(result.featured).durationMin}
-              cost={chainStats(result.featured).cost}
-              players={chainStats(result.featured).players}
-            />
-            <Button variant="ghost" className="accept-btn" onClick={() => startChain(result.featured!)}>
-              ▶ START FEATURED QUEST
-            </Button>
-          </section>
-        )}
-
-        {result.singles.length > 0 && (
-          <section className="singles">
-            <h2 className="section-title">💡 More ideas near you</h2>
-            {result.singles.map((q) => (
-              <div className="single-card" key={q.id}>
-                <div className="single-emoji">{q.emoji}</div>
-                <div className="single-main">
-                  <div className="single-title">{q.title}</div>
-                  <div className="single-meta">
-                    {q.city} · {fmtDuration(q.durationMin)} · {fmtCost(q.cost)} · +{q.xp} XP
-                  </div>
-                </div>
-                <button className="single-start" onClick={() => startQuest(q)}>
-                  ▶
-                </button>
-              </div>
-            ))}
-          </section>
-        )}
-
-        {!result.generated && result.singles.length === 0 && !result.featured && (
-          <div className="empty-state">
-            <p>Nothing matched your exact choices — South Africa still loves you.</p>
-            {result.nearMisses.length > 0 && (
-              <div className="near-misses">
-                <p className="near-misses-title">Closest quests outside your range:</p>
-                {result.nearMisses.map(({ quest, reason }) => (
-                  <div className="near-miss" key={quest.id}>
-                    <span className="near-miss-emoji">{quest.emoji}</span>
-                    <span className="near-miss-main">
-                      <span className="near-miss-title">{quest.title}</span>
-                      <span className="near-miss-reason">{reason}</span>
-                    </span>
-                  </div>
-                ))}
-                <p className="near-misses-hint">Tweak your budget, time or distance to pull these in.</p>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    )
-  }
-
-  const steps = [
-    {
-      title: 'How many people?',
-      options: PEOPLE.map((o) => ({ ...o, active: people === o.value, onPick: () => { setPeople(o.value as PeopleValue); advance() } })),
-    },
-    {
-      title: 'How long?',
-      options: TIME.map((o) => ({ ...o, active: time === o.value, onPick: () => { setTime(o.value as TimeValue); advance() } })),
-    },
-    {
-      title: 'Budget per person?',
-      options: BUDGET.map((o) => ({ ...o, active: budget === o.value, onPick: () => { setBudget(o.value); advance() } })),
-    },
-    {
-      title: 'How far are you willing to go?',
-      options: DISTANCE.map((o) => ({ ...o, active: distance === o.value, onPick: () => { setDistance(o.value as DistanceValue); advance() } })),
-    },
-    {
-      title: 'What vibe?',
-      options: VIBES.map(([v, meta]) => ({
-        emoji: meta.emoji,
-        label: meta.label,
-        active: vibe === v,
-        onPick: () => { setVibe(v); advance({ vibe: v }) },
-      })),
-    },
-  ]
-  const current = steps[step]
-
-  const advance = (override?: Partial<GeneratorInput>) => {
-    if (step < steps.length - 1) {
-      setStep((s) => s + 1)
+  // Nearby first (like a feed of what you can actually do), popularity as tiebreak;
+  // "Trending" flips to most-completed first. Shuffle randomises the order.
+  const ordered = useMemo(() => {
+    const list = [...filtered]
+    // Anywhere quests have no real distance — treat them as 0 (doable right now).
+    const dist = (q: Quest) => (q.anywhere ? 0 : haversineKm(startLat, startLng, q.lat, q.lng))
+    if (trending) {
+      list.sort((a, b) => b.completedCount - a.completedCount)
     } else {
-      findQuest(override)
+      list.sort((a, b) => dist(a) - dist(b) || b.completedCount - a.completedCount)
     }
+    if (shuffleKey > 0) {
+      let seed = (shuffleKey * 2654435761) >>> 0
+      const rnd = () => {
+        seed = (seed * 1664525 + 1013904223) >>> 0
+        return seed / 4294967296
+      }
+      for (let i = list.length - 1; i > 0; i--) {
+        const j = Math.floor(rnd() * (i + 1))
+        ;[list[i], list[j]] = [list[j], list[i]]
+      }
+    }
+    return list
+  }, [filtered, trending, shuffleKey, startLat, startLng])
+
+  const visible = ordered.slice(0, shown)
+
+  const fmtDistance = (q: Quest): string => {
+    if (q.anywhere) return 'Anywhere'
+    const km = haversineKm(startLat, startLng, q.lat, q.lng)
+    if (km < 0.5) return 'right nearby'
+    return km < 10 ? `${km.toFixed(1)} km away` : `${Math.round(km)} km away`
+  }
+
+  const activeLabel =
+    [category ? CATEGORY_META[category].emoji + ' ' + CATEGORY_META[category].label : null, vibe ? VIBE_META[vibe].emoji + ' ' + VIBE_META[vibe].label : null, trending ? '🔥 Trending' : null]
+      .filter(Boolean)
+      .join(' · ') || 'All quests'
+
+  const clearFilters = () => {
+    setCategory(null)
+    setVibe(null)
+    setTrending(false)
+    setShown(PAGE)
   }
 
   return (
-    <div className="page generator">
+    <div className="page feed">
       <header className="page-head">
-        <div className="bored-banner">😐 WE'RE BORED</div>
-        <h1 className="page-title">The SideQuest Generator</h1>
-        <p className="page-sub">Answer 5 quick questions and we'll build your adventure.</p>
+        <h1 className="page-title">🎮 Quest Feed</h1>
+        <p className="page-sub">Scroll like it's Instagram — but every post is a real place to go.</p>
       </header>
 
-      <div className="generator-start">
+      <div className="feed-start">
         <label className="field-label">Starting from</label>
         <LocationPicker
           currentLabel={startLabel}
@@ -273,40 +113,124 @@ export default function Generator() {
           onUseMyLocation={useMyLocation}
           onReset={() => setStartPlace(null)}
         />
+        <div className="feed-meta">
+          {ordered.length} quests near {startLabel}
+        </div>
       </div>
 
-      <div className="stepper">
-        {STEP_LABELS.map((label, i) => (
-          <div key={label} className={`stepper-item ${i === step ? 'stepper-active' : ''} ${i < step ? 'stepper-done' : ''}`}>
-            <span className="stepper-dot">{i < step ? '✓' : i + 1}</span>
-            <span className="stepper-label">{label}</span>
-          </div>
-        ))}
-      </div>
-
-      <div key={step} className="step-card">
-        <h2 className="step-title">{current.title}</h2>
-        <div className={`option-grid ${step === 4 ? 'option-grid-vibes' : ''}`}>
-          {current.options.map((o, i) => (
-            <button key={i} className={`option-btn ${o.active ? 'option-active' : ''}`} onClick={o.onPick}>
-              <span className="option-emoji">{o.emoji}</span>
-              <span className="option-label">{o.label}</span>
-            </button>
+      <div className="feed-filters">
+        <div className="chips-row">
+          {CATEGORIES.map(([c, meta]) => (
+            <Chip
+              key={c}
+              label={meta.label}
+              emoji={meta.emoji}
+              color={meta.color}
+              active={category === c}
+              onClick={() => {
+                setCategory(category === c ? null : c)
+                setTrending(false)
+                setShown(PAGE)
+              }}
+            />
+          ))}
+          <Chip
+            label="Trending"
+            emoji="🔥"
+            active={trending}
+            onClick={() => {
+              setTrending((t) => !t)
+              setShown(PAGE)
+            }}
+          />
+        </div>
+        <div className="chips-row">
+          {VIBES.map(([v, meta]) => (
+            <Chip
+              key={v}
+              label={meta.label}
+              emoji={meta.emoji}
+              active={vibe === v}
+              onClick={() => {
+                setVibe(vibe === v ? null : v)
+                setShown(PAGE)
+              }}
+            />
           ))}
         </div>
-        <div className="step-nav">
-          {step > 0 && (
-            <Button variant="ghost" onClick={() => setStep((s) => s - 1)}>
-              ← Back
-            </Button>
-          )}
-          {step === 4 && (
-            <Button onClick={findQuest} className="find-btn">
-              🎲 FIND SIDEQUEST
-            </Button>
-          )}
+      </div>
+
+      <div className="feed-toolbar">
+        <span className="feed-hint">{activeLabel}</span>
+        <button className="feed-shuffle" onClick={() => setShuffleKey((k) => k + 1)} title="Randomise the order">
+          🎲 Shuffle
+        </button>
+      </div>
+
+      {visible.length === 0 ? (
+        <div className="empty-state">
+          <p>No quests match that combo — yet.</p>
+          <Button variant="ghost" onClick={clearFilters}>
+            Clear filters
+          </Button>
+        </div>
+      ) : (
+        <div className="feed-list">
+          {visible.map((q) => (
+            <QuestCard key={q.id} q={q} distance={fmtDistance(q)} onStart={() => startQuest(q)} />
+          ))}
+        </div>
+      )}
+
+      {shown < ordered.length && (
+        <div className="feed-more">
+          <Button variant="ghost" onClick={() => setShown((n) => n + PAGE)}>
+            Show more ({ordered.length - shown} left)
+          </Button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function QuestCard({ q, distance, onStart }: { q: Quest; distance: string; onStart: () => void }) {
+  const meta = CATEGORY_META[q.category]
+  return (
+    <article className="feed-card">
+      <header className="feed-card-head">
+        <span className="feed-card-avatar">{q.emoji}</span>
+        <div className="feed-card-head-main">
+          <h2 className="feed-card-title">
+            {q.title}
+            {q.trending && <span className="feed-card-trending"> 🔥</span>}
+          </h2>
+          <p className="feed-card-sub">
+            {q.anywhere ? 'Anywhere' : q.city} · {meta.label}
+            {q.anywhere ? '' : ` · ${distance}`}
+          </p>
+        </div>
+        <span className="feed-card-xp">+{q.xp} XP</span>
+      </header>
+
+      <div className="feed-card-hero" style={{ background: `linear-gradient(135deg, ${meta.color}2e, ${meta.color}0d)` }}>
+        {q.emoji}
+      </div>
+
+      <div className="feed-card-body">
+        <p className="feed-card-desc">{q.description}</p>
+        <div className="feed-card-tags">
+          {q.tags.slice(0, 4).map((t) => (
+            <span key={t}>#{t.replace(/\s+/g, '')}</span>
+          ))}
         </div>
       </div>
-    </div>
+
+      <footer className="feed-card-actions">
+        <QuestStats durationMin={q.durationMin} cost={q.cost} players={q.players} difficulty={q.difficulty} />
+        <Button variant="gold" className="feed-start-btn" onClick={onStart}>
+          ⚡ START QUEST
+        </Button>
+      </footer>
+    </article>
   )
 }

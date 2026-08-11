@@ -229,8 +229,8 @@ export default function SearchBox({
                   <span className="search-result-main">
                     <span className="search-result-title">{quest.title}</span>
                     <span className="search-result-sub">
-                      {quest.city} · {CATEGORY_META[quest.category].label} · {fmtDuration(quest.durationMin)} ·{' '}
-                      {fmtCost(quest.cost)}
+                      {quest.anywhere ? 'Anywhere' : quest.city} · {CATEGORY_META[quest.category].label} ·{' '}
+                      {fmtDuration(quest.durationMin)} · {fmtCost(quest.cost)}
                     </span>
                   </span>
                 </button>

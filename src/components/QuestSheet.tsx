@@ -27,7 +27,9 @@ export const QuestSheet = ({
   const title = quest?.title ?? chain?.title ?? ''
   const emoji = quest?.emoji ?? chain?.emoji ?? '📍'
   const location = quest
-    ? `${quest.city} · ${quest.provinceName}`
+    ? quest.anywhere
+      ? 'Anywhere'
+      : `${quest.city} · ${quest.provinceName}`
     : chain
       ? `${chain.city} · ${PROVINCES[chain.province].name}`
       : ''

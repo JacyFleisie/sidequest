@@ -35,7 +35,8 @@ export default function ActiveQuest() {
     const out: Record<string, number> = {}
     for (const s of session?.steps ?? []) {
       const q = questById(s.questId)
-      out[s.questId] = q ? haversineKm(pos.lat, pos.lng, q.lat, q.lng) : 0
+      // "Anywhere" quests (social/school) need no location — always in range.
+      out[s.questId] = q && !q.anywhere ? haversineKm(pos.lat, pos.lng, q.lat, q.lng) : 0
     }
     return out
   }
@@ -137,16 +138,18 @@ export default function ActiveQuest() {
                       {s.questEmoji} {s.questTitle}
                     </span>
                     <span className="active-step-meta">
-                      {s.questCity} · {fmtDuration(questDuration(s.questId))} · +{s.xp} XP
+                      {questById(s.questId)?.anywhere ? 'Anywhere' : s.questCity} · {fmtDuration(questDuration(s.questId))} · +{s.xp} XP
                     </span>
-                    <span className={`active-step-prox ${km !== null && near(s.questId) ? 'active-prox-near' : km !== null ? 'active-prox-far' : ''}`}>
-                      {locating && proximity === null
-                        ? '📡 locating…'
-                        : km === null
-                          ? '📍 checking…'
-                          : near(s.questId)
-                            ? '📍 you are here'
-                            : `📍 ${km.toFixed(1)} km away`}
+                    <span className={`active-step-prox ${questById(s.questId)?.anywhere ? 'active-prox-anywhere' : km !== null && near(s.questId) ? 'active-prox-near' : km !== null ? 'active-prox-far' : ''}`}>
+                      {questById(s.questId)?.anywhere
+                        ? '📍 anywhere'
+                        : locating && proximity === null
+                          ? '📡 locating…'
+                          : km === null
+                            ? '📍 checking…'
+                            : near(s.questId)
+                              ? '📍 you are here'
+                              : `📍 ${km.toFixed(1)} km away`}
                     </span>
                   </span>
                 </button>
@@ -160,7 +163,7 @@ export default function ActiveQuest() {
           </div>
 
           <div className="active-loc-note">
-            📍 Must be within {RADIUS_KM} km of every stop to finish
+            📍 Must be within {RADIUS_KM} km of every stop to finish · anywhere-quests need no location
             {locSource === 'device' ? ' · verified with device GPS' : locSource === 'assumed' ? ' · using your start location (device GPS unavailable)' : ''}
           </div>
 

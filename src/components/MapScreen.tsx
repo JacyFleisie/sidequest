@@ -276,6 +276,7 @@ export default function MapScreen() {
 
   const visible = useMemo(() => {
     let quests = ALL_QUESTS.filter((q) => {
+      if (q.anywhere) return false // anywhere-quests have no real location — keep them off the map
       if (filter === 'trending') return q.trending
       if (filter !== 'all') return q.category === filter
       return true

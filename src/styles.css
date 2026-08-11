@@ -908,7 +908,11 @@ select { background: var(--card-2); color: var(--text); border: 1px solid var(--
   border: 2px solid var(--gold); box-shadow: 0 6px 20px #0006;
 }
 .friend-sheet-name { font-size: 22px; font-weight: 900; margin-top: 10px; letter-spacing: -0.3px; }
-.friend-sheet-level { color: var(--muted); font-size: 13px; margin-top: 5px; }
+.friend-sheet-level-pill {
+  display: inline-block; margin-top: 10px; font-size: 12.5px; font-weight: 800;
+  color: #ffd98a; background: #ffd23f0d; border: 1px solid #ffd23f44;
+  border-radius: 99px; padding: 6px 14px;
+}
 .friend-sheet-stats {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(64px, 1fr)); gap: 8px; margin: 20px 0;
 }
@@ -1025,19 +1029,36 @@ select { background: var(--card-2); color: var(--text); border: 1px solid var(--
 .badge-locked { opacity: 0.55; }
 .badge-locked .badge-emoji { filter: grayscale(1); }
 
-.badge-sheet { text-align: center; padding: 24px 22px 18px; }
+/* Shared sheet eyebrow (echoes the sign-in sheet's brand header) */
+.sheet-eyebrow {
+  font-size: 11px; font-weight: 900; letter-spacing: 3px; color: var(--gold);
+  text-transform: uppercase; opacity: 0.9;
+}
+
+.badge-sheet { text-align: center; padding: 22px 22px 18px; }
+.badge-sheet-hero {
+  background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+  padding: 26px 18px 20px; margin-top: 12px;
+}
+.badge-sheet-hero-earned {
+  border-color: #ffd23f55; background: linear-gradient(180deg, #ffd23f0f, var(--card));
+  box-shadow: 0 6px 24px #ffd23f14;
+}
 .badge-sheet-emoji { font-size: 64px; line-height: 1; }
-.badge-sheet-name { font-size: 22px; font-weight: 900; margin-top: 10px; }
-.badge-sheet-desc { color: var(--muted); font-size: 14px; margin-top: 6px; line-height: 1.5; max-width: 320px; margin-left: auto; margin-right: auto; }
+.badge-sheet-name { font-size: 22px; font-weight: 900; margin-top: 10px; letter-spacing: 0.2px; }
+.badge-sheet-desc { color: var(--muted); font-size: 14px; margin-top: 8px; line-height: 1.55; max-width: 320px; margin-left: auto; margin-right: auto; }
 .badge-sheet-status {
   display: inline-block; margin-top: 16px; font-size: 13px; font-weight: 800;
   padding: 8px 16px; border-radius: 99px;
 }
-.badge-sheet-status-earned { background: var(--green)1a; color: var(--green); border: 1px solid var(--green); }
+.badge-sheet-status-earned { background: #3ddc6f14; color: var(--green); border: 1px solid var(--green); }
 .badge-sheet-status-locked { background: var(--card-2); color: var(--muted); border: 1px solid var(--border); }
 .badge-sheet-progress { margin-top: 20px; text-align: left; }
 .badge-progress-top { display: flex; justify-content: space-between; font-size: 13px; font-weight: 800; margin-bottom: 6px; }
-.badge-sheet-need { margin-top: 10px; font-size: 13px; color: var(--muted); text-align: left; }
+.badge-sheet-need {
+  margin-top: 12px; font-size: 13px; color: var(--muted); text-align: left; line-height: 1.5;
+  background: var(--card-2); border: 1px dashed var(--border); border-radius: 12px; padding: 10px 12px;
+}
 
 .home-base-select { width: 100%; margin-bottom: 8px; }
 .home-base-current {
@@ -1063,6 +1084,48 @@ select { background: var(--card-2); color: var(--text); border: 1px solid var(--
   color: #ff7b87; font-size: 13px; font-weight: 800; background: #ff47570d;
   transition: all 0.15s ease;
 }
+
+/* ── Quest feed (Instagram-style generator) ─────────────────────────── */
+.feed-start { margin-bottom: 14px; }
+.feed-meta { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.feed-filters { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+.feed-toolbar { display: flex; align-items: center; justify-content: space-between; margin: 14px 0 12px; gap: 10px; }
+.feed-hint { font-size: 12px; color: var(--muted); font-weight: 700; }
+.feed-shuffle {
+  font: inherit; font-size: 13px; font-weight: 800; color: var(--gold); white-space: nowrap;
+  background: #ffd23f0d; border: 1px solid #ffd23f44; border-radius: 99px; padding: 8px 16px; cursor: pointer;
+  transition: all 0.15s ease;
+}
+.feed-shuffle:hover { background: #ffd23f1a; }
+.feed-list { display: flex; flex-direction: column; gap: 16px; }
+.feed-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+  overflow: hidden; transition: border-color 0.15s ease;
+}
+.feed-card:hover { border-color: #ffd23f55; }
+.feed-card-head { display: flex; align-items: center; gap: 12px; padding: 14px 14px 0; }
+.feed-card-avatar {
+  width: 46px; height: 46px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 24px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--card-2), #1b1f2e);
+  border: 2px solid var(--gold);
+}
+.feed-card-head-main { flex: 1; min-width: 0; }
+.feed-card-title { font-size: 15px; font-weight: 900; line-height: 1.3; }
+.feed-card-trending { color: #ff9f1c; }
+.feed-card-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.feed-card-xp { font-size: 12px; font-weight: 900; color: var(--gold); white-space: nowrap; }
+.feed-card-hero {
+  display: flex; align-items: center; justify-content: center; font-size: 64px;
+  padding: 30px 0; margin-top: 12px;
+}
+.feed-card-body { padding: 12px 14px 0; }
+.feed-card-desc { font-size: 13.5px; color: var(--text); line-height: 1.55; }
+.feed-card-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.feed-card-tags span { font-size: 11px; font-weight: 700; color: var(--muted); }
+.feed-card-actions { padding: 4px 14px 14px; }
+.feed-start-btn { width: 100%; margin-top: 4px; }
+.feed-more { margin-top: 16px; display: flex; justify-content: center; }
 .reset-btn:hover { border-color: #ff4757; background: #ff47571a; }
 
 /* ── Update banner + update card ─────────────────────────────────────── */
@@ -1165,10 +1228,11 @@ select { background: var(--card-2); color: var(--text); border: 1px solid var(--
 .signin-pass-wrap .signin-input { padding-right: 46px; }
 .signin-pass-toggle {
   position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-  font-size: 16px; line-height: 1; padding: 6px; border-radius: 8px;
-  opacity: 0.75; transition: opacity 0.15s, background 0.15s;
+  font-size: 16px; line-height: 1; padding: 7px 9px; border-radius: 8px;
+  background: var(--card); border: 1px solid var(--border); cursor: pointer;
+  transition: border 0.15s, background 0.15s;
 }
-.signin-pass-toggle:hover { opacity: 1; background: #ffffff12; }
+.signin-pass-toggle:hover { border-color: var(--gold); background: #ffd23f14; }
 .signin-error {
   font-size: 13px; color: #ff8b95; background: #ff47570f;
   border: 1px solid #ff475744; border-radius: 10px; padding: 10px 12px;

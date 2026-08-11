@@ -93,6 +93,10 @@ export default function Profile() {
       </section>
 
       <section className="profile-section">
+        <AccountCard />
+      </section>
+
+      <section className="profile-section">
         <h2 className="section-title">📊 Stats dashboard</h2>
         <div className="stats-grid">
           <div className="stat-card">
@@ -224,10 +228,6 @@ export default function Profile() {
             ))}
           </div>
         )}
-      </section>
-
-      <section className="profile-section">
-        <AccountCard />
       </section>
 
       <section className="profile-section">
@@ -391,6 +391,7 @@ function BadgeSheet({ badge, progress, onClose }: { badge: BadgeDef; progress: P
   return (
     <Sheet onClose={onClose}>
       <div className="badge-sheet">
+        <div className="sheet-eyebrow">🎖️ Badge</div>
         <div className={`badge-sheet-hero ${earned ? 'badge-sheet-hero-earned' : ''}`}>
           <div className="badge-sheet-emoji">{earned ? badge.emoji : '🔒'}</div>
           <h3 className="badge-sheet-name">{badge.name}</h3>

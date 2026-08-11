@@ -75,7 +75,7 @@ export default function Home() {
             <span className="home-action-emoji">🎲</span>
             <span className="home-action-main">
               <span className="home-action-title">I'm bored</span>
-              <span className="home-action-sub">The wizard picks for you</span>
+              <span className="home-action-sub">Scroll the quest feed — shuffle for surprises</span>
             </span>
           </button>
           <button className="home-action" onClick={() => navigate('/builder')}>
