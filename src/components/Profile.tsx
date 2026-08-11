@@ -1,19 +1,28 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CATEGORY_META, HOME_BASES, PROVINCES, type Category, type ProvinceId } from '../data/quests'
 import { BADGES, completedCountByProvince, levelProgress, playerStats, rankFromXp, totalCompleted, totalQuestsInProvince, type BadgeDef, type Progress } from '../lib/game'
 import { useGame } from '../lib/store'
 import { checkForUpdate, downloadAndInstall, getCurrentVersion, isAndroid, type UpdateInfo } from '../lib/updater'
 import { getAccountInfo, onAuthChange, signOutAccount, type AccountInfo } from '../lib/sync'
+import EditProfile from './EditProfile'
 import SignIn from './SignIn'
 import { Bar, Sheet } from './ui'
 
 const LEVEL_EMOJI = ['🌱', '🌿', '🔥', '⚡', '🌟', '💎', '👑', '🦁', '🚀', '🌍', '🏆', '🇿🇦']
 
 export default function Profile() {
-  const { state, playerName, setPlayerName, homeBaseId, setHomeBaseId, startPlace, setStartPlace } = useGame()
-  const [editingName, setEditingName] = useState(false)
-  const [nameDraft, setNameDraft] = useState(playerName)
+  const { state, playerName, homeBaseId, setHomeBaseId, startPlace, setStartPlace } = useGame()
+  const [showEditProfile, setShowEditProfile] = useState(false)
   const [selectedBadge, setSelectedBadge] = useState<BadgeDef | null>(null)
+  const [savedToast, setSavedToast] = useState<string | null>(null)
+  const toastTimer = useRef<number | null>(null)
+
+  const usernameSaved = (name: string) => {
+    setShowEditProfile(false)
+    setSavedToast(name)
+    if (toastTimer.current) window.clearTimeout(toastTimer.current)
+    toastTimer.current = window.setTimeout(() => setSavedToast(null), 2600)
+  }
 
   const progress = levelProgress(state.xp)
   const levelEmoji = LEVEL_EMOJI[Math.min(progress.level - 1, LEVEL_EMOJI.length - 1)]
@@ -33,11 +42,6 @@ export default function Profile() {
   const hoursText =
     totalMin === 0 ? '0 m' : totalMin >= 60 ? `${Math.floor(totalMin / 60)} h${totalMin % 60 ? ` ${totalMin % 60} m` : ''}` : `${totalMin} m`
 
-  const saveName = () => {
-    setPlayerName(nameDraft.trim() || 'SideQuester')
-    setEditingName(false)
-  }
-
   return (
     <div className="page profile">
       <header className="page-head">
@@ -48,18 +52,17 @@ export default function Profile() {
       <section className="player-card">
         <div className="player-avatar">{levelEmoji}</div>
         <div className="player-info">
-          {editingName ? (
-            <div className="name-edit">
-              <input value={nameDraft} onChange={(e) => setNameDraft(e.target.value)} maxLength={20} autoFocus />
-              <button className="name-save" onClick={saveName}>
-                ✓
-              </button>
-            </div>
-          ) : (
-            <button className="player-name" onClick={() => { setNameDraft(playerName); setEditingName(true) }} title="Tap to edit">
-              {playerName} ✏️
+          <div className="player-name-row">
+            <span className="player-name">@{playerName}</span>
+            <button
+              className="player-edit"
+              onClick={() => setShowEditProfile(true)}
+              title="Edit username"
+              aria-label="Edit username"
+            >
+              ✏️
             </button>
-          )}
+          </div>
           <div className="player-level">
             Level {progress.level} · <span className="player-streak">🔥 {state.streak}-day streak</span>
           </div>
@@ -183,6 +186,11 @@ export default function Profile() {
         <BadgeSheet badge={selectedBadge} progress={gameProgress} onClose={() => setSelectedBadge(null)} />
       )}
 
+      {showEditProfile && <EditProfile onClose={() => setShowEditProfile(false)} onSaved={usernameSaved} />}
+      {savedToast && (
+        <div className="account-toast">✓ Username updated — your friends now see @{savedToast}</div>
+      )}
+
       <section className="profile-section">
         <h2 className="section-title">📍 Home base</h2>
         {startPlace ? (
@@ -252,9 +260,20 @@ export default function Profile() {
 }
 
 function AccountCard() {
+  const { playerName } = useGame()
   const [account, setAccount] = useState<AccountInfo | null>(null)
   const [loading, setLoading] = useState(true)
   const [showSignIn, setShowSignIn] = useState(false)
+  const [showEditProfile, setShowEditProfile] = useState(false)
+  const [savedToast, setSavedToast] = useState<string | null>(null)
+  const toastTimer = useRef<number | null>(null)
+
+  const usernameSaved = (name: string) => {
+    setShowEditProfile(false)
+    setSavedToast(name)
+    if (toastTimer.current) window.clearTimeout(toastTimer.current)
+    toastTimer.current = window.setTimeout(() => setSavedToast(null), 2600)
+  }
 
   const load = async () => {
     setLoading(true)
@@ -290,12 +309,20 @@ function AccountCard() {
           <p className="update-card-version">
             ✅ Signed in as <b>{account.email ?? 'connected user'}</b>
           </p>
+          <p className="update-card-user">
+            👤 Username: <b>@{playerName}</b>
+          </p>
           <p className="update-card-status" style={{ fontSize: 12, color: 'var(--muted)' }}>
             Your stats are synced to your account — they survive reinstalls and work on any device.
           </p>
-          <button className="update-btn" onClick={() => void doSignOut()}>
-            🚪 Sign out
-          </button>
+          <div className="account-actions">
+            <button className="update-btn" onClick={() => setShowEditProfile(true)}>
+              ✏️ Edit profile
+            </button>
+            <button className="update-btn update-btn-danger" onClick={() => void doSignOut()}>
+              🚪 Sign out
+            </button>
+          </div>
         </>
       ) : (
         <>
@@ -311,6 +338,10 @@ function AccountCard() {
         </>
       )}
       {showSignIn && <SignIn onClose={() => setShowSignIn(false)} />}
+      {showEditProfile && <EditProfile onClose={() => setShowEditProfile(false)} onSaved={usernameSaved} />}
+      {savedToast && (
+        <div className="account-toast">✓ Username updated — your friends now see @{savedToast}</div>
+      )}
     </div>
   )
 }

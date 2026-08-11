@@ -1,5 +1,14 @@
 apply plugin: 'com.android.application'
 
+// Firebase Cloud Messaging (push notifications for new releases). The Google
+// services plugin generates FCM config from android/app/google-services.json,
+// which is project-specific and downloaded from the Firebase console. Only
+// apply it once that file exists, so the build keeps working before setup.
+def hasGoogleServices = file('google-services.json').exists()
+if (hasGoogleServices) {
+    apply plugin: 'com.google.gms.google-services'
+}
+
 // Release signing: reads android/keystore.properties (gitignored). The APK is
 // signed with a real key so Android doesn't flag it as an untrusted debug build.
 def keystoreProps = new Properties()

@@ -1,10 +1,13 @@
 import { useState } from 'react'
-import { sendPasswordReset, signInToAccount, upgradeToAccount } from '../lib/sync'
+import { ensureIdentity, isUsernameAvailable, sendPasswordReset, signInToAccount, upgradeToAccount, usernameError } from '../lib/sync'
+import { useGame } from '../lib/store'
 import Turnstile, { turnstileEnabled } from './Turnstile'
 import { Button, Sheet } from './ui'
 
 export default function SignIn({ onClose }: { onClose: () => void }) {
+  const { playerName, setPlayerName } = useGame()
   const [mode, setMode] = useState<'signin' | 'create'>('create')
+  const [username, setUsername] = useState(playerName)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPass, setShowPass] = useState(false)
@@ -42,6 +45,25 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
 
   const submit = async () => {
     setError(null)
+    let cleanName = ''
+    if (mode === 'create') {
+      cleanName = username.trim()
+      const nameInvalid = usernameError(cleanName)
+      if (nameInvalid) {
+        setError(nameInvalid)
+        return
+      }
+      // Usernames are unique — check availability before spending the captcha
+      // token, so a taken name never wastes an attempt.
+      const uid = await ensureIdentity()
+      if (uid && !(await isUsernameAvailable(uid, cleanName))) {
+        setError('That username is already taken — pick another.')
+        return
+      }
+      // The username is set the moment the account is created — it becomes
+      // your display name, synced to profiles for friends to find.
+      setPlayerName(cleanName)
+    }
     const cleanEmail = email.trim().toLowerCase()
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
       setError('Please enter a valid email address.')
@@ -92,7 +114,7 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
         <h2 className="signin-title">{mode === 'create' ? '⚡ Create your account' : '👋 Welcome back'}</h2>
         <p className="signin-sub">
           {mode === 'create'
-            ? 'Your quests, stats and friends sync to your account — so they survive reinstalls and follow you to any device.'
+            ? 'Pick a username and sign up — your quests, stats and friends then sync to your account and follow you to any device.'
             : 'Sign in to pick up your quests, stats and friends right where you left off.'}
         </p>
 
@@ -143,6 +165,26 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
           </>
         ) : (
           <form className="signin-form" onSubmit={(e) => { e.preventDefault(); void submit() }}>
+            {mode === 'create' && (
+              <>
+                <label className="signin-label" htmlFor="sq-username">
+                  Username
+                </label>
+                <input
+                  id="sq-username"
+                  className="signin-input"
+                  type="text"
+                  name="username"
+                  autoComplete="nickname"
+                  placeholder="Your quest name"
+                  maxLength={20}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  disabled={busy || done}
+                />
+              </>
+            )}
+
             <label className="signin-label" htmlFor="sq-email">
               Email
             </label>

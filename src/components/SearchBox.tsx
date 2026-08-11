@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ALL_QUESTS, CATEGORY_META, CHAINS, type Chain, type Quest } from '../data/quests'
 import { fmtCost, fmtDuration } from '../lib/game'
+import { taglineOfTheDay } from '../lib/taglines'
 import { searchGazetteer, searchOsm, type GazHit } from '../data/places'
 
 export interface PlaceHit {
@@ -185,6 +186,7 @@ export default function SearchBox({
         <div className="search-empty">
           Type to search the whole country — try <em>“Sandton”</em>, <em>“Big Red Barn”</em>, <em>“kota”</em> or{' '}
           <em>“waterfall”</em>.
+          <div className="empty-tagline">{taglineOfTheDay()}</div>
         </div>
       ) : (
         <div className="search-results">

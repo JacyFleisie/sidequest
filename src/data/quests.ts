@@ -79,6 +79,12 @@ export interface Quest {
   purpose?: string
   /** True when the quest has no real location — doable anywhere (e.g. social quests). */
   anywhere?: boolean
+  /** Creator info for user-made quests; absent/empty means an official quest or your own. */
+  ownerId?: string
+  ownerName?: string
+  ownerEmoji?: string
+  /** True when a community quest was auto-hidden after too many reports. */
+  hidden?: boolean
   completionLine: string
   xp: number
   trending?: boolean
@@ -1098,11 +1104,49 @@ const EXTRA: Quest[] = [
 
 export const ALL_QUESTS: Quest[] = [...QUESTS, ...EXTRA]
 
+// ── Custom-quest registry ───────────────────────────────────────────────────
+// User-made quests aren't in the static ALL_QUESTS array — they're loaded from
+// the store / Supabase at runtime. Every questById() call site (ActiveQuest,
+// completion, sync, …) resolves through this registry, so a custom quest flows
+// through the whole pipeline exactly like an official one.
+const customRegistry = new Map<string, Quest>()
+
+/** Upserts runtime quests (yours + friends') into the quest lookup. */
+export const registerCustomQuests = (quests: Quest[]): void => {
+  for (const q of quests) if (q?.id) customRegistry.set(q.id, q)
+}
+
+/** Removes a quest from the lookup (e.g. the owner deleted it). */
+export const unregisterCustomQuest = (id: string): void => {
+  customRegistry.delete(id)
+}
+
+/** Non-throwing lookup: official quests first, then the custom registry. */
+export const findQuest = (id: string): Quest | undefined =>
+  ALL_QUESTS.find((x) => x.id === id) ?? customRegistry.get(id)
+
 export const questById = (id: string): Quest => {
-  const quest = ALL_QUESTS.find((x) => x.id === id)
+  const quest = findQuest(id)
   if (!quest) throw new Error(`Unknown quest: ${id}`)
   return quest
 }
+
+// ── Region → province (used when shaping user-made anywhere-quests) ─────────
+const REGION_PROVINCE: Record<string, ProvinceId> = {
+  jhb: 'GP', pretoria: 'GP',
+  'cape-town': 'WC', stellenbosch: 'WC', hermanus: 'WC',
+  durban: 'KZN', pmb: 'KZN', margate: 'KZN', midlands: 'KZN', drakensberg: 'KZN',
+  gebeha: 'EC', jbay: 'EC', 'east-london': 'EC', 'wild-coast': 'EC', hogsback: 'EC',
+  'garden-route': 'WC', tsitsikamma: 'EC', knysna: 'WC',
+  bloemfontein: 'FS', parys: 'FS', 'golden-gate': 'FS',
+  kimberley: 'NC', mokala: 'NC', upington: 'NC', augrabies: 'NC', kgalagadi: 'NC', namaqualand: 'NC',
+  polokwane: 'LP', modjadji: 'LP', magoebaskloof: 'LP', mapungubwe: 'LP',
+  mbombela: 'MP', blyde: 'MP', graskop: 'MP', sudwala: 'MP', hazyview: 'MP', kruger: 'MP', dullstroom: 'MP',
+  rustenburg: 'NW', 'sun-city': 'NW', pilanesberg: 'NW', hartbeespoort: 'NW',
+}
+
+/** Best-effort province for a home-base region (cosmetic on custom quests). */
+export const regionProvince = (region: string): ProvinceId => REGION_PROVINCE[region] ?? 'GP'
 
 export interface ChainStats {
   durationMin: number

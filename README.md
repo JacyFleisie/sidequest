@@ -6,8 +6,9 @@
 
 **Your life is the main story. South Africa is your map.**
 
-A real-world adventure game for students — when the bell rings, or you've just had
-enough of class, grab your friends and go find a quest.
+A real-world adventure game that turns all of South Africa into your playground. A
+lunch break, a long weekend, or a road trip to nowhere — grab your friends and go find
+a quest.
 
 <br/>
 

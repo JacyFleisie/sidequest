@@ -34,3 +34,6 @@ android/app/src/main/assets/public/
 .freebuff/
 sidequest-release.keystore
 android/keystore.properties
+
+# Firebase: generated per-project from the Firebase console (see docs/fcm-setup.md)
+android/app/google-services.json

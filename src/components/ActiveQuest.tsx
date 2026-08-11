@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ALL_QUESTS, HOME_BASES, questById } from '../data/quests'
+import { HOME_BASES, findQuest, questById } from '../data/quests'
 import { fetchWeather, fmtDuration, getDevicePosition, haversineKm } from '../lib/game'
 import { useGame } from '../lib/store'
 import { Button, Sheet } from './ui'
@@ -193,4 +193,4 @@ export default function ActiveQuest() {
   )
 }
 
-const questDuration = (id: string): number => ALL_QUESTS.find((q) => q.id === id)?.durationMin ?? 60
+const questDuration = (id: string): number => findQuest(id)?.durationMin ?? 60

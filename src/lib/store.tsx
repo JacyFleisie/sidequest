@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { ALL_QUESTS, CHAINS, questById, type Chain, type Quest } from '../data/quests'
+import { ALL_QUESTS, CHAINS, findQuest, questById, registerCustomQuests, unregisterCustomQuest, type Chain, type Quest } from '../data/quests'
 import { levelFromXp, rankFromXp } from './game'
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -85,8 +85,9 @@ export interface PersistedState {
   activeSession: ActiveSession | null
   lastCompletion: LastCompletion | null
   seenIntro: boolean
-  onboarded: boolean
   customChains: CustomChain[]
+  /** User-made anywhere-quests (offline-first; synced to Supabase when signed in). */
+  customQuests: Quest[]
   friends: Friend[]
   recentGenerated: string[] // quest ids suggested lately, so the generator avoids repeats
 }
@@ -104,8 +105,8 @@ const DEFAULT_STATE: PersistedState = {
   activeSession: null,
   lastCompletion: null,
   seenIntro: false,
-  onboarded: false,
   customChains: [],
+  customQuests: [],
   friends: [],
   recentGenerated: [],
 }
@@ -117,10 +118,7 @@ const load = (): PersistedState => {
     const raw = localStorage.getItem(KEY)
     if (!raw) return DEFAULT_STATE
     const parsed = JSON.parse(raw) as Partial<PersistedState>
-    // Existing installs (no `onboarded` field) skip onboarding — only a brand
-    // new install, or one where onboarding was explicitly left unfinished,
-    // shows the flow.
-    return { ...DEFAULT_STATE, ...parsed, onboarded: parsed.onboarded !== false }
+    return { ...DEFAULT_STATE, ...parsed }
   } catch {
     return DEFAULT_STATE
   }
@@ -157,12 +155,14 @@ interface GameApi {
   setHomeBaseId: (id: string) => void
   setStartPlace: (place: StartPlace | null) => void
   setSeenIntro: () => void
-  setOnboarded: () => void
   customChains: CustomChain[]
+  customQuests: Quest[]
   recentGenerated: string[]
   recordGenerated: (questIds: string[]) => void
   saveCustomChain: (chain: CustomChain) => void
   deleteCustomChain: (id: string) => void
+  saveCustomQuest: (quest: Quest) => void
+  deleteCustomQuest: (id: string) => void
   startCustomChain: (chain: CustomChain) => void
   friends: Friend[]
   addFriend: (friend: Friend) => void
@@ -246,6 +246,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         })),
 
       customChains: state.customChains,
+      customQuests: state.customQuests ?? [],
       friends: state.friends,
 
       addFriend: (friend: Friend) =>
@@ -269,6 +270,23 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
 
       deleteCustomChain: (id: string) =>
         setState((s) => ({ ...s, customChains: s.customChains.filter((c) => c.id !== id) })),
+
+      saveCustomQuest: (quest: Quest) => {
+        registerCustomQuests([quest])
+        setState((s) => {
+          const list = s.customQuests ?? []
+          const exists = list.some((c) => c.id === quest.id)
+          return {
+            ...s,
+            customQuests: exists ? list.map((c) => (c.id === quest.id ? quest : c)) : [quest, ...list].slice(0, 100),
+          }
+        })
+      },
+
+      deleteCustomQuest: (id: string) => {
+        unregisterCustomQuest(id)
+        setState((s) => ({ ...s, customQuests: (s.customQuests ?? []).filter((c) => c.id !== id) }))
+      },
 
       startCustomChain: (chain: CustomChain) => {
         const quests = chain.questIds.map((id) => ALL_QUESTS.find((x) => x.id === id)).filter((x): x is Quest => Boolean(x))
@@ -325,7 +343,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         const after = levelFromXp(state.xp + awarded)
 
         let line = 'You completed a SideQuest. The map of South Africa thanks you.'
-        if (session.kind === 'quest') line = questById(session.steps[0].questId).completionLine
+        if (session.kind === 'quest') {
+          line =
+            findQuest(session.steps[0].questId)?.completionLine ??
+            'Quest complete. You did the thing. Legend.'
+        }
         if (session.kind === 'chain' && session.sourceChainId) {
           const chain = CHAINS.find((c) => c.id === session.sourceChainId)
           if (chain) line = chain.completionLine
@@ -380,7 +402,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         }),      setPlayerName: (name: string) => setState((s) => ({ ...s, playerName: name })),
       setHomeBaseId: (id: string) => setState((s) => ({ ...s, homeBaseId: id })),
       setStartPlace: (place: StartPlace | null) => setState((s) => ({ ...s, startPlace: place })),
-      setOnboarded: () => setState((s) => ({ ...s, onboarded: true })),
 
       setSeenIntro: () => setState((s) => ({ ...s, seenIntro: true })),
     }

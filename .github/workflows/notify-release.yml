@@ -1,0 +1,35 @@
+name: Notify app of new release
+
+# Pushes an FCM notification to every registered phone whenever a release is
+# published, so the update banner on the device is pre-announced even when the
+# app is closed. Requires three repo secrets (Settings → Secrets and variables
+# → Actions):
+#   SUPABASE_PROJECT_REF     the subdomain of your Supabase URL (e.g. abcdefgh)
+#   SUPABASE_ANON_KEY        the publishable anon key (public by design)
+#   UPDATE_WEBHOOK_SECRET    a random string shared with the edge function
+#                            (Supabase → Edge Functions → notify-update → Secrets)
+on:
+  release:
+    types: [published]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Call notify-update edge function
+        env:
+          FUNC_URL: https://${{ secrets.SUPABASE_PROJECT_REF }}.supabase.co/functions/v1/notify-update
+          ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          WEBHOOK_SECRET: ${{ secrets.UPDATE_WEBHOOK_SECRET }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_BODY: ${{ github.event.release.body }}
+        run: |
+          jq -n --arg tag "$RELEASE_TAG" --arg notes "$RELEASE_BODY" '{tag: $tag, notes: $notes}' \
+            | curl -fsS -X POST "$FUNC_URL" \
+              -H "Authorization: Bearer $ANON_KEY" \
+              -H "Content-Type: application/json" \
+              -H "x-webhook-secret: $WEBHOOK_SECRET" \
+              -d @- \
+              && echo "FCM notification sent"

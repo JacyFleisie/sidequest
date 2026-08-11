@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { HOME_BASES } from '../data/quests'
 import { levelProgress, rankFromXp, totalCompleted, type Progress } from '../lib/game'
+import { taglineOfTheDay } from '../lib/taglines'
 import { useGame } from '../lib/store'
 
 export default function Home() {
@@ -28,10 +29,10 @@ export default function Home() {
           SIDEQUEST <span className="intro-flag">🇿🇦</span>
         </h1>
         <div className="intro-byline">by Jacy</div>
-        <p className="intro-tagline">Your next adventure is closer than your next class.</p>
+        <p className="intro-tagline">Life is the main quest. Go find the side quests.</p>
         <p className="home-hero-sub">
-          When the bell rings — or you've just had enough of class — go find a quest: a kota in Soweto, a waterfall in
-          KZN, a park you've never heard of.
+          A lunch break, a long weekend, a road trip — wherever you are, there's a quest waiting: a kota in Soweto, a
+          waterfall in KZN, a park you've never heard of.
         </p>
       </header>
 
@@ -71,8 +72,8 @@ export default function Home() {
               <span className="home-action-sub">Browse every quest on the map</span>
             </span>
           </button>
-          <button className="home-action" onClick={() => navigate('/generate')}>
-            <span className="home-action-emoji">🎲</span>
+          <button className="home-action" onClick={() => navigate('/feed')}>
+            <span className="home-action-emoji">📜</span>
             <span className="home-action-main">
               <span className="home-action-title">I'm bored</span>
               <span className="home-action-sub">Scroll the quest feed — shuffle for surprises</span>
@@ -97,6 +98,7 @@ export default function Home() {
 
       <p className="home-foot">
         Home base: {startPlace?.label ?? HOME_BASES.find((b) => b.id === homeBaseId)?.label ?? homeBaseId} · Made in South Africa 🇿🇦
+        <span className="home-tagline">{taglineOfTheDay()}</span>
       </p>
     </div>
   )

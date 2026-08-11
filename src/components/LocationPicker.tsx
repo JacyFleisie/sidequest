@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { searchGazetteer, searchOsm, type GazHit } from '../data/places'
+import { taglineOfTheDay } from '../lib/taglines'
 import type { StartPlace } from '../lib/store'
 
 export default function LocationPicker({
@@ -103,7 +104,10 @@ export default function LocationPicker({
           </div>
 
           {query.trim() === '' ? (
-            <div className="loc-empty">Try <em>“Midrand”</em>, <em>“St Lucia”</em>, <em>“UCT”</em> or an airport code.</div>
+            <div className="loc-empty">
+              Try <em>“Midrand”</em>, <em>“St Lucia”</em>, <em>“UCT”</em> or an airport code.
+              <div className="empty-tagline">{taglineOfTheDay()}</div>
+            </div>
           ) : (
             <div className="loc-results">
               {allHits.map((h, i) => (

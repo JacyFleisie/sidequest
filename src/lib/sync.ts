@@ -1,6 +1,6 @@
 import { Capacitor } from '@capacitor/core'
 import { supabase, supabaseConfigured } from './supabase'
-import { ALL_QUESTS } from '../data/quests'
+import { ALL_QUESTS, findQuest, type Category, type Vibe } from '../data/quests'
 import { BADGES, levelFromXp, type Progress } from './game'
 import { acquireTurnstileToken, turnstileEnabled } from '../components/Turnstile'
 import type { CompletedEntry, PersistedState } from './store'
@@ -110,7 +110,7 @@ export async function syncCompletions(uid: string, state: PersistedState): Promi
   const chainRows: { profile_id: string; chain_id: string; completed_at: string; xp: number; is_custom: boolean }[] = []
 
   for (const [id, entry] of Object.entries(state.completed)) {
-    if (ALL_QUESTS.some((q) => q.id === id)) {
+    if (ALL_QUESTS.some((q) => q.id === id) || (state.customQuests ?? []).some((c) => c.id === id)) {
       questRows.push({
         profile_id: uid,
         quest_id: id,
@@ -337,6 +337,43 @@ export interface FoundPerson {
   level: number
 }
 
+/**
+ * Case-insensitive username availability check (profiles are publicly readable
+ * by design, so a plain query works). Returns true when no one else holds the
+ * name; offline/unconfigured returns true and the DB unique index remains the
+ * backstop.
+ */
+export async function isUsernameAvailable(uid: string, name: string): Promise<boolean> {
+  if (!supabase) return true
+  try {
+    const { data } = await supabase
+      .from('profiles')
+      .select('id')
+      .ilike('name', name.trim())
+      .neq('id', uid)
+      .limit(1)
+    return (data ?? []).length === 0
+  } catch {
+    return true
+  }
+}
+
+/** Username rules shared by the sign-up and edit-profile forms. */
+export const USERNAME_RULES = {
+  min: 2,
+  max: 20,
+  pattern: /^[a-zA-Z0-9 _.'-]+$/,
+} as const
+
+export const usernameError = (name: string): string | null => {
+  const n = name.trim()
+  if (n.length < USERNAME_RULES.min || n.length > USERNAME_RULES.max)
+    return `Username needs to be ${USERNAME_RULES.min}–${USERNAME_RULES.max} characters.`
+  if (!USERNAME_RULES.pattern.test(n))
+    return 'Usernames can only use letters, numbers, spaces, _ . - \' .'
+  return null
+}
+
 /** Searches real profiles by name (profiles are publicly readable by design). */
 export async function findPeople(query: string, myUid: string): Promise<FoundPerson[]> {
   if (!supabase || !query.trim()) return []
@@ -353,6 +390,206 @@ export async function findPeople(query: string, myUid: string): Promise<FoundPer
   } catch {
     return []
   }
+}
+
+// ── Custom quests (user-made anywhere-quests) ───────────────────────────────
+
+export interface CustomQuestDraft {
+  title: string
+  description: string
+  emoji: string
+  category: Category
+  vibe: Vibe[]
+  durationMin: number
+  cost: number
+  players: [number, number]
+  difficulty: number
+  xp: number
+  tags: string[]
+}
+
+/** A custom quest row with its creator's profile, as served by the feed. */
+export interface CustomQuestRow {
+  id: string
+  ownerId: string
+  ownerName: string
+  ownerEmoji: string
+  draft: CustomQuestDraft
+  createdAt: string
+  /** True once the quest reached the report threshold and was auto-hidden. */
+  hidden: boolean
+}
+
+/** Publishes a custom quest to Supabase. The id is app-generated so the local
+ * copy and the DB row always match. */
+export async function saveCustomQuest(
+  uid: string,
+  id: string,
+  draft: CustomQuestDraft,
+): Promise<boolean> {
+  if (!supabase) return false
+  const { error } = await supabase.from('custom_quests').insert({
+    id,
+    profile_id: uid,
+    title: draft.title,
+    description: draft.description,
+    emoji: draft.emoji,
+    category: draft.category,
+    vibe: draft.vibe,
+    duration_min: draft.durationMin,
+    cost: draft.cost,
+    players_min: draft.players[0],
+    players_max: draft.players[1],
+    difficulty: draft.difficulty,
+    xp: draft.xp,
+    tags: draft.tags,
+  })
+  if (error) {
+    console.warn('[sync] custom quest save failed', error.message)
+    return false
+  }
+  return true
+}
+
+/** Fetches community quests (platform-wide — anyone can see them), newest
+ * first. Auto-hidden quests are excluded — except the user's own, so a
+ * creator can still see (and delete) their hidden quest. Empty when
+ * offline/unconfigured. */
+export async function fetchCustomQuests(uid: string): Promise<CustomQuestRow[]> {
+  if (!supabase) return []
+  try {
+    const { data, error } = await supabase
+      .from('custom_quests')
+      .select(
+        'id,profile_id,title,description,emoji,category,vibe,duration_min,cost,players_min,players_max,difficulty,xp,tags,created_at,hidden',
+      )
+      .or(`hidden.eq.false,profile_id.eq.${uid}`)
+      .order('created_at', { ascending: false })
+      .limit(100)
+    if (error || !data || data.length === 0) return []
+
+    const ownerIds = [...new Set(data.map((r) => r.profile_id))]
+    const { data: owners } = await supabase
+      .from('profiles')
+      .select('id,name,emoji')
+      .in('id', ownerIds)
+    const ownerMap = new Map((owners ?? []).map((o) => [o.id, o]))
+
+    return data.map((r) => ({
+      id: r.id,
+      ownerId: r.profile_id,
+      ownerName: ownerMap.get(r.profile_id)?.name ?? 'SideQuester',
+      ownerEmoji: ownerMap.get(r.profile_id)?.emoji ?? '🌱',
+      createdAt: r.created_at,
+      hidden: Boolean(r.hidden),
+      draft: {
+        title: r.title,
+        description: r.description ?? '',
+        emoji: r.emoji ?? '✨',
+        category: r.category as Category,
+        vibe: (r.vibe ?? []) as Vibe[],
+        durationMin: r.duration_min,
+        cost: r.cost,
+        players: [r.players_min, r.players_max] as [number, number],
+        difficulty: r.difficulty,
+        xp: r.xp,
+        tags: (r.tags ?? []) as string[],
+      },
+    }))
+  } catch {
+    return []
+  }
+}
+
+/** Deletes one of the player's own custom quests. */
+export async function deleteCustomQuest(uid: string, id: string): Promise<boolean> {
+  if (!supabase) return false
+  const { error } = await supabase
+    .from('custom_quests')
+    .delete()
+    .eq('id', id)
+    .eq('profile_id', uid)
+  if (error) console.warn('[sync] custom quest delete failed', error.message)
+  return !error
+}
+
+/**
+ * Reports a friend's custom quest. Each user can report a quest once — the
+ * quest auto-hides at REPORT_THRESHOLD reports (handled by a DB trigger).
+ * Returns 'ok' on a fresh report, 'duplicate' if this user already reported
+ * it (or it's their own quest), and 'error' on any failure.
+ */
+export async function reportCustomQuest(
+  uid: string,
+  questId: string,
+): Promise<'ok' | 'duplicate' | 'error'> {
+  if (!supabase) return 'error'
+  try {
+    const { error } = await supabase.from('quest_reports').insert({
+      id: crypto.randomUUID(),
+      custom_quest_id: questId,
+      reporter_id: uid,
+    })
+    if (!error) return 'ok'
+    if (/duplicate key|unique/i.test(error.message)) return 'duplicate'
+    if (/row-level security|policy/i.test(error.message)) return 'duplicate'
+    console.warn('[sync] report failed', error.message)
+    return 'error'
+  } catch {
+    return 'error'
+  }
+}
+
+/** Looks up one profile's display name (for notification text). */
+export async function fetchProfileName(uid: string): Promise<string | null> {
+  if (!supabase) return null
+  try {
+    const { data } = await supabase.from('profiles').select('name').eq('id', uid).maybeSingle()
+    return data?.name ?? null
+  } catch {
+    return null
+  }
+}
+
+/** Subscribes to custom-quest changes (platform-wide), so a new community
+ * quest appears in the feed without a manual refresh. */
+export function subscribeCustomQuests(cb: () => void): () => void {
+  if (!supabase) return () => {}
+  const channel = supabase
+    .channel(`custom-quests`)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'custom_quests' }, cb)
+    .subscribe()
+  return () => {
+    supabase?.removeChannel(channel)
+  }
+}
+
+/** Subscribes to new challenges aimed at this player (RLS-scoped), so an
+ * incoming dare surfaces the moment it's sent — wherever the app is open. */
+export function subscribeChallenges(uid: string, cb: () => void): () => void {
+  if (!supabase) return () => {}
+  const channel = supabase
+    .channel(`challenges-${uid}`)
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'challenges', filter: `opponent_id=eq.${uid}` },
+      cb,
+    )
+    .subscribe()
+  return () => {
+    supabase?.removeChannel(channel)
+  }
+}
+
+/** Registers (or refreshes) this device's FCM token for push notifications. */
+export async function savePushToken(uid: string, token: string): Promise<boolean> {
+  if (!supabase) return false
+  const { error } = await supabase.from('push_tokens').upsert(
+    { profile_id: uid, token, platform: 'android', updated_at: new Date().toISOString() },
+    { onConflict: 'profile_id,token' },
+  )
+  if (error) console.warn('[sync] push token save failed', error.message)
+  return !error
 }
 
 // ── Realtime ────────────────────────────────────────────────────────────────
@@ -437,15 +674,30 @@ export async function fetchFriendFeed(uid: string): Promise<FeedEvent[]> {
       .in('id', friendIds)
     const profMap = new Map((profs ?? []).map((p) => [p.id, p]))
 
+    // Custom-quest completions carry app-generated uuids — resolve their titles
+    // from the custom_quests table (RLS scopes to friends' quests; anything left
+    // unknown falls back to a generic label).
+    const unknown = completions
+      .filter((c) => !findQuest(c.quest_id))
+      .map((c) => c.quest_id)
+    const titleMap = new Map<string, string>()
+    if (unknown.length > 0) {
+      const { data: custom } = await supabase
+        .from('custom_quests')
+        .select('id,title')
+        .in('id', unknown)
+      for (const c of custom ?? []) titleMap.set(c.id, c.title)
+    }
+
     return completions.map((c) => {
-      const q = ALL_QUESTS.find((x) => x.id === c.quest_id)
+      const q = findQuest(c.quest_id)
       const prof = profMap.get(c.profile_id)
       return {
         profileId: c.profile_id,
         name: prof?.name ?? 'A friend',
         emoji: prof?.emoji ?? '🧭',
         questId: c.quest_id,
-        questTitle: q?.title ?? c.quest_id,
+        questTitle: q?.title ?? titleMap.get(c.quest_id) ?? 'A quest',
         city: q?.city ?? '',
         completedAt: c.completed_at,
         xp: c.xp,

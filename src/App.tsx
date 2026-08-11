@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Capacitor } from '@capacitor/core'
 import { App as CapApp } from '@capacitor/app'
-import { Navigate, Route, Routes, useSearchParams } from 'react-router-dom'
+import { Navigate, Route, Routes, useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from './lib/supabase'
 import BottomNav from './components/BottomNav'
 import ChainBuilder from './components/ChainBuilder'
@@ -9,13 +9,13 @@ import Friends from './components/Friends'
 import Generator from './components/Generator'
 import Home from './components/Home'
 import MapScreen from './components/MapScreen'
-import Onboarding from './components/Onboarding'
 import ActiveQuest from './components/ActiveQuest'
 import CompletionModal from './components/CompletionModal'
 import Profile from './components/Profile'
 import ResetPassword from './components/ResetPassword'
 import UpdateBanner from './components/UpdateBanner'
 import UpdatedNotice from './components/UpdatedNotice'
+import { initPushNotifications, setPushActionHandler } from './lib/push'
 import { QuestSheet } from './components/QuestSheet'
 import { ALL_QUESTS, type Chain, type Quest } from './data/quests'
 import { decodeChainShare } from './lib/share'
@@ -23,7 +23,11 @@ import { useGame } from './lib/store'
 import {
   completeMatchingChallenges,
   ensureIdentity,
+  fetchIncomingChallenges,
+  fetchIncomingRequests,
+  fetchProfileName,
   handleAuthCallback,
+  subscribeChallenges,
   subscribeIncomingRequests,
   syncCompletions,
   syncProfile,
@@ -31,8 +35,18 @@ import {
 
 export default function App() {
   const { state } = useGame()
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const [recovery, setRecovery] = useState(false)
+
+  // Realtime notification toasts — surfaced wherever you are in the app, and
+  // tapping one jumps to the Friends screen.
+  const [toasts, setToasts] = useState<{ id: number; text: string }[]>([])
+  const pushToast = useCallback((text: string) => {
+    const id = Date.now() + Math.random()
+    setToasts((t) => [...t, { id, text }].slice(-3))
+    window.setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 6000)
+  }, [])
 
   // ── Password reset: a recovery email link starts a recovery session ───────
   useEffect(() => {
@@ -50,6 +64,7 @@ export default function App() {
   const pushedRef = useRef(false)
   useEffect(() => {
     let unsub: (() => void) | null = null
+    let unsubChallenges: (() => void) | null = null
     let cancelled = false
     void (async () => {
       const uid = await ensureIdentity()
@@ -60,14 +75,44 @@ export default function App() {
       await syncCompletions(uid, state)
       await syncProfile(uid, state)
       pushedRef.current = true
+      // Register for FCM so releases, friend requests and challenges arrive
+      // even when the app is closed. Tapping a request/challenge push lands on
+      // the Friends tab (the in-app toast already covers the open-app case).
+      setPushActionHandler((data) => {
+        if (
+          data.type === 'friend-request' ||
+          data.type === 'challenge' ||
+          data.type === 'friend-accepted' ||
+          data.type === 'challenge-accepted'
+        ) {
+          navigate('/friends')
+        }
+      })
+      void initPushNotifications()
       unsub = subscribeIncomingRequests(uid, () => {
-        // A request arrived — refetch and surface it via the friends screen.
+        // A request arrived — surface it instantly, wherever the app is open.
         window.dispatchEvent(new CustomEvent('sidequest:friend-request'))
+        void (async () => {
+          const reqs = await fetchIncomingRequests(uid)
+          const latest = reqs[0]
+          if (latest) pushToast(`${latest.senderEmoji} ${latest.senderName} sent you a friend request`)
+        })()
+      })
+      unsubChallenges = subscribeChallenges(uid, () => {
+        // A new dare arrived — toast it immediately.
+        void (async () => {
+          const chals = await fetchIncomingChallenges(uid)
+          const latest = chals[0]
+          if (!latest) return
+          const name = await fetchProfileName(latest.challengerId)
+          pushToast(`⚔️ ${name ?? 'A friend'} challenged you to ${latest.targetType === 'chain' ? 'a quest chain' : 'a quest'}!`)
+        })()
       })
     })()
     return () => {
       cancelled = true
       unsub?.()
+      unsubChallenges?.()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -157,18 +202,30 @@ export default function App() {
 
   const challenger = searchParams.get('from')
 
-  // First launch: the onboarding flow owns the whole screen until the player
-  // picks a name and a home base.
-  if (!state.onboarded) return <Onboarding />
-
   return (
     <div className="app">
       <UpdateBanner />
       <UpdatedNotice />
+      <div className="notif-toasts">
+        {toasts.map((t) => (
+          <button
+            key={t.id}
+            className="notif-toast"
+            onClick={() => {
+              setToasts((x) => x.filter((y) => y.id !== t.id))
+              navigate('/friends')
+            }}
+          >
+            {t.text}
+          </button>
+        ))}
+      </div>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/map" element={<MapScreen />} />
-        <Route path="/generate" element={<Generator />} />
+        <Route path="/feed" element={<Generator />} />
+        {/* Old /generate links (shared quests, bookmarks) redirect to the new route. */}
+        <Route path="/generate" element={<Navigate to="/feed" replace />} />
         <Route path="/builder" element={<ChainBuilder />} />
         <Route path="/friends" element={<Friends />} />
         <Route path="/profile" element={<Profile />} />
