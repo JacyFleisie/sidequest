@@ -352,12 +352,15 @@ notification announcing each new release.
 **Cut a new release from your machine:**
 
 ```bash
-npm run release patch   # or: minor / major
+npm run release patch        # or: minor / major
+npm run release -- --silent  # silent update — keeps the previous release's notes
 ```
 
 This bumps the version everywhere, rebuilds the APK, tags `vX.Y.Z`, attaches
 the APK to a GitHub release, deploys the web build to Pages, and pushes an FCM
 notification to every registered phone. Your phone picks it up automatically.
+Use `--silent` for quiet bugfix/hotfix releases — the update installs, but the
+in-app "What's new" keeps showing the previous release's notes.
 
 ---
 

@@ -2,21 +2,33 @@
 # Ship a new SideQuest release end-to-end:
 #   bump version → build APK → commit → tag vX.Y.Z → push → GitHub release with the APK.
 # The phone app auto-detects the new release and offers to install it.
-# Usage: bash scripts/release.sh [major|minor|patch] ["commit message"]   (default: patch)
+# Usage: bash scripts/release.sh [major|minor|patch] ["commit message"] [--silent]   (default: patch)
 #
-# Release notes: if RELEASE_NOTES.md exists at the repo root it becomes the
-# GitHub release body — which is exactly what the in-app 'What's new' sheet
-# shows on the phone. Replace its contents before each release so the notes
-# describe this version. Without the file, notes are auto-generated from the
-# commits since the previous tag.
+# --silent: reuse the previous release's notes as the release body, so the
+# in-app 'What's new' keeps showing the previous update's notes (for quiet
+# bugfix/hotfix releases). Without it, RELEASE_NOTES.md becomes the release
+# body — which is exactly what the in-app 'What's new' sheet shows on the
+# phone. Replace its contents before each release so the notes describe this
+# version. Without the file, notes are auto-generated from the commits since
+# the previous tag.
 set -e
 cd "$(dirname "$0")/.."
 
-LEVEL="${1:-patch}"
+LEVEL="patch"
+COMMIT_MSG=""
+SILENT=0
+for arg in "$@"; do
+  case "$arg" in
+    major|minor|patch) LEVEL="$arg" ;;
+    --silent) SILENT=1 ;;
+    *) COMMIT_MSG="$arg" ;;
+  esac
+done
+
 bash scripts/bump-version.sh "$LEVEL"
 
 V=$(node -p "require('./package.json').version")
-COMMIT_MSG="${2:-Release v$V}"
+COMMIT_MSG="${COMMIT_MSG:-Release v$V}"
 
 echo "==> Building APK (npm run apk)"
 npm run apk
@@ -33,7 +45,22 @@ echo "==> Pushing to GitHub"
 git push origin main --tags
 
 echo "==> Creating GitHub release"
-if [ -f RELEASE_NOTES.md ]; then
+if [ "$SILENT" = "1" ]; then
+  # Silent update: carry the previous release's notes forward so the in-app
+  # 'What's new' keeps showing the previous update instead of a fresh one.
+  PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+  if [ -n "$PREV_TAG" ] && gh release view "$PREV_TAG" --json body --jq .body > /tmp/sidequest-prev-notes.md 2>/dev/null && [ -s /tmp/sidequest-prev-notes.md ]; then
+    echo "   Silent update — reusing $PREV_TAG's notes as the release body."
+    gh release create "v$V" SideQuest.apk \
+      --title "SideQuest v$V" \
+      --notes-file /tmp/sidequest-prev-notes.md
+  else
+    echo "   No previous notes found — falling back to RELEASE_NOTES.md."
+    gh release create "v$V" SideQuest.apk \
+      --title "SideQuest v$V" \
+      --notes-file RELEASE_NOTES.md
+  fi
+elif [ -f RELEASE_NOTES.md ]; then
   echo "   Using RELEASE_NOTES.md as the release body (this is the in-app 'What's new')."
   gh release create "v$V" SideQuest.apk \
     --title "SideQuest v$V" \
