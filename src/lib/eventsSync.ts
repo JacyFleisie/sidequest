@@ -11,6 +11,7 @@
 // hand-written quests always remain as the fallback floor.
 // ─────────────────────────────────────────────────────────────────────────────
 import { registerCustomQuests, type Quest } from '../data/quests'
+import { isUpcomingEvent } from './game'
 
 // Public raw URL — no API key needed (the repo is public). Override in .env
 // with VITE_EVENTS_URL to point at a fork or a local dev copy.
@@ -97,9 +98,6 @@ const writeCache = (events: Quest[]) => {
   }
 }
 
-/** Whole days until an ISO deadline; negative when passed. */
-const daysUntil = (iso: string): number => Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000)
-
 /** Fetches the live events feed (cached 12h). Never throws — returns [] offline. */
 export async function fetchRemoteEvents(force = false): Promise<Quest[]> {
   const cached = readCache()
@@ -110,8 +108,8 @@ export async function fetchRemoteEvents(force = false): Promise<Quest[]> {
     const data = (await res.json()) as { events?: RemoteEventRow[] }
     const events = (data.events ?? [])
       .map(rowToQuest)
-      // Drop events whose date has passed (1-day grace so the countdown can say "today").
-      .filter((q) => !q.startsAt || daysUntil(q.startsAt) > -1)
+      // Drop past events AND events more than a year out — only upcoming ones.
+      .filter((q) => isUpcomingEvent(q))
     if (events.length > 0) writeCache(events)
     return events.length > 0 ? events : (cached ?? [])
   } catch {

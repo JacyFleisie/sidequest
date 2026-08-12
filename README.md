@@ -21,10 +21,10 @@ road trip to nowhere.
 
 <br/>
 
-[![Live demo](https://img.shields.io/badge/Live%20demo%20%E2%86%92-1f6feb?style=for-the-badge&logo=githubpages&logoColor=white)](https://jacyfleisie.github.io/sidequest)
-[![Download APK](https://img.shields.io/badge/Download%20APK-108c43?style=for-the-badge&logo=android&logoColor=white)](https://github.com/JacyFleisie/sidequest/releases/latest/download/SideQuest.apk)
+[![Live demo](https://img.shields.io/badge/Try%20the%20live%20demo%20%E2%86%92-1f6feb?style=for-the-badge&logo=githubpages&logoColor=white)](https://jacyfleisie.github.io/sidequest)
+[![Download APK](https://img.shields.io/badge/Download%20for%20Android-108c43?style=for-the-badge&logo=android&logoColor=white)](https://github.com/JacyFleisie/sidequest/releases/latest/download/SideQuest.apk)
 
-**Works in any browser** (live demo) **or as a real Android app** (APK).
+**Play it in any browser** (live demo, no install) **or as a real Android app.**
 
 </div>
 
@@ -34,10 +34,12 @@ road trip to nowhere.
 
 - [The Problem](#-the-problem)
 - [The Solution](#-the-solution)
+- [How It Works](#-how-it-works)
 - [Features](#-features)
 - [Screenshots](#-screenshots)
 - [Tech Stack](#-tech-stack)
 - [Architecture](#-architecture)
+- [Engineering Highlights](#-engineering-highlights)
 - [Getting Started](#-getting-started)
 - [Android App & Auto-Updates](#-android-app--auto-updates)
 - [Documentation](#-documentation)
@@ -52,18 +54,19 @@ road trip to nowhere.
 ## 🎯 The Problem
 
 South Africa is one of the most beautiful, weird and wonderful countries on
-Earth — yet most people only ever "see" it through a screen.
+Earth — yet most of us only ever "see" it through a screen.
 
 - **Discovery is passive.** Google Maps lists places, but it never makes you
-  *want* to go. A gorgeous waterfall in KZN stays a photo on a feed.
+  *want* to go. A waterfall in KZN, a kota in Soweto, a sunset at Camps Bay —
+  they stay photos on a feed instead of afternoons out.
 - **Boredom is real.** Students on a lunch break, a free afternoon, or a
   holiday have nowhere obvious to point their energy — so they scroll.
-- **Social apps are generic.** Global platforms don't know that a kota in
-  Soweto, a sunset at Camps Bay and a braai on Heritage Day are the actual
-  highlights of a South African week.
+- **Social apps are generic.** Global platforms don't know that a braai on
+  Heritage Day or a winter jazz festival in Joburg are the actual highlights of
+  a South African week.
 
-SideQuest exists to fix that: **the country is already the playground — we just
-need a reason to go.**
+SideQuest exists to fix that: **the country is already the playground — we
+just needed a reason to go.**
 
 ## ✅ The Solution
 
@@ -72,17 +75,30 @@ quests across all 9 provinces — from a kota hunt in Soweto and a sunset at Zoo
 Lake, to lion-watching in the Kruger and a waterfall in KZN. Every quest is a
 real place, pinned on a real map, waiting for you to actually show up.
 
-XP, levels, ranks, badges, friends and squads turn "going somewhere" into a
-game you play with your crew. Seasonal quests tied to real SA events (Braai
-Day, Comrades, Splashy Fen, the National Arts Festival…) keep the map alive all
-year — with an "Ends Sunday" countdown so you don't miss them. Real upcoming
-festivals, markets and motorsport events are quests too, grouped under 🎪
-Festival, 🛍️ Market and 🏎️ Automotive chips — with dates, entry fees and
-exactly where to buy tickets.
+XP, levels, ranks, **46 badges**, friends, squads and streaks turn "going
+somewhere" into a game you play with your crew. Seasonal quests tied to real SA
+events (Braai Day, Comrades, Splashy Fen, the National Arts Festival…) keep the
+map alive all year — with an "Ends Sunday" countdown so you don't miss them.
+And real upcoming festivals, markets and motorsport events are quests too —
+found **automatically, every night**, with dates, entry fees and exactly where
+to buy tickets.
 
 > **Every number you see is real.** No fake "X people loved this" counters —
-> ratings come from players who actually completed the quest, straight from the
-> database.
+> ratings come only from players who actually completed the quest, straight
+> from the database.
+
+## 🧭 How It Works
+
+1. **Pick your base.** Set your home from a 19-city picker or hit *Use my
+   location* — no sign-up required to play.
+2. **Pick a quest.** Browse the map, search any place in the country, or scroll
+   the Instagram-style feed filtered by category, budget, distance or date.
+3. **Actually go.** Quests are **GPS-gated** — you can only complete one when
+   your device is near the place. No completing quests from the couch.
+4. **Get rewarded.** XP, levels, ranks (Rookie → Explorer → Trailblazer →
+   Legend of SA), badges, streaks and stats — alone or with a squad (+20% XP).
+5. **Stay for the events.** The app finds new ticketed events by itself every
+   night, so there's always something happening this weekend.
 
 ---
 
@@ -93,79 +109,89 @@ The whole country as a dark game board with every quest pinned in its real
 location. **Search** finds any place or quest — local results first, then live
 OpenStreetMap for anything else — and flies you straight to it. The map
 **survives tile-server outages** by falling back to a backup source instead of
-crashing to a blank screen.
+crashing to a blank screen. Auto-discovered events stand out with **pulsing
+red LIVE pins** and their own filter chip.
 
 ### 📍 Location-first gameplay
-Set your base from a 19-city picker or hit **"Use my location"** — no API key
-needed. Quests are **GPS-gated**: you can only complete one when your device is
-within 5 km of every stop. No completing quests from the couch. Every quest
-shows a **live drive time** and one-tap **directions in Google Maps or Waze**.
+Quests are **GPS-gated**: you can only complete one when your device is within
+5 km of every stop. Every quest shows a **live drive time** and one-tap
+**directions in Google Maps or Waze**.
 
 ### 📜 The Quest Feed
 Scroll like it's Instagram — real places plus quests the whole community made
-up. Filter by category, vibe, "Anywhere", "Community", "Seasonal" or
-"Trending", pull down to reshuffle (which also fetches the freshest events),
-and jump straight into a quest. A dedicated **location picker** lets you
-browse quests from a different city than your own.
+up. Pull down to refresh (which also reshuffles and fetches the freshest
+events), and filter with one tap:
 
-**Real event chips** — 🎪 **Festival**, 🛍️ **Market** and 🏎️ **Automotive**
-chips narrow the feed to real calendar events (Aardklop, Joy of Jazz, the
-Pretoria Boeremark, Tarlton drag nights…). No chip selected = everything
-still shows. Dated events carry their date, entry fee, a **countdown** ("⏳ 2
-days left to get tickets", red when ≤ 3 days) and **direct links to every
-ticket seller** — Ticketmaster, Webtickets, Computicket, Ticketpro, Quicket,
-Howler, iTickets, Big Concerts and the festivals' own sites — so buying is
-one tap away, in person or online.
+- **Category** — Free, Chill, Food, Activity, Adventure, Event, Mystery
+- **Vibe** — chill, funny, social, competitive, romantic, chaotic, outdoors…
+- **Anywhere** — quests with no location, doable right now
+- **Community** — quests created by players, platform-wide
+- **Seasonal** — limited-time quests with live "Ends Sunday" countdowns
+- **🟥 Live** — ticketed sport, concerts & comedy from the nightly feed, with
+  a **📅 When** sub-filter: *This weekend* (Fri 5pm–Sun) or *This month*
+- **🎪 Festival / 🛍️ Market / 🏎️ Automotive** — real calendar events
+- **💰 Budget slider** — filter by price per person, with an adaptive range
+  that matches the priciest quest on offer
+- **📍 Feed location + radius** — browse quests near a *different* city, with
+  nearest-first sorting and ≤25 km / ≤100 km radius filters
+- **🔥 Trending** — the most-reviewed quests first
+
+Only **upcoming events** are ever shown — dated events more than ~6 months out
+are hidden everywhere, so the feed never reads like a year-ahead schedule.
 
 ### 🏆 Progress & Glory
 XP, levels and ranks — **Rookie → Explorer → Trailblazer → Legend of SA**.
-Daily streaks, a stats dashboard (km walked, quests per category, favourite
-province, total hours) and **18 badges** including Night Owl, Rain Warrior and
-the 10km Club. Tap any badge for its details and progress.
+Daily streaks, a stats dashboard (km covered, quests per category, favourite
+province, total hours) and **46 badges** — from Night Owl and Rain Warrior to
+the 10km Club, Golden Hour and South Africa Explorer. Tap any badge for its
+details and live progress toward the next one.
+
+### ✍️ Creator Titles
+Community quest authors earn vanity titles instead of money — *Quest Writer →
+Quest Curator → Quest Master → Quest Legend* — shown as a gold chip next to
+their name in the feed and tracked on the profile. Community quests are
+moderated: blocklist-checked, reportable, and auto-hidden after enough reports.
 
 ### 👥 Friends, Squads & Co-op
 Add your crew by username and watch real stats sync live. **Squads** bring a
 co-op layer: create a squad, invite friends, see the roster update in real
 time, and every member earns a **+20% XP bonus** on quests completed together.
-The Activity tab surfaces friends' quest completions and badge milestones as
+The Activity feed surfaces friends' quest completions and badge milestones as
 they happen.
 
 ### 🔧 Chain Builder
-Assemble your own multi-stop quest from the whole catalog, reorder stops, and
-share it as a link that carries the entire quest inside the URL.
+Assemble your own multi-stop quest from the whole catalog, reorder the stops,
+and share it as a link that carries the entire quest inside the URL.
 
 ### ⭐ Ratings & Reviews (real, moderated)
 After completing a quest you can **rate it 1–5 stars** and leave a tip — the
 database only accepts reviews from players who actually finished the quest.
-Comments are blocklist-checked, anyone can report a review, and a review
-auto-hides after 5 reports.
+Reviews are blocklist-checked, anyone can report one, and a review auto-hides
+after enough reports.
 
 ### ⏳ Seasonal Quests
 Limited-time quests tied to real SA events — Braai Day, the Soweto Food
 Festival, Rocking the Daisies, December holidays, Comrades, Splashy Fen, the
-National Arts Festival — with a live countdown ("Ends Sunday") in the feed,
-automatic removal once the event passes, and an "Ends in N days" pill on the
-quest sheet.
+National Arts Festival — with a live countdown in the feed and automatic
+removal once the event passes.
 
 ### 🎟️ Live Events — automatically discovered
 SideQuest finds new events **by itself**. Every morning a GitHub Actions cron
-(`.github/workflows/events-fetch.yml`) runs `scripts/fetch-events.mjs`, which
-pulls real, dated, ticketed events from free sources, pins them to real map
-coordinates (only events we can place accurately are kept), and publishes
-`public/events-remote.json`. The app fetches that feed at launch and on feed
-refresh, merges it into the feed with ticket links and countdowns, and caches
-it for 12 hours so it works offline.
+runs `scripts/fetch-events.mjs`, which pulls real, dated, ticketed events from
+free sources (the Howler homepage, plus an optional free Ticketmaster API key),
+pins them to real map coordinates — only events we can place accurately are
+kept — and publishes `public/events-remote.json`. The app pulls that feed at
+launch and on every refresh, merges it into the map and feed with ticket links,
+prices and countdowns, and caches it for 12 hours so it works offline.
 
-- **Sources:** the [Howler](https://www.howler.co.za/) homepage (no key —
-  featured festivals, nightlife, music) plus, optionally, the **Eventbrite
-  public API** — free and thousands of SA concerts, comedy and sport events.
-  Add a free token to unlock it:
-  - `EVENTBRITE_TOKEN` in `.env` (local) or as a GitHub Actions secret for the
-    nightly run — get one free at [eventbrite.com/platform](https://www.eventbrite.com/platform).
-- **Zero cost, zero keys required:** without any token the Howler feed alone
-  keeps events fresh; the app needs no API key to read the feed.
-- **Never stale, never wrong:** if a run fails, the previous feed is kept;
-  past events are dropped automatically.
+- **Tickets built in** — every ticketed event lists exactly where to buy:
+  Ticketmaster, Webtickets, Computicket, Ticketpro, Quicket, Howler, iTickets,
+  Big Concerts and the festivals' own sites — with a **countdown** ("⏳ 2 days
+  left to get tickets", red when ≤ 3 days) so you don't miss out.
+- **Zero cost, zero keys required** — without any token the Howler feed alone
+  keeps events fresh.
+- **Never stale, never wrong** — if a run fails, the previous feed is kept;
+  past and far-future events are dropped automatically.
 - Run it yourself anytime: `npm run fetch:events`.
 
 ---
@@ -191,10 +217,11 @@ it for 12 hours so it works offline.
 | Native shell | Capacitor 8 (`com.jacy.sidequest`) + FCM push notifications |
 | Backend | Supabase (Postgres) — accounts, profiles, friends, squads, reviews, custom quests, push tokens |
 | Auth | Supabase Auth — email + password, protected by Cloudflare Turnstile |
-| Realtime | Supabase Realtime (postgres_changes) — friend requests, feed, squads |
+| Realtime | Supabase Realtime (postgres_changes) — friend requests, activity feed, squads |
 | State | React context + `localStorage` (offline-first), synced to your account |
 | Styling | Hand-rolled CSS design tokens, mobile-first with a bottom nav |
-| CI/CD | GitHub Actions — Pages deploy, release notifications, **nightly live-events fetch** |
+| CI/CD | GitHub Actions — Pages deploy, release pipeline, **nightly live-events fetch** |
+| Notifications | Firebase Cloud Messaging — releases, friend requests, badges |
 
 ---
 
@@ -222,9 +249,9 @@ it for 12 hours so it works offline.
 
   LIVE EVENTS (automatic):
   nightly GitHub Actions cron ──▶ scripts/fetch-events.mjs
-       (Howler + optional Eventbrite, free)
+       (Howler + optional Ticketmaster, free)
             └──▶ public/events-remote.json ──▶ app pulls at launch,
-                 merged into the feed with tickets + countdowns
+                 merged into the map + feed with tickets & countdowns
 ```
 
 The app is **offline-first**: the full quest catalog ships in the bundle and
@@ -236,17 +263,45 @@ state. Nothing breaks when you drive through a dead zone.
 
 ```
 src/
-├── data/            # quests.ts (core + chains) · hangouts.ts · social.ts · seasonal.ts
-├── lib/             # game logic, badges, friends, squads, reviews, sync engine, store
+├── data/            # quests.ts · hangouts.ts · places.ts · events.ts · seasonal.ts · social.ts
+├── lib/             # game logic, 46 badges, creator tiers, friends, squads, reviews,
+│                    #   sync engine, events feed, store (offline-first state)
 ├── components/      # MapScreen, Generator (feed), Profile, QuestSheet, SquadPanel, …
 └── App.tsx          # routes + share-link handling + boot sync
 android/             # Capacitor native shell (custom updater plugin)
 supabase/
 ├── migrations/      # versioned schema — applied automatically via GitHub integration
 └── functions/       # edge functions: delete-account, notify-user, notify-update
-scripts/             # build-apk, bump-version, release, quest data checker
+scripts/             # build-apk, bump-version, release, quest data checker, events fetcher
 docs/                # database design + push notification setup
 ```
+
+---
+
+## 🏆 Engineering Highlights
+
+Things I'm proud of under the hood:
+
+- **GPS-gated completion integrity** — a quest only completes when your device
+  is physically at the location; there's no "complete from the couch" path.
+- **Offline-first sync engine** — idempotent, offline-safe sync to Postgres;
+  the game is fully playable with no connection and merges cleanly when you're
+  back online.
+- **A self-updating content pipeline** — the app's event catalog is *grown by
+  CI*: a nightly cron scrapes free sources, geocodes and validates every event,
+  and ships it to users as a static feed. Zero manual data entry, zero API
+  keys required to run.
+- **Data-quality tooling** — `npm run check:quests` validates all 377 quests
+  (missing provinces, out-of-SA coordinates, duplicate titles within 1 km) so
+  the map grows clean instead of messier.
+- **Real anti-gaming systems** — completion-gated reviews, blocklisted content,
+  report + auto-hide moderation, CAPTCHA-protected sign-up, row-level security
+  on every table.
+- **End-to-end release pipeline** — one command bumps the version everywhere,
+  rebuilds the APK, tags a release, deploys the web build, and pushes an FCM
+  notification to every phone.
+- **Resilient map** — tile-server failover so the map never dies with its
+  provider, and marker clustering tuned for low-mid Android devices.
 
 ---
 
@@ -321,7 +376,7 @@ notification to every registered phone. Your phone picks it up automatically.
 - **TypeScript strict** — `tsc -b` runs in CI before every deploy
 - **Quest data checker** — `npm run check:quests` flags missing provinces,
   coordinates outside SA, duplicate titles within 1 km, and unfillable quest
-  cards across all 335 quests
+  cards across all 377 quests
 - **Production build** — Vite build runs in the Pages workflow on every push
 - **E2E-verified features** — the sync engine (friends, squads, reviews,
   account deletion) is tested against the live database with throwaway
@@ -335,6 +390,7 @@ notification to every registered phone. Your phone picks it up automatically.
 - [x] Ratings & reviews (completion-gated, moderated)
 - [x] Squads — co-op XP bonus, live roster
 - [x] Seasonal quests tied to real SA events
+- [x] Auto-discovered live events (nightly pipeline)
 - [x] Account deletion (POPIA-friendly)
 - [ ] Google Play Store listing (kills sideload warnings + unlocks push reliability)
 - [ ] Localization — badge & rank names in isiZulu / Afrikaans
@@ -359,6 +415,8 @@ that all interactions are governed by our [Code of Conduct](CODE_OF_CONDUCT.md).
 - Sign-in is protected by **Cloudflare Turnstile** to block bots.
 - Your **GPS stays on-device** — quest completion is checked locally; only
   your chosen home base and quest stats ever sync.
+- **POPIA-friendly** — users can delete their account and all their data from
+  the Profile tab, wired end-to-end to the database.
 - Found a vulnerability? See [SECURITY.md](SECURITY.md) — and please don't
   open a public issue for it.
 

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ALL_QUESTS, CATEGORY_META, CHAINS, type Chain, type Quest } from '../data/quests'
+import { isUpcomingEvent } from '../lib/game'
 import { fmtCost, fmtDuration } from '../lib/game'
 import { taglineOfTheDay } from '../lib/taglines'
 import { searchGazetteer, searchOsm, type GazHit } from '../data/places'
@@ -66,6 +67,7 @@ export default function SearchBox({
   const questCities = useMemo(() => {
     const map = new Map<string, PlaceHit>()
     for (const quest of ALL_QUESTS) {
+      if (!isUpcomingEvent(quest)) continue // skip events that have passed or are too far out
       const key = `${quest.city}|${quest.province}`
       const existing = map.get(key)
       if (existing) existing.count += 1
@@ -88,6 +90,7 @@ export default function SearchBox({
     if (!q) return []
     const scored: { quest: Quest; score: number }[] = []
     for (const quest of ALL_QUESTS) {
+      if (!isUpcomingEvent(quest)) continue // hide passed / too-far-out events from results too
       const hay = [
         quest.title,
         quest.city,

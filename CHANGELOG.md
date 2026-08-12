@@ -7,11 +7,45 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
+- **🟥 Live + date filter** — the Live chip now combines with a "📅 When"
+  sub-filter: **This weekend** (Fri 5pm–Sun) or **This month**, so users can
+  find ticketed events happening soon; the active label reads "🟥 Live ·
+  this weekend" etc.
+- **💰 Budget slider in the feed** — a price filter (per person) with an
+  adaptive range: the slider's top end matches the priciest quest currently
+  in the feed (up to R1,000+ for live events), and dragging it live-filters
+  to "Up to R X" with the count updating instantly
+- **📅 Only upcoming events shown** — dated events more than ~6 months out
+  (KKNK, Comrades, Bastille, CT Jazz etc.) are hidden everywhere: the feed,
+  the map, search, and chain building. A shared `isUpcomingEvent` rule keeps
+  all views consistent, so no more "Ends in 200+ days" quests
+- **📍 Feed location now actually filters** — picking a feed location sorts the
+  feed nearest-first (real quests first, anywhere quests after) and adds a
+  radius control (Any distance / ≤25 km / ≤100 km) so the selection visibly
+  changes what you see; picking a new spot or resetting clears the radius
+- **🟥 Live chip in the feed** — filters to just the ticketed sport, concerts
+  and comedy from the nightly auto-discovered feed, with a pulsing LIVE tag
+  and date + ticket price on each card
+- **🟥 Live events on the map** — auto-discovered events (the nightly feed)
+  now appear as pulsing red "LIVE" pins with a tag, a 🟥 Live filter chip,
+  and a "N live" count in the map hint — new events are easy to spot
+- **✍️ Creator titles** — community quest authors earn vanity titles based
+  on published quests: Quest Writer (1), Quest Curator (3), Quest Master (10),
+  Quest Legend (25). Shown as a chip next to the author's name on feed cards
+  and as a progress-tracked Creator section on the profile
+- **19 new badges** — XP milestones (Halfway There, Seasoned, Veteran),
+  quest-volume (Completionist 25, Half-Century 50), streak tiers (Unstoppable
+  14, Iron Will 30), anywhere-quest counts (Social Butterfly 5, People Person
+  15), time feats (Weekend Warrior, Golden Hour), distance (Long Haul 50km,
+  25km On Foot, Century of Strides), exploration breadth (Tri-Province,
+  Six Provinces, Day Tripper), weather (Sun Seeker) and Category Guru
+  (15 in one category) — all with live progress bars on the badge sheet
 - **🎟️ Live events — automatically discovered.** A nightly GitHub Actions cron
-  runs `scripts/fetch-events.mjs` (Howler, plus optional free Eventbrite API),
-  pins real dated events to the map, and publishes `public/events-remote.json`;
-  the app pulls it at launch and on feed refresh and merges it in — new
-  festivals, markets, concerts and sport events appear with zero manual work
+  runs `scripts/fetch-events.mjs` (Howler, plus optional free Ticketmaster
+  Discovery API, which supports `countryCode=ZA`), pins real dated
+  events to the map, and publishes `public/events-remote.json`; the app pulls
+  it at launch and on feed refresh and merges it in — new festivals, markets,
+  concerts and sport events appear with zero manual work
   (`npm run fetch:events` to run it manually)
 - **Event quests** — 40+ real, researched events across all 9 provinces:
   Aardklop, KKNK, Joy of Jazz, Afrikaans is Groot, Innibos, Vryfees, Woordfees,

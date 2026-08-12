@@ -11,10 +11,11 @@
 //   1. Howler (howler.co.za)      — no key needed; scrapes the homepage's
 //                                   featured events (title, venue, date, price,
 //                                   ticket URL).
-//   2. Eventbrite public API      — optional but richer; enable it by setting
-//                                   EVENTBRITE_TOKEN in .env (free developer
-//                                   token at eventbrite.com/platform). When
-//                                   unset, Howler alone keeps the feed fresh.
+//   2. Ticketmaster Discovery API — optional but richer; enable it by setting
+//                                   TICKETMASTER_API_KEY in .env (free key at
+//                                   developer.ticketmaster.com, supports
+//                                   countryCode=ZA). When unset, Howler alone
+//                                   keeps the feed fresh.
 //
 // Only events we can place on the map (known SA venue/city) are kept — a
 // wrong pin is worse than no pin. Past events are dropped. If every source
@@ -144,30 +145,41 @@ async function fetchHowler() {
   return events
 }
 
-/** Fetches upcoming SA events from the Eventbrite public API (needs EVENTBRITE_TOKEN). */
-async function fetchEventbrite(token) {
+/** Fetches upcoming SA events from the Ticketmaster Discovery API (needs
+ * TICKETMASTER_API_KEY). Free key: developer.ticketmaster.com → create an
+ * account → 'Create an app' → copy the API key. Supports countryCode=ZA. */
+async function fetchTicketmaster(key) {
   const params = new URLSearchParams({
-    'location.address': 'South Africa',
-    'location.within': '1000km',
-    sort_by: 'date',
-    page_size: '50',
-    expand: 'venue',
+    apikey: key,
+    countryCode: 'ZA',
+    sort: 'date,asc',
+    size: '200',
+    includeTBA: 'no',
+    includeTBD: 'no',
   })
-  const res = await fetch(`https://www.eventbriteapi.com/v3/events/search/?${params}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-  if (!res.ok) throw new Error(`Eventbrite HTTP ${res.status}`)
+  const res = await fetch(`https://app.ticketmaster.com/discovery/v2/events.json?${params}`)
+  if (!res.ok) throw new Error(`Ticketmaster HTTP ${res.status}`)
   const data = await res.json()
-  return (data.events ?? []).map((e) => ({
-    source: 'eventbrite',
-    title: e.name?.text ?? '',
-    venue: e.venue?.name ?? '',
-    city: e.venue?.address?.city ?? '',
-    start: e.start?.local ? new Date(e.start.local) : null,
-    free: Boolean(e.is_free),
-    url: e.url ?? '',
-    summary: e.summary ?? '',
-  }))
+  const list = data?._embedded?.events ?? []
+  const out = []
+  for (const e of list) {
+    const venue = e?._embedded?.venues?.[0]
+    const startRaw = e?.dates?.start?.local ?? e?.dates?.start?.dateTime
+    const start = startRaw ? new Date(startRaw) : null
+    if (!start || Number.isNaN(start.getTime())) continue
+    const price = e?.priceRanges?.[0]
+    out.push({
+      source: 'ticketmaster',
+      title: e.name ?? '',
+      venue: venue?.name ?? '',
+      city: venue?.city?.name ?? '',
+      start,
+      price: price ? `R${Math.round(price.min)}` : null,
+      url: e.url ?? '',
+      summary: e.info ?? e.pleaseNote ?? '',
+    })
+  }
+  return out
 }
 
 const toQuest = (ev, now) => {
@@ -176,9 +188,9 @@ const toQuest = (ev, now) => {
   if (!info) return null // never pin an event we can't place accurately
   const city = info.city
   const priceLabel = ev.price ? (ev.price === 'FREE' ? 'free entry' : `from ${fmt.format(Number(ev.price.replace(/[^0-9.]/g, '')))}`) : 'prices vary'
-  const seller =
+  const    seller =
     ev.source === 'howler' ? { label: 'Online at Howler', url: ev.url }
-    : { label: 'Online at Eventbrite', url: ev.url }
+    : { label: 'Online at Ticketmaster', url: ev.url }
   return {
     id: `remote-${ev.source}-${slug(ev.title)}-${ev.start.getFullYear()}${String(ev.start.getMonth() + 1).padStart(2, '0')}${String(ev.start.getDate()).padStart(2, '0')}`,
     title: ev.title,
@@ -195,7 +207,7 @@ const toQuest = (ev, now) => {
     players: [1, 8],
     difficulty: 1,
     vibe: ['entertainment'],
-    description: ev.summary?.slice(0, 240) || (ev.source === 'howler' ? `Live ticketed event at ${ev.venue || city} — check the ticket page for details.` : 'A live ticketed event in South Africa — grab your tickets on Eventbrite.'),
+    description: ev.summary?.slice(0, 240) || (ev.source === 'howler' ? `Live ticketed event at ${ev.venue || city} — check the ticket page for details.` : 'A live ticketed event in South Africa — grab your tickets on Ticketmaster.'),
     completionLine: 'You were there. Legend.',
     xp: 300,
     when: whenLabel(ev.start),
@@ -231,17 +243,17 @@ try {
   failed.push(`Howler (${e.message})`)
 }
 
-const token = process.env.EVENTBRITE_TOKEN
-if (token) {
+const tmKey = process.env.TICKETMASTER_API_KEY
+if (tmKey) {
   try {
-    const eb = await fetchEventbrite(token)
-    log(`Eventbrite: ${eb.length} events`)
-    fresh.push(...eb)
+    const tm = await fetchTicketmaster(tmKey)
+    log(`Ticketmaster: ${tm.length} events`)
+    fresh.push(...tm)
   } catch (e) {
-    failed.push(`Eventbrite (${e.message})`)
+    failed.push(`Ticketmaster (${e.message})`)
   }
 } else {
-  log('Eventbrite: skipped (set EVENTBRITE_TOKEN in .env for the richer source)')
+  log('Ticketmaster: skipped (set TICKETMASTER_API_KEY in .env for the richer source)')
 }
 
 const seen = new Set()
@@ -258,7 +270,7 @@ const quests = fresh
   .sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt))
   .slice(0, 30)
 
-const payload = { generatedAt: iso(now), source: token ? 'howler + eventbrite' : 'howler', events: quests }
+const payload = { generatedAt: iso(now), source: tmKey ? 'howler + ticketmaster' : 'howler', events: quests }
 
 if (quests.length === 0 && failed.length > 0 && !existsSync(OUT)) {
   console.error('[fetch-events] no events fetched and no previous feed to fall back to')

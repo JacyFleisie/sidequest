@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { ALL_QUESTS, CATEGORY_META, type Category, type Quest } from '../data/quests'
+import { isUpcomingEvent } from '../lib/game'
 import { fmtCost, fmtDuration } from '../lib/game'
 import { chainShareUrl, copyText, shareViaNative } from '../lib/share'
 import { useGame, type CustomChain } from '../lib/store'
@@ -38,6 +39,7 @@ export default function ChainBuilder() {
   const pool = useMemo(() => {
     const q = query.trim().toLowerCase()
     const list = ALL_QUESTS.filter((x) => {
+      if (!isUpcomingEvent(x)) return false // no passed / too-far-out events in chains either
       if (cat !== 'all' && x.category !== cat) return false
       if (!q) return true
       return (

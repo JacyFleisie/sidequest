@@ -6,8 +6,9 @@ import 'leaflet/dist/leaflet.css'
 import 'leaflet.markercluster'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
-import { ALL_QUESTS, CATEGORY_META, CHAINS, HOME_BASES, type Category, type Chain, type Quest } from '../data/quests'
-import { categoryColor, getUserLocation, nearestBase, reverseGeocodeLabel } from '../lib/game'
+import { ALL_QUESTS, CATEGORY_META, CHAINS, HOME_BASES, registerCustomQuests, type Category, type Chain, type Quest } from '../data/quests'
+import { fetchRemoteEvents } from '../lib/eventsSync'
+import { categoryColor, getUserLocation, isUpcomingEvent, nearestBase, reverseGeocodeLabel } from '../lib/game'
 import { useGame, type StartPlace } from '../lib/store'
 import { usePullToRefresh } from '../lib/usePullToRefresh'
 import LocationPicker from './LocationPicker'
@@ -16,7 +17,7 @@ import { QuestSheet } from './QuestSheet'
 import SearchBox, { type PlaceHit } from './SearchBox'
 import { Chip } from './ui'
 
-type Filter = 'all' | Category | 'trending'
+type Filter = 'all' | Category | 'trending' | 'live'
 
 const FILTERS: { id: Filter; label: string; emoji: string; color?: string }[] = [
   { id: 'all', label: 'All', emoji: '🗺️' },
@@ -27,13 +28,14 @@ const FILTERS: { id: Filter; label: string; emoji: string; color?: string }[] = 
   { id: 'adventure', label: 'Adventure', emoji: '🔴', color: CATEGORY_META.adventure.color },
   { id: 'event', label: 'Event', emoji: '🟣', color: CATEGORY_META.event.color },
   { id: 'mystery', label: 'Mystery', emoji: '⚫', color: CATEGORY_META.mystery.color },
+  { id: 'live', label: 'Live', emoji: '🟥', color: '#ff4757' },
   { id: 'trending', label: 'Trending', emoji: '🔥', color: '#ff6b35' },
 ]
 
-const pinHtml = (emoji: string, color: string, done: boolean, chain: boolean): string =>
-  `<div class="quest-pin ${chain ? 'pin-chain' : ''} ${done ? 'pin-done' : ''}" style="--pc:${color}">${emoji}${
+const pinHtml = (emoji: string, color: string, done: boolean, chain: boolean, live = false): string =>
+  `<div class="quest-pin ${chain ? 'pin-chain' : ''} ${done ? 'pin-done' : ''} ${live ? 'pin-live' : ''}" style="--pc:${color}">${emoji}${
     done ? '<span class="pin-check">✓</span>' : ''
-  }</div>`
+  }${live ? '<span class="pin-live-tag">LIVE</span>' : ''}</div>`
 
 // Free tile providers, tried in order. CARTO's public tiles are free but rate-limit and
 // drop out intermittently — if they fail we slide to the next source instead of showing a gray map.
@@ -185,6 +187,9 @@ function QuestMarkers({
   onSelectChain: (c: Chain) => void
   completed: Record<string, unknown>
 }) {
+  // Auto-discovered live events (the nightly events-remote.json feed) get a
+  // distinct pulsing red pin so they're easy to spot against curated quests.
+  const isLive = (q: Quest): boolean => q.id.startsWith('remote-')
   const map = useMap()
   const groupRef = useRef<L.MarkerClusterGroup | null>(null)
 
@@ -214,11 +219,12 @@ function QuestMarkers({
 
     for (const q of quests) {
       const done = Boolean(completed[q.id])
+      const live = isLive(q)
       const icon = L.divIcon({
-        html: pinHtml(q.emoji, categoryColor(q.category), done, false),
+        html: pinHtml(q.emoji, live ? '#ff4757' : categoryColor(q.category), done, false, live),
         className: '',
-        iconSize: [38, 38],
-        iconAnchor: [19, 19],
+        iconSize: live ? [40, 40] : [38, 38],
+        iconAnchor: live ? [20, 20] : [19, 19],
       })
       const marker = L.marker([q.lat, q.lng], { icon })
       marker.on('click', () => onSelectQuest(q))
@@ -248,7 +254,31 @@ export default function MapScreen() {
   const [selected, setSelected] = useState<{ quest?: Quest; chain?: Chain } | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
   const [locError, setLocError] = useState<string | null>(null)
+  const [liveQuests, setLiveQuests] = useState<Quest[]>([])
   const mapRef = useRef<L.Map | null>(null)
+
+  // Pull the auto-discovered live events feed onto the map. Uses fetchRemoteEvents
+  // (NOT syncRemoteEvents — that dispatches a refresh event which would loop
+  // forever from this listener). App boot already registered them app-wide, so
+  // opening their quest sheet works even before this resolves.
+  useEffect(() => {
+    let alive = true
+    const load = (force: boolean) => {
+      void fetchRemoteEvents(force).then((events) => {
+        if (!alive) return
+        // Register so opening their quest sheet resolves the quest app-wide.
+        registerCustomQuests(events)
+        setLiveQuests(events)
+      })
+    }
+    load(false)
+    const onRemote = () => load(true)
+    window.addEventListener('sidequest:remote-events', onRemote)
+    return () => {
+      alive = false
+      window.removeEventListener('sidequest:remote-events', onRemote)
+    }
+  }, [])
 
   // Pull-to-refresh: drag down from the top strip of the map to reload the
   // tiles (the map view is preserved so a refresh never jumps the camera).
@@ -303,9 +333,14 @@ export default function MapScreen() {
   }
 
   const visible = useMemo(() => {
-    let quests = ALL_QUESTS.filter((q) => {
+    // Live events come from the nightly feed — real, dated, map-pinnable.
+    const all = [...ALL_QUESTS, ...liveQuests]
+    let quests = all.filter((q) => {
       if (q.anywhere) return false // anywhere-quests have no real location — keep them off the map
+      // Only upcoming events — dated events a year out (or already past) stay hidden.
+      if (!isUpcomingEvent(q)) return false
       if (filter === 'trending') return q.trending
+      if (filter === 'live') return q.id.startsWith('remote-')
       if (filter !== 'all') return q.category === filter
       return true
     })
@@ -316,7 +351,7 @@ export default function MapScreen() {
       return true
     })
     return { quests, chains }
-  }, [filter, showCompleted, completed])
+  }, [filter, showCompleted, completed, liveQuests])
 
   const flyHome = () => {
     mapRef.current?.flyTo([startPos.lat, startPos.lng], 12, { duration: 1.4 })
@@ -415,6 +450,11 @@ export default function MapScreen() {
         </div>
         <div className="map-hint">
           {visible.quests.length + visible.chains.length} quests · starting from {startLabel}
+          {liveQuests.length > 0 && (
+            <span className="map-hint-live" title="Auto-discovered live events (nightly feed)">
+              🟥 {liveQuests.length} live
+            </span>
+          )}
         </div>
       </div>
 

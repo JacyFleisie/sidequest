@@ -1,23 +1,37 @@
-# SideQuest v1.0.18 — The Events release 🎟️
+# SideQuest v1.0.19 — The Feed Upgrade 📜
 
-The map just got a whole lot more alive. This release is all about real things happening, real soon.
+The feed got a serious glow-up. Now you can find *exactly* the quest you're in
+the mood for — and your hard work earns a whole lot more badges.
 
-## 🤖 Events that find themselves
-- SideQuest now **discovers events automatically** — a nightly job scans event sources and drops new festivals, markets, concerts and sport days straight into your feed. No manual searching, ever.
-- Pull down to refresh the feed and the newest events appear.
+## 📜 The feed, now a proper filter machine
+- **💰 Budget slider** — drag to "up to R100" and every card is affordable. The
+  range adapts to the priciest event in the feed, so it always makes sense.
+- **📅 Live + date** — the Live chip now combines with *This weekend*
+  (Fri 5pm–Sun) or *This month*, so you can find a ticketed gig happening soon.
+- **📍 Location filter** — pick any city and the feed sorts nearest-first,
+  with radius options (≤ 25 km / ≤ 100 km). Browsing from a different city
+  finally changes what you see.
+- **Only upcoming events** — anything more than ~6 months out is hidden
+  everywhere, so no more "Ends in 300 days" quests cluttering your feed.
 
-## 🎪 New event chips
-- Tap **🎪 Festival**, **🛍️ Market** or **🏎️ Automotive** to see only that kind of event — Aardklop, the Pretoria Boeremark, Tarlton drag nights and everything between. No chip selected? Everything still shows.
+## 🏅 19 new badges (46 total)
+XP milestones (Halfway There, Seasoned, Veteran), bigger streaks (14 & 30
+days), Golden Hour finishes, Day Tripper, Long Haul, Category Guru, six
+provinces and more — each with a live progress bar on its detail sheet.
 
-## 🎟️ Tickets, one tap away
-- Every ticketed event tells you **exactly where to buy** — Ticketmaster, Webtickets, Computicket, Quicket, Howler and more — with a direct link per seller and a big Get-tickets button.
-- And a countdown so you never miss it: **"⏳ 2 days left to get tickets"** — it turns red when you're under 3 days.
+## ✍️ Creator titles
+Publish community quests and earn a vanity title next to your name in the
+feed: **Quest Writer → Quest Curator → Quest Master → Quest Legend**. Fame
+first, money later.
 
-## 🇿🇦 40+ real events on the map
-- **Sport:** Springboks vs All Blacks (Ellis Park + Cape Town), the Soweto Derby, Nedbank Golf Challenge, Cape Town Cycle Tour
-- **Music:** Joy of Jazz, both jazz festivals, Dave, Jill Scott, Kehlani, Brian McKnight, Kenny Lattimore
-- **Festivals:** Aardklop, KKNK, Afrikaans is Groot, Innibos, Bastille & Montreux Franschhoek, Hantam Vleisfees, Clarens Craft Beer, Durban July
-- **Comedy:** the Festival of Comedy with Trevor Noah, Skhumba
-- **Markets:** 10 recurring markets — Boeremark, Neighbourgoods, Oranjezicht, Root 44 and more — always on
+## 🗺️ Live on the map
+Auto-discovered events now pop on the map as **pulsing red LIVE pins** with
+their own filter chip — new festivals and concerts are impossible to miss.
 
-Every event has its real date, real place, real entry fee and a working ticket link. Go do something. 🇿🇦
+## 🟥 Live chip in the feed
+A dedicated Live filter shows only ticketed sport, concerts and comedy from
+the nightly feed, with date and ticket price on every card.
+
+---
+
+*Full details in the [changelog](https://github.com/JacyFleisie/sidequest/blob/main/CHANGELOG.md).*

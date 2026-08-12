@@ -173,6 +173,24 @@ const featProgress = (pred: (e: CompletionMeta) => boolean) => (p: Progress): Ba
 
 const chainPred = (id: string): boolean => id.startsWith('chain-') || id.startsWith('s-')
 
+const anywhereCount = (p: Progress): number =>
+  p.completedIds.filter((id) => ALL_QUESTS.find((x) => x.id === id)?.anywhere).length
+
+const provinceCount = (p: Progress): number =>
+  Object.values(completedCountByProvince(p)).filter((c) => c >= 1).length
+
+const totalKmFromHome = (p: Progress): number =>
+  Object.values(p.entries ?? {}).reduce((sum, e) => sum + (e.distFromHomeKm ?? 0), 0)
+
+const maxQuestsInDay = (p: Progress): number => {
+  const byDay: Record<string, number> = {}
+  for (const e of Object.values(p.entries ?? {})) {
+    const day = new Date(e.at).toDateString()
+    byDay[day] = (byDay[day] ?? 0) + 1
+  }
+  return Math.max(0, ...Object.values(byDay))
+}
+
 const provProgress = (prov: ProvinceId) => (p: Progress): BadgeProgress => {
   const done = completedCountByProvince(p)[prov]
   const target = PROVINCES[prov].badgeCount
@@ -207,6 +225,25 @@ export const BADGES: BadgeDef[] = [
   { id: 'early-bird', name: 'Early Bird', emoji: '🌅', description: 'Finish a quest before 7am.', earned: (p) => anyEntry(p, (e) => new Date(e.at).getHours() < 7), progress: featProgress((e) => new Date(e.at).getHours() < 7) },
   { id: 'rain-warrior', name: 'Rain Warrior', emoji: '🌧️', description: 'Complete a quest while it\'s raining.', earned: (p) => anyEntry(p, (e) => e.weather === 'rain'), progress: featProgress((e) => e.weather === 'rain') },
   { id: 'km-10', name: '10km Club', emoji: '🥾', description: 'Complete a quest 10 km or more from your home base.', earned: (p) => anyEntry(p, (e) => (e.distFromHomeKm ?? 0) >= 10), progress: featProgress((e) => (e.distFromHomeKm ?? 0) >= 10) },
+  { id: 'km-50', name: 'Long Haul', emoji: '🚗', description: 'Complete a quest 50 km or more from your home base.', earned: (p) => anyEntry(p, (e) => (e.distFromHomeKm ?? 0) >= 50), progress: featProgress((e) => (e.distFromHomeKm ?? 0) >= 50) },
+  { id: 'total-km-25', name: '25km On Foot', emoji: '🚶', description: 'Cover 25 km in total from your home base.', earned: (p) => totalKmFromHome(p) >= 25, progress: (p) => ({ done: Math.round(totalKmFromHome(p)), target: 25, earnedAt: null }) },
+  { id: 'total-km-100', name: 'Century of Strides', emoji: '🏁', description: 'Cover 100 km in total from your home base.', earned: (p) => totalKmFromHome(p) >= 100, progress: (p) => ({ done: Math.round(totalKmFromHome(p)), target: 100, earnedAt: null }) },
+  { id: 'xp-500', name: 'Halfway There', emoji: '🚀', description: 'Earn 500 XP.', earned: (p) => p.xp >= 500, progress: (p) => ({ done: p.xp, target: 500, earnedAt: null }) },
+  { id: 'xp-2000', name: 'Seasoned', emoji: '🌟', description: 'Earn 2,000 XP.', earned: (p) => p.xp >= 2000, progress: (p) => ({ done: p.xp, target: 2000, earnedAt: null }) },
+  { id: 'xp-4500', name: 'Veteran', emoji: '🎖️', description: 'Earn 4,500 XP.', earned: (p) => p.xp >= 4500, progress: (p) => ({ done: p.xp, target: 4500, earnedAt: null }) },
+  { id: 'quest-25', name: 'Completionist', emoji: '🏆', description: 'Complete 25 SideQuests.', earned: (p) => totalCompleted(p) >= 25, progress: (p) => countProgress(p, totalCompleted(p), 25, () => true) },
+  { id: 'quest-50', name: 'Half-Century', emoji: '💎', description: 'Complete 50 SideQuests.', earned: (p) => totalCompleted(p) >= 50, progress: (p) => countProgress(p, totalCompleted(p), 50, () => true) },
+  { id: 'streak-14', name: 'Unstoppable', emoji: '🧱', description: '14-day quest streak.', earned: (p) => p.streak >= 14, progress: (p) => ({ done: p.streak, target: 14, earnedAt: null }) },
+  { id: 'streak-30', name: 'Iron Will', emoji: '🛡️', description: '30-day quest streak.', earned: (p) => p.streak >= 30, progress: (p) => ({ done: p.streak, target: 30, earnedAt: null }) },
+  { id: 'anywhere-5', name: 'Social Butterfly', emoji: '🦋', description: 'Complete 5 anywhere quests.', earned: (p) => anywhereCount(p) >= 5, progress: (p) => countProgress(p, anywhereCount(p), 5, (id) => ALL_QUESTS.find((x) => x.id === id)?.anywhere === true) },
+  { id: 'anywhere-15', name: 'People Person', emoji: '🗣️', description: 'Complete 15 anywhere quests.', earned: (p) => anywhereCount(p) >= 15, progress: (p) => countProgress(p, anywhereCount(p), 15, (id) => ALL_QUESTS.find((x) => x.id === id)?.anywhere === true) },
+  { id: 'weekend-warrior', name: 'Weekend Warrior', emoji: '🎉', description: 'Finish a quest on a Saturday or Sunday.', earned: (p) => anyEntry(p, (e) => { const d = new Date(e.at).getDay(); return d === 0 || d === 6 }), progress: featProgress((e) => { const d = new Date(e.at).getDay(); return d === 0 || d === 6 }) },
+  { id: 'golden-hour', name: 'Golden Hour', emoji: '🌇', description: 'Finish a quest between 5pm and 7pm.', earned: (p) => anyEntry(p, (e) => { const h = new Date(e.at).getHours(); return h >= 17 && h < 19 }), progress: featProgress((e) => { const h = new Date(e.at).getHours(); return h >= 17 && h < 19 }) },
+  { id: 'day-tripper', name: 'Day Tripper', emoji: '🌍', description: 'Complete 3 quests in a single day.', earned: (p) => maxQuestsInDay(p) >= 3, progress: (p) => ({ done: maxQuestsInDay(p), target: 3, earnedAt: null }) },
+  { id: 'sun-seeker', name: 'Sun Seeker', emoji: '☀️', description: 'Complete a quest on a dry day.', earned: (p) => anyEntry(p, (e) => e.weather === 'dry'), progress: featProgress((e) => e.weather === 'dry') },
+  { id: 'provinces-3', name: 'Tri-Province', emoji: '🗺️', description: 'Complete quests in 3 provinces.', earned: (p) => provinceCount(p) >= 3, progress: (p) => ({ done: provinceCount(p), target: 3, earnedAt: null }) },
+  { id: 'provinces-6', name: 'Six Provinces', emoji: '🧭', description: 'Complete quests in 6 provinces.', earned: (p) => provinceCount(p) >= 6, progress: (p) => ({ done: provinceCount(p), target: 6, earnedAt: null }) },
+  { id: 'category-guru', name: 'Category Guru', emoji: '🏅', description: 'Complete 15 quests in any single category.', earned: (p) => (Object.keys(CATEGORY_META) as Category[]).some((c) => countCategory(p, c) >= 15), progress: (p) => ({ done: Math.max(0, ...(Object.keys(CATEGORY_META) as Category[]).map((c) => countCategory(p, c))), target: 15, earnedAt: null }) },
   ...Object.values(PROVINCES).map(
     (prov): BadgeDef => ({
       id: `province-${prov.id}`,
@@ -223,6 +260,58 @@ export const BADGES: BadgeDef[] = [
 const countCategory = (p: Progress, category: Category): number =>
   p.completedIds.filter((id) => ALL_QUESTS.find((x) => x.id === id)?.category === category).length
 
+
+// ── Creator tiers (vanity titles for community quest authors) ───────────────
+export interface CreatorTier {
+  minQuests: number
+  name: string
+  emoji: string
+  description: string
+}
+
+export const CREATOR_TIERS: CreatorTier[] = [
+  { minQuests: 1, name: 'Quest Writer', emoji: '✍️', description: 'Publish your first community quest.' },
+  { minQuests: 3, name: 'Quest Curator', emoji: '🎨', description: 'Publish 3 community quests.' },
+  { minQuests: 10, name: 'Quest Master', emoji: '🏆', description: 'Publish 10 community quests.' },
+  { minQuests: 25, name: 'Quest Legend', emoji: '👑', description: 'Publish 25 community quests.' },
+]
+
+/** The highest creator title earned for a given number of published quests. */
+export const creatorTierFor = (published: number): CreatorTier | null => {
+  let tier: CreatorTier | null = null
+  for (const t of CREATOR_TIERS) if (published >= t.minQuests) tier = t
+  return tier
+}
+
+/** The next title to work toward, or null at the top. */
+export const nextCreatorTier = (published: number): CreatorTier | null =>
+  CREATOR_TIERS.find((t) => t.minQuests > published) ?? null
+
+// ── Event horizon ────────────────────────────────────────────────────────────
+/** Whole days until an ISO date (ceils; negative when already passed). */
+export const daysUntilIso = (iso: string): number =>
+  Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000)
+
+/** How far ahead an event may start and still count as "upcoming". Roughly the
+ * current season + one: festivals and concerts further out than this (e.g. a
+ * 2027 edition while it's still 2026) clutter the feed and map with dates no
+ * one can act on yet. */
+export const EVENT_HORIZON_DAYS = 182 // ~6 months
+
+/** True when a dated event is genuinely upcoming: not passed, and starting
+ * within the event horizon (not "a year away"). Undated quests always
+ * qualify. Seasonal quests whose expiry is past are hidden too. */
+export const isUpcomingEvent = (q: { startsAt?: string; expiresAt?: string }): boolean => {
+  if (q.startsAt) {
+    const d = daysUntilIso(q.startsAt)
+    if (d < 0 || d > EVENT_HORIZON_DAYS) return false
+  }
+  if (q.expiresAt) {
+    const d = daysUntilIso(q.expiresAt)
+    if (d <= 0 || d > EVENT_HORIZON_DAYS) return false
+  }
+  return true
+}
 
 // ── Misc formatting helpers ──────────────────────────────────────────────────
 export const fmtDuration = (minutes: number): string => {

@@ -1,15 +1,17 @@
 name: Fetch live events
 
 # THE "AUTO SEARCH" ENGINE. Runs every morning (04:00 UTC) and regenerates
-# public/events-remote.json from free sources (Howler always; Eventbrite when
-# the EVENTBRITE_TOKEN repo secret is set). The commit is deployed to GitHub
-# Pages by the pages.yml workflow, and the app pulls the feed at launch — so
-# new festivals, markets, concerts and sport events appear with zero manual
-# work. No paid services, no API keys required.
+# public/events-remote.json from free sources (Howler always; Ticketmaster
+# when the TICKETMASTER_API_KEY repo secret is set). The commit is deployed to
+# GitHub Pages by the pages.yml workflow, and the app pulls the feed at launch
+# — so new festivals, markets, concerts and sport events appear with zero
+# manual work. No paid services.
 #
 # Optional setup (Settings → Secrets and variables → Actions):
-#   EVENTBRITE_TOKEN   a free Eventbrite developer token (eventbrite.com/platform)
-#                      → adds hundreds of ticketed events (concerts, comedy, sport)
+#   TICKETMASTER_API_KEY   a free Ticketmaster Discovery API key
+#                          (developer.ticketmaster.com → create an app)
+#                          → adds concerts, sport, theatre & comedy events
+#                          (countryCode=ZA supported). Howler alone otherwise.
 
 on:
   schedule:
@@ -34,9 +36,9 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Fetch events (Howler + optional Eventbrite)
+      - name: Fetch events (Howler + optional Ticketmaster)
         env:
-          EVENTBRITE_TOKEN: ${{ secrets.EVENTBRITE_TOKEN }}
+          TICKETMASTER_API_KEY: ${{ secrets.TICKETMASTER_API_KEY }}
         run: node scripts/fetch-events.mjs
 
       - name: Commit the fresh feed if anything changed

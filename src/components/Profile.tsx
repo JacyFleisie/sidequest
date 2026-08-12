@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { CATEGORY_META, HOME_BASES, PROVINCES, type Category, type ProvinceId } from '../data/quests'
-import { BADGES, completedCountByProvince, levelProgress, playerStats, rankFromXp, totalCompleted, totalQuestsInProvince, type BadgeDef, type Progress } from '../lib/game'
+import { BADGES, completedCountByProvince, CREATOR_TIERS, creatorTierFor, levelProgress, nextCreatorTier, playerStats, rankFromXp, totalCompleted, totalQuestsInProvince, type BadgeDef, type Progress } from '../lib/game'
 import { useGame } from '../lib/store'
 import { checkForUpdate, cleanReleaseNotes, downloadAndInstall, fetchLatestRelease, getCurrentVersion, isAndroid, type UpdateInfo } from '../lib/updater'
-import { ensureIdentity, getAccountInfo, onAuthChange, signOutAccount, syncCompletions, syncProfile, type AccountInfo } from '../lib/sync'
+import { ensureIdentity, fetchCustomQuests, getAccountInfo, onAuthChange, signOutAccount, syncCompletions, syncProfile, type AccountInfo } from '../lib/sync'
 import { usePullToRefresh } from '../lib/usePullToRefresh'
 import DeleteAccount from './DeleteAccount'
 import EditProfile from './EditProfile'
@@ -20,6 +20,24 @@ export default function Profile() {
   const [selectedBadge, setSelectedBadge] = useState<BadgeDef | null>(null)
   const [savedToast, setSavedToast] = useState<string | null>(null)
   const toastTimer = useRef<number | null>(null)
+  // Creator title: how many community quests this user has published. Starts
+  // from this device's local count; a server pull catches quests made on
+  // other devices too.
+  const [publishedCount, setPublishedCount] = useState(state.customQuests?.length ?? 0)
+  useEffect(() => {
+    let alive = true
+    void (async () => {
+      const uid = await ensureIdentity()
+      if (!uid) return
+      const rows = await fetchCustomQuests(uid)
+      if (!alive) return
+      const mine = rows.filter((r) => r.ownerId === uid).length
+      setPublishedCount((cur) => Math.max(cur, mine))
+    })()
+    return () => {
+      alive = false
+    }
+  }, [])
 
   // Pull down to re-sync your stats from the server.
   const refresh = () => {
@@ -198,6 +216,11 @@ export default function Profile() {
         <p className="section-sub">Tap a badge for details and progress.</p>
       </section>
 
+      <section className="profile-section">
+        <h2 className="section-title">✍️ Creator</h2>
+        <CreatorCard published={publishedCount} />
+      </section>
+
       {selectedBadge && (
         <BadgeSheet badge={selectedBadge} progress={gameProgress} onClose={() => setSelectedBadge(null)} />
       )}
@@ -274,6 +297,50 @@ export default function Profile() {
     </div>
   )
 }
+
+function CreatorCard({ published }: { published: number }) {
+  const tier = creatorTierFor(published)
+  const next = nextCreatorTier(published)
+  const prev = tier ? CREATOR_TIERS[tierIndex(tier)] : null
+  const pct = next ? (published - (prev?.minQuests ?? 0)) / (next.minQuests - (prev?.minQuests ?? 0)) : 1
+  return (
+    <>
+      {tier ? (
+        <div className="creator-card">
+          <div className="creator-card-emoji">{tier.emoji}</div>
+          <div className="creator-card-main">
+            <div className="creator-card-title">{tier.name}</div>
+            <div className="creator-card-sub">{tier.description}</div>
+            <div className="creator-card-count">📚 {published} quest{published === 1 ? '' : 's'} published</div>
+          </div>
+        </div>
+      ) : (
+        <div className="creator-card creator-card-locked">
+          <div className="creator-card-emoji">🔒</div>
+          <div className="creator-card-main">
+            <div className="creator-card-title">No title yet</div>
+            <div className="creator-card-sub">Publish community quests to earn creator titles.</div>
+            {next && (
+              <div className="creator-card-count">✍️ {next.minQuests - published} more quest{published === next.minQuests - 1 ? '' : 's'} to {next.emoji} {next.name}</div>
+            )}
+          </div>
+        </div>
+      )}
+      {next && (
+        <div className="creator-progress">
+          <Bar pct={Math.min(1, Math.max(0, pct))} color="var(--gold)" />
+          <span className="creator-progress-label">
+            Next: {next.emoji} {next.name} at {next.minQuests} quests
+          </span>
+        </div>
+      )}
+    </>
+  )
+}
+
+// Helper so CreatorCard can find the previous tier's threshold for the bar.
+const tierIndex = (tier: { name: string }): number =>
+  CREATOR_TIERS.findIndex((t) => t.name === tier.name)
 
 function AccountCard() {
   const { playerName } = useGame()
