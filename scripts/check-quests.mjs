@@ -17,7 +17,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-const FILES = ['src/data/hangouts.ts', 'src/data/social.ts', 'src/data/quests.ts', 'src/data/places.ts', 'src/data/seasonal.ts']
+const FILES = ['src/data/hangouts.ts', 'src/data/social.ts', 'src/data/quests.ts', 'src/data/places.ts', 'src/data/seasonal.ts', 'src/data/events.ts']
 
 const PROVINCES = new Set(['GP', 'WC', 'KZN', 'EC', 'FS', 'LP', 'MP', 'NW', 'NC'])
 // Rough SA bounding box (Cape Agulhas → Musina, Alexander Bay → Kosi Bay).

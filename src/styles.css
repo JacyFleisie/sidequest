@@ -497,6 +497,39 @@ select {
 .directions-actions a:hover { border-color: var(--gold); color: var(--gold); }
 .directions-note { font-size: 11.5px; color: var(--muted); margin: 8px 0 0; }
 
+/* ── Tickets (events that need them) ──────────────────────────────────────── */
+.quest-tickets {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 12px 14px; margin: 12px 0 2px;
+}
+.tickets-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.tickets-badge { font-size: 13.5px; font-weight: 900; color: var(--gold); }
+.tickets-when { font-size: 12px; font-weight: 700; color: var(--muted); }
+.tickets-countdown {
+  margin-top: 9px; font-size: 13px; font-weight: 800; color: var(--gold);
+  background: #c97f141a; border: 1px solid #c97f1455; border-radius: 99px;
+  padding: 6px 12px; display: inline-block;
+}
+.tickets-countdown.urgent { color: var(--danger); background: var(--danger-bg); border-color: var(--danger-border); }
+.tickets-countdown.passed { color: var(--muted); background: var(--card-2); border-color: var(--border); font-weight: 700; }
+.tickets-price { font-size: 13px; font-weight: 700; color: var(--text); margin-top: 8px; }
+.tickets-where { margin-top: 8px; }
+.tickets-where-label { font-size: 12px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.4px; }
+.tickets-where-item { font-size: 12.5px; color: var(--text-2); line-height: 1.5; margin-top: 3px; }
+.tickets-where-bullet { color: var(--muted); }
+.tickets-where-link {
+  color: var(--gold); font-weight: 700; text-decoration: none;
+  border-bottom: 1px dashed #c97f1466; transition: border-color 0.15s ease;
+}
+.tickets-where-link:hover { border-bottom-color: var(--gold); }
+.tickets-btn {
+  margin-top: 10px; width: 100%; padding: 11px; border-radius: 99px; cursor: pointer;
+  font-size: 13.5px; font-weight: 800; color: #fff;
+  background: linear-gradient(135deg, var(--gold), #a8630a);
+  border: none; transition: filter 0.15s ease;
+}
+.tickets-btn:hover { filter: brightness(1.06); }
+
 /* ── Reviews ──────────────────────────────────────────────────────────────── */
 .quest-reviews {
   border-top: 1px solid var(--border); margin: 14px 0 16px; padding-top: 14px;
@@ -1227,6 +1260,14 @@ select {
 }
 .feed-card-expiry:hover { background: #c97f142b; }
 .feed-card-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.feed-card-event { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.event-chip {
+  display: inline-flex; align-items: center; gap: 3px; font-size: 10.5px; font-weight: 900;
+  color: var(--gold); background: #c97f141a; border: 1px solid #c97f1455;
+  border-radius: 99px; padding: 2px 8px; letter-spacing: 0.2px;
+}
+.event-when { font-size: 11.5px; font-weight: 700; color: var(--text-2); }
+.event-tickets { font-size: 11.5px; font-weight: 700; color: var(--sa-green); }
 .feed-card-xp { font-size: 12px; font-weight: 900; color: var(--gold); white-space: nowrap; }
 .feed-card-hero {
   display: flex; align-items: center; justify-content: center; font-size: 64px;

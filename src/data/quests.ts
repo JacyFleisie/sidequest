@@ -4,6 +4,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { HANGOUT_QUESTS } from './hangouts'
 import { SEASONAL_QUESTS as SEASONAL } from './seasonal'
+import { EVENT_QUESTS } from './events'
 
 export type Category =
   | 'free'
@@ -60,6 +61,34 @@ export const PROVINCES: Record<ProvinceId, Province> = {
   NC:  { id: 'NC',  name: 'Northern Cape',  short: 'NC',  badge: 'Big Sky Scout',      badgeCount: 15, emoji: '🌌', lat: -29.0467, lng: 21.9900 },
 }
 
+export type EventType = 'festival' | 'market' | 'automotive'
+
+export const EVENT_TYPE_META: Record<EventType, { label: string; emoji: string }> = {
+  festival:   { label: 'Festival',   emoji: '🎪' },
+  market:     { label: 'Market',     emoji: '🛍️' },
+  automotive: { label: 'Automotive', emoji: '🏎️' },
+}
+
+/** Where tickets can be bought — each channel may carry a direct seller link. */
+export interface TicketChannel {
+  /** Human channel name, e.g. "Online at Webtickets". */
+  label: string
+  /** Direct link to this seller's page (absent for in-person channels like the gate). */
+  url?: string
+}
+
+/** Ticket availability for events that need one to get in (or to the main shows). */
+export interface TicketInfo {
+  /** True when you must have a ticket to get in. */
+  required?: boolean
+  /** Human price string, e.g. "from R150 · full festival pass R480". */
+  price?: string
+  /** Where tickets can be bought — online, in person, at outlets. */
+  where?: TicketChannel[]
+  /** Direct ticket link (the big Get-tickets button). */
+  url?: string
+}
+
 export interface Quest {
   id: string
   title: string
@@ -92,6 +121,16 @@ export interface Quest {
   /** ISO date when a seasonal quest ends (tied to a real SA event). Once past,
    * the quest disappears from the feed with a countdown before that. */
   expiresAt?: string
+  /** Real calendar event — groups the quest under the Festival / Market /
+   * Automotive chips in the feed. */
+  eventType?: EventType
+  /** Human-friendly when info, e.g. "Sat 26 Sep 2026 · gates 8am". */
+  when?: string
+  /** ISO datetime when a dated event starts — the ticket deadline. Drives the
+   * "N days left to get tickets" countdown on the quest sheet. */
+  startsAt?: string
+  /** Ticket availability — shown on the quest sheet with a get-tickets link. */
+  ticketInfo?: TicketInfo
   tags: string[]
 }
 
@@ -1036,7 +1075,7 @@ const EXTRA: Quest[] = [
   }),
 ]
 
-export const ALL_QUESTS: Quest[] = [...QUESTS, ...EXTRA, ...SEASONAL]
+export const ALL_QUESTS: Quest[] = [...QUESTS, ...EXTRA, ...SEASONAL, ...EVENT_QUESTS]
 
 // ── Custom-quest registry ───────────────────────────────────────────────────
 // User-made quests aren't in the static ALL_QUESTS array — they're loaded from

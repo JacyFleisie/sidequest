@@ -6,6 +6,34 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- **🎟️ Live events — automatically discovered.** A nightly GitHub Actions cron
+  runs `scripts/fetch-events.mjs` (Howler, plus optional free Eventbrite API),
+  pins real dated events to the map, and publishes `public/events-remote.json`;
+  the app pulls it at launch and on feed refresh and merges it in — new
+  festivals, markets, concerts and sport events appear with zero manual work
+  (`npm run fetch:events` to run it manually)
+- **Event quests** — 40+ real, researched events across all 9 provinces:
+  Aardklop, KKNK, Joy of Jazz, Afrikaans is Groot, Innibos, Vryfees, Woordfees,
+  Bastille & Montreux Franschhoek, Hermanus Whales, Knysna Oysters, Hantam
+  Vleisfees, Clarens Craft Beer, Durban July, Soweto Derby, both Springboks vs
+  All Blacks tests, Nedbank Golf Challenge, Cape Town Cycle Tour, Tarlton drag
+  nights, Killarney, Zwartkops, concerts (Dave, Jill Scott, Kehlani, Brian
+  McKnight, Kenny Lattimore, Campus Fest) and comedy (Festival of Comedy with
+  Trevor Noah, Skhumba)
+- **🎪 Festival / 🛍️ Market / 🏎️ Automotive chips** in the feed — tap one to
+  see only that kind of event; no chip selected shows everything
+- **Per-seller ticket links** — every ticketed event lists exactly where to
+  buy (Ticketmaster, Webtickets, Computicket, Ticketpro, Quicket, Howler,
+  iTickets, Big Concerts, festival sites) with a direct link per seller and a
+  Get-tickets button
+- **Ticket countdown** on the quest sheet — "⏳ 2 days left to get tickets"
+  (red when ≤ 3 days, "Today — last chance!", muted when passed); seasonal
+  quests show "Ends in N days"
+- 10 recurring markets (Pretoria Boeremark, Neighbourgoods, Oranjezicht City
+  Farm, Root 44, Hazel Food, Willowbridge, Hout Bay Harbour, Bryanston
+  Organic, Market on the Plein) as always-on quests
+
 ## [1.0.17] - 2026
 
 ### Added

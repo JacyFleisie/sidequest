@@ -29,6 +29,7 @@ import {
   syncProfile,
 } from './lib/sync'
 import { fetchMySquad, subscribeSquad } from './lib/squads'
+import { syncRemoteEvents } from './lib/eventsSync'
 
 export default function App() {
   const { state } = useGame()
@@ -101,6 +102,9 @@ export default function App() {
       void fetchMySquad(uid)
       const unsubSquad = subscribeSquad(uid, () => void fetchMySquad(uid))
       unsubSquadRef.current = unsubSquad
+      // Live events: pull the auto-discovered feed (cached 12h) and register it
+      // app-wide so quest sheets resolve remote events — no manual searches.
+      void syncRemoteEvents()
     })()
     return () => {
       cancelled = true

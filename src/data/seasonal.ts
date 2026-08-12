@@ -59,7 +59,9 @@ export const SEASONAL_QUESTS: Quest[] = [
     vibe: ['food', 'social'],
     description: 'September is Soweto Food Festival season — hit Walter Sisulu Square and eat something you have never tried. Do not leave until you have a favourite.',
     completionLine: 'You ate your way through Soweto’s food scene. The square approves.',
-    xp: 200, expiresAt: '2026-09-14T21:00:00+02:00', tags: ['food', 'soweto', 'festival'],
+    xp: 200, expiresAt: '2026-09-14T21:00:00+02:00', eventType: 'festival',
+    ticketInfo: { required: false, price: 'street food as priced · some stalls ticketed', where: [{ label: 'Free entry to the square' }, { label: 'Event wristbands at the info tent' }] },
+    tags: ['food', 'soweto', 'festival'],
   }),
   // ── HERITAGE DAY / BRAAI DAY (24 Sep) ──────────────────────────────────────
   qAny({
@@ -81,7 +83,9 @@ export const SEASONAL_QUESTS: Quest[] = [
     vibe: ['entertainment', 'social'],
     description: 'The Daisies festival weekend is on — even a day-trip to Darling counts. Best outfit or best impression wins the bragging rights.',
     completionLine: 'You smelled summer before it even properly arrived. Legendary timing.',
-    xp: 260, expiresAt: '2026-10-05T21:00:00+02:00', tags: ['festival', 'music', 'seasonal'],
+    xp: 260, expiresAt: '2026-10-05T21:00:00+02:00', eventType: 'festival',
+    ticketInfo: { required: true, price: 'weekend tickets from ~R1 500 · day visits cheaper', where: [{ label: 'Online at Webtickets', url: 'https://www.webtickets.co.za/' }, { label: 'Online at Rocking the Daisies', url: 'https://www.rockingthedaisies.com/' }], url: 'https://www.webtickets.co.za/' },
+    tags: ['festival', 'music', 'seasonal'],
   }),
   qAny({
     id: 'sea-joburg-pride', title: 'Joburg Pride Colours', emoji: '🌈',
@@ -153,7 +157,9 @@ export const SEASONAL_QUESTS: Quest[] = [
     vibe: ['chill', 'entertainment'],
     description: 'Summer concert season at Kirstenbosch — bring a blanket and a questionable picnic and watch the sun set behind Table Mountain to live music.',
     completionLine: 'Music, mountains, blanket, people. This is what summer was invented for.',
-    xp: 220, expiresAt: '2027-03-31T21:00:00+02:00', tags: ['music', 'picnic', 'seasonal'],
+    xp: 220, expiresAt: '2027-03-31T21:00:00+02:00', eventType: 'festival',
+    ticketInfo: { required: true, price: 'concerts from ~R120', where: [{ label: 'Online at Webtickets', url: 'https://www.webtickets.co.za/' }, { label: 'At the Kirstenbosch box office on the night' }], url: 'https://www.webtickets.co.za/' },
+    tags: ['music', 'picnic', 'seasonal'],
   }),
   q({
     id: 'sea-cape-carnival', title: 'Cape Town Carnival Colour', emoji: '🎭',
@@ -163,7 +169,9 @@ export const SEASONAL_QUESTS: Quest[] = [
     vibe: ['entertainment', 'social'],
     description: 'The Cape Town Carnival lights up the Fan Walk in March — join in with your best get-up, or cheer the floats from the side.',
     completionLine: 'You cheered, you danced, you went home glowing. Carnival done right.',
-    xp: 190, expiresAt: '2027-03-22T21:00:00+02:00', tags: ['carnival', 'cape town', 'seasonal'],
+    xp: 190, expiresAt: '2027-03-22T21:00:00+02:00', eventType: 'festival',
+    ticketInfo: { required: false, price: 'free to watch · VIP stands ticketed', where: [{ label: 'Free along the Fan Walk route' }, { label: 'VIP tickets online at Cape Town Carnival', url: 'https://www.capetowncarnival.com/' }], url: 'https://www.capetowncarnival.com/' },
+    tags: ['carnival', 'cape town', 'seasonal'],
   }),
   q({
     id: 'sea-varsity-cup', title: 'Varsity Cup Finals Week', emoji: '🎓',
@@ -183,7 +191,9 @@ export const SEASONAL_QUESTS: Quest[] = [
     vibe: ['outdoors', 'entertainment'],
     description: 'Easter weekend at Splashy Fen — camp energy, live music, and the Drakensberg as your backdrop. Even a day visit counts.',
     completionLine: 'You camped, you listened, you came back with dirt under your nails and stories.',
-    xp: 300, expiresAt: '2027-04-06T21:00:00+02:00', tags: ['festival', 'camping', 'seasonal'],
+    xp: 300, expiresAt: '2027-04-06T21:00:00+02:00', eventType: 'festival',
+    ticketInfo: { required: true, price: 'day passes from ~R250 · camping weekend passes more', where: [{ label: 'Online at Webtickets', url: 'https://www.webtickets.co.za/' }, { label: 'Online at Splashy Fen', url: 'https://www.splashyfen.co.za/' }], url: 'https://www.splashyfen.co.za/' },
+    tags: ['festival', 'camping', 'seasonal'],
   }),
   q({
     id: 'sea-two-oceans', title: 'Two Oceans Marathon Cheer', emoji: '🏃',
@@ -203,7 +213,9 @@ export const SEASONAL_QUESTS: Quest[] = [
     vibe: ['random', 'social'],
     description: 'Burn week in the Tankwa — even if you only drive past, do something wonderfully weird in honour of the desert city.',
     completionLine: 'You carried a little bit of the burn’s weirdness into the real world. The desert approves.',
-    xp: 240, expiresAt: '2027-05-04T21:00:00+02:00', tags: ['afrikaburn', 'tankwa', 'seasonal'],
+    xp: 240, expiresAt: '2027-05-04T21:00:00+02:00', eventType: 'festival',
+    ticketInfo: { required: true, price: 'tickets from ~R2 200 (the burn funds itself)', where: [{ label: 'Online at AfrikaBurn (when tickets go on sale)', url: 'https://www.afrikaburn.com/' }], url: 'https://www.afrikaburn.com/' },
+    tags: ['afrikaburn', 'tankwa', 'seasonal'],
   }),
   q({
     id: 'sea-comrades', title: 'Comrades Weekend Cheer', emoji: '🥇',
@@ -223,6 +235,8 @@ export const SEASONAL_QUESTS: Quest[] = [
     vibe: ['entertainment', 'chill'],
     description: 'The National Arts Festival is on in Makhanda — catch any show: comedy, theatre, or a street act that defies explanation.',
     completionLine: 'You watched art you cannot explain. That is the whole point of the festival.',
-    xp: 230, expiresAt: '2027-07-05T21:00:00+02:00', tags: ['arts', 'festival', 'seasonal'],
+    xp: 230, expiresAt: '2027-07-05T21:00:00+02:00', eventType: 'festival',
+    ticketInfo: { required: true, price: 'show tickets from ~R100', where: [{ label: 'Online at the National Arts Festival', url: 'https://www.nationalartsfestival.co.za/' }, { label: 'In person at the festival box office in Makhanda' }], url: 'https://www.nationalartsfestival.co.za/' },
+    tags: ['arts', 'festival', 'seasonal'],
   }),
 ]

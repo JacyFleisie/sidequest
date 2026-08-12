@@ -1,0 +1,53 @@
+name: Fetch live events
+
+# THE "AUTO SEARCH" ENGINE. Runs every morning (04:00 UTC) and regenerates
+# public/events-remote.json from free sources (Howler always; Eventbrite when
+# the EVENTBRITE_TOKEN repo secret is set). The commit is deployed to GitHub
+# Pages by the pages.yml workflow, and the app pulls the feed at launch — so
+# new festivals, markets, concerts and sport events appear with zero manual
+# work. No paid services, no API keys required.
+#
+# Optional setup (Settings → Secrets and variables → Actions):
+#   EVENTBRITE_TOKEN   a free Eventbrite developer token (eventbrite.com/platform)
+#                      → adds hundreds of ticketed events (concerts, comedy, sport)
+
+on:
+  schedule:
+    - cron: '0 4 * * *'   # 06:00 SAST every day
+  workflow_dispatch:       # manual "Run workflow" button too
+
+permissions:
+  contents: write
+
+concurrency:
+  group: events-fetch
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Fetch events (Howler + optional Eventbrite)
+        env:
+          EVENTBRITE_TOKEN: ${{ secrets.EVENTBRITE_TOKEN }}
+        run: node scripts/fetch-events.mjs
+
+      - name: Commit the fresh feed if anything changed
+        run: |
+          git config user.name "sidequest-events-bot"
+          git config user.email "actions@github.com"
+          git add public/events-remote.json
+          if git diff --cached --quiet; then
+            echo "No event changes — feed is already current."
+          else
+            git commit -m "chore: refresh live events feed [skip ci]"
+            git push
+            echo "New events committed — Pages will deploy them, and the app picks them up on next launch."
+          fi

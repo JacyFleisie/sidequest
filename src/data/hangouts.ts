@@ -1132,7 +1132,9 @@ export const HANGOUT_QUESTS: Quest[] = [
     vibe: ['competitive', 'chaotic'],
     description: 'South Africa\'s oldest permanent racetrack. Pick a driver in the crowd, cheer like a fanatic, and argue about lap times the whole way home.',
     completionLine: 'You lost your voice screaming at cars going in circles. Tradition upheld.',
-    xp: 320, tags: ['motorsport', 'racing', 'day out'],
+    xp: 320, eventType: 'automotive',
+    ticketInfo: { required: true, price: 'from ~R100 at the gate', where: [{ label: 'At the gate on race days' }, { label: 'Online at Zwartkops', url: 'https://zwartkops.co.za/' }], url: 'https://zwartkops.co.za/' },
+    tags: ['motorsport', 'racing', 'day out'],
   }),
   q({
     id: 'supersport-park-cricket', title: 'SuperSport Park Cricket Day', emoji: '🏏',

@@ -1,6 +1,6 @@
 import { createPortal } from 'react-dom'
 import { useEffect, useRef, useState } from 'react'
-import { ALL_QUESTS, CATEGORY_META, HOME_BASES, PROVINCES, VIBE_META, chainStats, type Chain, type Quest } from '../data/quests'
+import { ALL_QUESTS, CATEGORY_META, EVENT_TYPE_META, HOME_BASES, PROVINCES, VIBE_META, chainStats, type Chain, type Quest } from '../data/quests'
 import { fmtDuration, getUserLocation } from '../lib/game'
 import { deleteReview, fetchReviews, reportReview, submitReview, type QuestReview, type ReviewStats } from '../lib/reviews'
 import { ensureIdentity, isNativePlatform } from '../lib/sync'
@@ -106,6 +106,8 @@ export const QuestSheet = ({
           <Directions from={{ lat: quest.lat, lng: quest.lng }} fallbackFrom={startPlace} homeBaseId={homeBaseId} />
         )}
 
+        {quest && <TicketBox quest={quest} />}
+
         {quest && <Reviews questId={quest.id} canReview={done} />}
 
         <Button
@@ -184,6 +186,91 @@ function Directions({
         </span>
       </div>
       <p className="directions-note">Opens turn-by-turn directions in the app on your phone.</p>
+    </div>
+  )
+}
+
+// ── Tickets: price + exactly where to buy + a get-tickets link ─────────────
+
+/** Whole days until an ISO deadline; negative when it has passed. */
+const daysUntil = (iso: string): number => {
+  const ms = new Date(iso).getTime() - Date.now()
+  return Math.ceil(ms / 86_400_000)
+}
+
+function TicketCountdown({ quest }: { quest: Quest }) {
+  const deadline = quest.startsAt ?? quest.expiresAt
+  if (!deadline) return null
+  const days = daysUntil(deadline)
+  const isEvent = quest.startsAt !== undefined
+  if (days < 0) {
+    return <p className="tickets-countdown passed">⏳ This event has passed</p>
+  }
+  if (days === 0) {
+    return (
+      <p className="tickets-countdown urgent">
+        {isEvent ? '⏳ Today — last chance to get tickets!' : '⏳ Ends today — last chance!'}
+      </p>
+    )
+  }
+  return (
+    <p className={`tickets-countdown${days <= 3 ? ' urgent' : ''}`}>
+      {isEvent
+        ? `⏳ ${days} day${days === 1 ? '' : 's'} left to get tickets`
+        : `⏳ Ends in ${days} day${days === 1 ? '' : 's'}`}
+    </p>
+  )
+}
+
+function TicketBox({ quest }: { quest: Quest }) {
+  const t = quest.ticketInfo
+  if (!t) return null
+  const open = (url: string) => {
+    if (isNativePlatform()) window.open(url, '_system')
+    else window.open(url, '_blank', 'noopener')
+  }
+  return (
+    <div className="quest-tickets">
+      <div className="tickets-head">
+        <span className="tickets-badge">
+          {quest.eventType ? `${EVENT_TYPE_META[quest.eventType].emoji} ${EVENT_TYPE_META[quest.eventType].label}` : '🎟️'}{' '}
+          {t.required ? '· tickets required' : '· free entry'}
+        </span>
+        {quest.when && <span className="tickets-when">📅 {quest.when}</span>}
+      </div>
+      <TicketCountdown quest={quest} />
+      {t.price && <p className="tickets-price">💰 {t.price}</p>}
+      {t.where && t.where.length > 0 && (
+        <div className="tickets-where">
+          <p className="tickets-where-label">🎟️ Get yours at:</p>
+          {t.where.map((w) => (
+            <p key={w.label} className="tickets-where-item">
+              <span className="tickets-where-bullet">•</span>{' '}
+              {w.url ? (
+                <a
+                  href={w.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    open(w.url as string)
+                  }}
+                  className="tickets-where-link"
+                >
+                  {w.label} ↗
+                </a>
+              ) : (
+                <span>{w.label}</span>
+              )}
+            </p>
+          ))}
+        </div>
+      )}
+      {t.url && (
+        <button className="tickets-btn" onClick={() => open(t.url as string)}>
+          🎟️ Get tickets
+        </button>
+      )}
     </div>
   )
 }

@@ -2,14 +2,17 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ALL_QUESTS,
   CATEGORY_META,
+  EVENT_TYPE_META,
   HOME_BASES,
   VIBE_META,
   registerCustomQuests,
   unregisterCustomQuest,
   type Category,
+  type EventType,
   type Quest,
   type Vibe,
 } from '../data/quests'
+import { fetchRemoteEvents } from '../lib/eventsSync'
 import { getUserLocation, haversineKm, reverseGeocodeLabel } from '../lib/game'
 import { supabase } from '../lib/supabase'
 import { taglineOfTheDay } from '../lib/taglines'
@@ -108,7 +111,11 @@ export default function Generator() {
     const uid = await ensureIdentity()
     setMyUid(uid)
     const rows = uid ? await fetchCustomQuests(uid) : []
-    const shaped = rows.map(rowToQuest)
+    // The auto-discovered live events feed (festivals, markets, concerts,
+    // sport — fetched nightly by the GitHub Actions scraper). Merged in so
+    // pull-to-refresh also grabs the freshest events.
+    const liveEvents = await fetchRemoteEvents()
+    const shaped = [...rows.map(rowToQuest), ...liveEvents]
     setRemoteQuests(shaped)
     registerCustomQuests(shaped)
     // Real review tallies — powers Trending. Never throws; empty on failure.
@@ -139,6 +146,8 @@ export default function Generator() {
   const [anywhereOnly, setAnywhereOnly] = useState(false)
   const [communityOnly, setCommunityOnly] = useState(false)
   const [seasonalOnly, setSeasonalOnly] = useState(false)
+  // Event chips: 🎪 Festival / 🛍️ Market / 🏎️ Automotive. No chip = everything.
+  const [eventChip, setEventChip] = useState<EventType | null>(null)
   // Random seed per mount, so every visit starts with a fresh (different) feed.
   const [shuffleKey, setShuffleKey] = useState(() => (Math.random() * 0xffffffff) >>> 0)
   const [shown, setShown] = useState(PAGE)
@@ -197,9 +206,10 @@ export default function Generator() {
           (!vibe || q.vibe.includes(vibe)) &&
           (!anywhereOnly || q.anywhere) &&
           (!communityOnly || q.ownerId !== undefined) &&
-          (!seasonalOnly || q.expiresAt !== undefined),
+          (!seasonalOnly || q.expiresAt !== undefined) &&
+          (!eventChip || q.eventType === eventChip),
       ),
-    [pool, category, vibe, anywhereOnly, communityOnly, seasonalOnly],
+    [pool, category, vibe, anywhereOnly, communityOnly, seasonalOnly, eventChip],
   )
 
   const handleDelete = (q: Quest) => {
@@ -238,7 +248,7 @@ export default function Generator() {
   }
 
   const activeLabel =
-    [category ? CATEGORY_META[category].emoji + ' ' + CATEGORY_META[category].label : null, vibe ? VIBE_META[vibe].emoji + ' ' + VIBE_META[vibe].label : null, anywhereOnly ? '🌍 Anywhere' : null, communityOnly ? '🧑‍🤝‍🧑 Community' : null, seasonalOnly ? '⏳ Seasonal' : null, trending ? '🔥 Trending' : null]
+    [category ? CATEGORY_META[category].emoji + ' ' + CATEGORY_META[category].label : null, vibe ? VIBE_META[vibe].emoji + ' ' + VIBE_META[vibe].label : null, anywhereOnly ? '🌍 Anywhere' : null, communityOnly ? '🧑‍🤝‍🧑 Community' : null, seasonalOnly ? '⏳ Seasonal' : null, eventChip ? EVENT_TYPE_META[eventChip].emoji + ' ' + EVENT_TYPE_META[eventChip].label : null, trending ? '🔥 Trending' : null]
       .filter(Boolean)
       .join(' · ') || 'All quests'
 
@@ -248,6 +258,7 @@ export default function Generator() {
     setAnywhereOnly(false)
     setCommunityOnly(false)
     setSeasonalOnly(false)
+    setEventChip(null)
     setTrending(false)
     refresh()
   }
@@ -322,6 +333,18 @@ export default function Generator() {
               refresh()
             }}
           />
+          {(Object.keys(EVENT_TYPE_META) as EventType[]).map((et) => (
+            <Chip
+              key={et}
+              label={EVENT_TYPE_META[et].label}
+              emoji={EVENT_TYPE_META[et].emoji}
+              active={eventChip === et}
+              onClick={() => {
+                setEventChip(eventChip === et ? null : et)
+                refresh()
+              }}
+            />
+          ))}
           <Chip
             label="Trending"
             emoji="🔥"
@@ -443,6 +466,19 @@ function QuestCard({
             {q.anywhere ? 'Anywhere' : q.city} · {meta.label}
             {q.anywhere ? '' : ` · ${distance}`}
           </p>
+          {q.eventType && (
+            <p className="feed-card-event">
+              <span className="event-chip">
+                {EVENT_TYPE_META[q.eventType].emoji} {EVENT_TYPE_META[q.eventType].label}
+              </span>
+              {q.when && <span className="event-when">📅 {q.when}</span>}
+              {q.ticketInfo && (
+                <span className="event-tickets">
+                  {q.ticketInfo.required ? '🎟️' : '🆓'} {q.ticketInfo.price ?? (q.ticketInfo.required ? 'Tickets needed' : 'Free entry')}
+                </span>
+              )}
+            </p>
+          )}
           {isCommunity && (
             <p className="feed-card-owner">
               {q.ownerEmoji || '🧑‍🤝‍🧑'} by @{q.ownerName}
