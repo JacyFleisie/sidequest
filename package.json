@@ -1,7 +1,7 @@
 {
   "name": "sidequest",
   "private": true,
-  "version": "1.0.16",
+  "version": "1.0.17",
   "type": "module",
   "scripts": {
     "predev": "node scripts/sync-env.mjs",
@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "typecheck": "tsc -b",
     "apk": "bash scripts/build-apk.sh",
+    "check:quests": "node scripts/check-quests.mjs",
     "bump": "bash scripts/bump-version.sh",
     "release": "bash scripts/release.sh"
   },

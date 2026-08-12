@@ -28,6 +28,7 @@ import {
   syncCompletions,
   syncProfile,
 } from './lib/sync'
+import { fetchMySquad, subscribeSquad } from './lib/squads'
 
 export default function App() {
   const { state } = useGame()
@@ -58,6 +59,7 @@ export default function App() {
   // ── Sync: sign in anonymously, push real stats, listen for friend requests ──
   const uidRef = useRef<string | null>(null)
   const pushedRef = useRef(false)
+  const unsubSquadRef = useRef<(() => void) | null>(null)
   useEffect(() => {
     let unsub: (() => void) | null = null
     let cancelled = false
@@ -93,10 +95,17 @@ export default function App() {
           if (latest) pushToast(`${latest.senderEmoji} ${latest.senderName} sent you a friend request`)
         })()
       })
+      // Squad membership: keeps the +20% XP bonus live everywhere in the app
+      // (not just while the Friends tab is open) and refreshes on any roster
+      // change or disband.
+      void fetchMySquad(uid)
+      const unsubSquad = subscribeSquad(uid, () => void fetchMySquad(uid))
+      unsubSquadRef.current = unsubSquad
     })()
     return () => {
       cancelled = true
       unsub?.()
+      unsubSquadRef.current?.()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { ALL_QUESTS, CHAINS, findQuest, questById, registerCustomQuests, unregisterCustomQuest, type Chain, type Quest } from '../data/quests'
 import { levelFromXp, rankFromXp } from './game'
+import { inSquad } from './squads'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 export interface CompletedEntry {
@@ -318,21 +319,28 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         let awarded = 0
         const stepXpTotal = session.steps.reduce((a, st) => a + st.xp, 0)
 
+        // Squad members earn +20% XP on every quest they finish together.
+        // The multiplier applies at award time, so joining (or leaving) a squad
+        // only affects quests completed while actually in it. Both the entries
+        // pushed to the server and the session total reflect the bonus.
+        const mult = inSquad() ? 1 + 0.2 : 1
+
         for (const step of session.steps) {
           if (!completed[step.questId]) {
+            const stepXp = Math.round(step.xp * mult)
             completed[step.questId] = {
               at: new Date().toISOString(),
-              xp: step.xp,
+              xp: stepXp,
               weather: meta?.weather,
               distFromHomeKm: meta?.distFromHomeKm?.[step.questId],
             }
-            awarded += step.xp
+            awarded += stepXp
           }
         }
 
         // The session "head": a real chain id or a synthetic generated-chain id.
         // Its own XP contribution is whatever isn't already covered by its steps.
-        const bonus = session.totalXp - stepXpTotal
+        const bonus = Math.round((session.totalXp - stepXpTotal) * mult)
         const headId = session.kind === 'chain' ? session.sourceChainId ?? session.id : null
         if (headId) {
           if (!completed[headId]) {

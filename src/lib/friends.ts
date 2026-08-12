@@ -1,6 +1,5 @@
 import { ALL_QUESTS, CHAINS, type Quest } from '../data/quests'
 import { BADGES, levelFromXp, type Progress } from './game'
-import { shareBase } from './share'
 import type { Friend } from './store'
 
 // ── Deterministic seeded profile (no backend — stable per friend id) ────────
@@ -159,42 +158,6 @@ export const friendProfile = (friend: Friend): FriendProfile => {
     badgeEvents,
   }
 }
-
-// ── Friend card: name + emoji (+ optional uid) travel in a URL param ────────
-// The uid is the sender's Supabase profile id: when a card carries one, the
-// recipient can send a REAL friend request to that profile. Cards without a uid
-// (older builds) fall back to the local add.
-export interface FriendCard {
-  n: string
-  e: string
-  u?: string
-}
-
-export const encodeFriendCard = (name: string, emoji: string, uid?: string): string => {
-  const payload: FriendCard = { n: name, e: emoji }
-  if (uid) payload.u = uid
-  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
-  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
-}
-
-export const decodeFriendCard = (raw: string): FriendCard | null => {
-  try {
-    const b64 = raw.replace(/-/g, '+').replace(/_/g, '/')
-    const padded = b64 + '='.repeat((4 - (b64.length % 4)) % 4)
-    const data = JSON.parse(decodeURIComponent(escape(atob(padded)))) as FriendCard
-    if (typeof data.n !== 'string' || typeof data.e !== 'string') return null
-    return {
-      n: data.n.slice(0, 24),
-      e: data.e.slice(0, 8),
-      u: typeof data.u === 'string' && data.u.length > 0 ? data.u : undefined,
-    }
-  } catch {
-    return null
-  }
-}
-
-export const friendCardUrl = (name: string, emoji: string, uid?: string): string =>
-  `${shareBase()}?friend=${encodeFriendCard(name, emoji, uid)}`
 
 // ── Rivalry comparisons ──────────────────────────────────────────────────────
 export interface Rivalry {

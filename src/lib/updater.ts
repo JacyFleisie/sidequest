@@ -6,7 +6,7 @@ import { App as CapApp } from '@capacitor/app'
 export const REPO = 'JacyFleisie/sidequest'
 
 // Keep in sync with package.json + android/app/build.gradle (the release script does it).
-export const APP_VERSION = '1.0.16'
+export const APP_VERSION = '1.0.17'
 
 interface SideQuestUpdaterPlugin {
   downloadApk(options: { url: string; fileName?: string }): Promise<{ path: string }>
@@ -120,6 +120,37 @@ export async function detectJustUpdated(): Promise<UpdatedInfo | null> {
   }
   rememberVersion(current)
   return null
+}
+
+export interface LatestReleaseInfo {
+  version: string
+  notes: string
+  publishedAt: string | null
+}
+
+/** Fetches the latest release (any platform — used by the What's new sheet). */
+export async function fetchLatestRelease(): Promise<LatestReleaseInfo | null> {
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`)
+    if (!res.ok) return null
+    const r = (await res.json()) as { tag_name?: string; body?: string; published_at?: string }
+    return {
+      version: String(r.tag_name ?? '').replace(/^v/, ''),
+      notes: typeof r.body === 'string' ? r.body.trim() : '',
+      publishedAt: r.published_at ?? null,
+    }
+  } catch {
+    return null
+  }
+}
+
+/** Cleans raw GitHub release notes into display lines (drops automation noise). */
+export function cleanReleaseNotes(notes: string): string[] {
+  return notes
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0)
+    .filter((l) => !/^(generated with codebuff|co-authored-by|automated release build|release v\d)/i.test(l))
 }
 
 /**

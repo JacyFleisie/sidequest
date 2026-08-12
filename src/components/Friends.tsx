@@ -28,6 +28,7 @@ import {
   type RealFriend,
 } from '../lib/sync'
 import { usePullToRefresh } from '../lib/usePullToRefresh'
+import SquadPanel from './SquadPanel'
 import { Sheet } from './ui'
 import PullHint from './PullHint'
 
@@ -200,7 +201,7 @@ export default function Friends() {
     <div className="page friends" ref={pageRef}>
       <PullHint pull={pull} refreshing={refreshing} />
       <header className="page-head">
-        <div className="bored-banner">👥 YOUR SQUAD</div>
+        <div className="bored-banner">👥 Your squad</div>
         <h1 className="page-title">Friends</h1>
         <p className="page-sub">Add your crew, compare quests, and keep up with each other's quests across South Africa.</p>
       </header>
@@ -216,6 +217,8 @@ export default function Friends() {
 
       {tab === 'squad' ? (
         <>
+          <SquadPanel realFriends={realFriends} />
+
           <section className="you-card">
             <div className="you-avatar">{youEmoji}</div>
             <div className="you-main">

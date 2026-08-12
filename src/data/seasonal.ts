@@ -1,0 +1,228 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Seasonal quests — limited-time quests tied to real South African events
+// (public holidays, festivals, sports seasons). Each carries an `expiresAt`
+// ISO date; the feed shows a countdown ("Ends Sunday") and drops the quest
+// once the date passes, so the app stays alive with events that disappear.
+// ─────────────────────────────────────────────────────────────────────────────
+import type { ProvinceId, Quest } from './quests'
+
+const PROV_NAMES: Record<ProvinceId, string> = {
+  GP: 'Gauteng',
+  WC: 'Western Cape',
+  KZN: 'KwaZulu-Natal',
+  EC: 'Eastern Cape',
+  FS: 'Free State',
+  LP: 'Limpopo',
+  MP: 'Mpumalanga',
+  NW: 'North West',
+  NC: 'Northern Cape',
+}
+
+const q = (d: Omit<Quest, 'provinceName'>): Quest => ({
+  ...d,
+  provinceName: PROV_NAMES[d.province],
+})
+
+// Doable anywhere (same pattern as social quests — anchor coords are harmless).
+const qAny = (d: Omit<Quest, 'provinceName'>): Quest => ({
+  ...q(d),
+  anywhere: true,
+})
+
+export const SEASONAL_QUESTS: Quest[] = [
+  // ── SPRING (Sep) ────────────────────────────────────────────────────────────
+  qAny({
+    id: 'sea-spring-day', title: 'Spring Day Bloom Hunt', emoji: '🌼',
+    category: 'event', province: 'GP', city: 'Johannesburg', region: 'jhb',
+    lat: -26.2041, lng: 28.0473,
+    durationMin: 30, cost: 0, players: [1, 6], difficulty: 1,
+    vibe: ['outdoors', 'chill'],
+    description: 'Spring Day: find the first proper bloom of the season — a jacaranda bud, a garden rose, anything. Photograph it before the day ends.',
+    completionLine: 'You found proof that winter ends. The most important discovery of the year.',
+    xp: 120, expiresAt: '2026-09-01T21:00:00+02:00', tags: ['spring', 'flowers', 'seasonal'],
+  }),
+  qAny({
+    id: 'sea-springbok-season', title: 'Springboks Game-Day Energy', emoji: '🏉',
+    category: 'event', province: 'GP', city: 'Johannesburg', region: 'jhb',
+    lat: -26.2041, lng: 28.0473,
+    durationMin: 90, cost: 0, players: [1, 10], difficulty: 1,
+    vibe: ['social', 'competitive'],
+    description: 'It’s Rugby Championship season. Find somewhere with the game on, wear something green, and celebrate (or commiserate) with complete strangers.',
+    completionLine: 'You bonded with strangers over a ball. That is the South African way.',
+    xp: 150, expiresAt: '2026-09-19T21:00:00+02:00', tags: ['rugby', 'sports', 'seasonal'],
+  }),
+  q({
+    id: 'sea-soweto-food-fest', title: 'Soweto Food Festival Taste Run', emoji: '🌭',
+    category: 'food', province: 'GP', city: 'Soweto', region: 'jhb',
+    lat: -26.2404, lng: 27.8988,
+    durationMin: 120, cost: 100, players: [1, 8], difficulty: 1,
+    vibe: ['food', 'social'],
+    description: 'September is Soweto Food Festival season — hit Walter Sisulu Square and eat something you have never tried. Do not leave until you have a favourite.',
+    completionLine: 'You ate your way through Soweto’s food scene. The square approves.',
+    xp: 200, expiresAt: '2026-09-14T21:00:00+02:00', tags: ['food', 'soweto', 'festival'],
+  }),
+  // ── HERITAGE DAY / BRAAI DAY (24 Sep) ──────────────────────────────────────
+  qAny({
+    id: 'sea-braai-day', title: 'National Braai Day Feast', emoji: '🔥',
+    category: 'food', province: 'GP', city: 'Johannesburg', region: 'jhb',
+    lat: -26.2041, lng: 28.0473,
+    durationMin: 120, cost: 80, players: [2, 10], difficulty: 1,
+    vibe: ['food', 'social'],
+    description: 'Heritage Day is Braai Day. Braai something — boerewors, a steak, even a sad sausage on a disposable grid. Prove the flames with a photo.',
+    completionLine: 'You honoured the national flame. Your ancestors of braai are proud.',
+    xp: 180, expiresAt: '2026-09-24T21:00:00+02:00', tags: ['braai', 'heritage', 'food'],
+  }),
+  // ── OCTOBER ─────────────────────────────────────────────────────────────────
+  q({
+    id: 'sea-daisies', title: 'Rocking the Daisies Weekend', emoji: '🌼',
+    category: 'event', province: 'WC', city: 'Darling', region: 'cape-town',
+    lat: -33.3892, lng: 18.4812,
+    durationMin: 300, cost: 200, players: [2, 8], difficulty: 2,
+    vibe: ['entertainment', 'social'],
+    description: 'The Daisies festival weekend is on — even a day-trip to Darling counts. Best outfit or best impression wins the bragging rights.',
+    completionLine: 'You smelled summer before it even properly arrived. Legendary timing.',
+    xp: 260, expiresAt: '2026-10-05T21:00:00+02:00', tags: ['festival', 'music', 'seasonal'],
+  }),
+  qAny({
+    id: 'sea-joburg-pride', title: 'Joburg Pride Colours', emoji: '🌈',
+    category: 'event', province: 'GP', city: 'Johannesburg', region: 'jhb',
+    lat: -26.2041, lng: 28.0473,
+    durationMin: 90, cost: 0, players: [1, 10], difficulty: 1,
+    vibe: ['social', 'funny'],
+    description: 'Pride weekend in Jozi — wear your most colourful outfit, show up somewhere public, and celebrate exactly who you are.',
+    completionLine: 'You showed up in colour. The whole city glowed a little brighter.',
+    xp: 160, expiresAt: '2026-10-25T21:00:00+02:00', tags: ['pride', 'jozi', 'seasonal'],
+  }),
+  // ── DECEMBER HOLIDAYS ───────────────────────────────────────────────────────
+  qAny({
+    id: 'sea-december-lights', title: 'Festive Lights Crawl', emoji: '🎄',
+    category: 'chill', province: 'GP', city: 'Johannesburg', region: 'jhb',
+    lat: -26.2041, lng: 28.0473,
+    durationMin: 60, cost: 0, players: [1, 6], difficulty: 1,
+    vibe: ['chill', 'romantic'],
+    description: 'Find the most over-the-top Christmas-lights street near you and rate it out of ten. The tackier, the better.',
+    completionLine: 'You rated neighbourhoods by their light displays. This is the important work.',
+    xp: 130, expiresAt: '2027-01-03T21:00:00+02:00', tags: ['christmas', 'lights', 'seasonal'],
+  }),
+  q({
+    id: 'sea-durban-beach', title: 'Durban Beachfront Countdown', emoji: '🏖️',
+    category: 'activity', province: 'KZN', city: 'Durban', region: 'durban',
+    lat: -29.8587, lng: 31.0218,
+    durationMin: 120, cost: 30, players: [1, 10], difficulty: 1,
+    vibe: ['outdoors', 'social'],
+    description: 'December holidays are beach time — swim, paddle, or argue about who gets the last boerie roll on the Golden Mile.',
+    completionLine: 'You did the December Durban thing properly. The sea remembers you.',
+    xp: 170, expiresAt: '2027-01-04T21:00:00+02:00', tags: ['beach', 'durban', 'summer'],
+  }),
+  q({
+    id: 'sea-camps-bay-sunset', title: 'Camps Bay Summer Sunset', emoji: '🌅',
+    category: 'chill', province: 'WC', city: 'Cape Town', region: 'cape-town',
+    lat: -33.9512, lng: 18.3780,
+    durationMin: 60, cost: 30, players: [1, 8], difficulty: 1,
+    vibe: ['chill', 'romantic'],
+    description: 'The classic December-evening move: sunset on Camps Bay, playlist on, zero plans. Stay until the sky gives up.',
+    completionLine: 'You watched the sky do its thing. Some things you cannot rush.',
+    xp: 150, expiresAt: '2027-01-06T21:00:00+02:00', tags: ['sunset', 'cape town', 'summer'],
+  }),
+  qAny({
+    id: 'sea-nye-rooftop', title: 'New Year’s Eve Rooftop Moment', emoji: '🎆',
+    category: 'event', province: 'GP', city: 'Johannesburg', region: 'jhb',
+    lat: -26.2041, lng: 28.0473,
+    durationMin: 90, cost: 0, players: [1, 10], difficulty: 1,
+    vibe: ['social', 'random'],
+    description: 'Watch the fireworks (or the neighbourhood chaos) and pick your word for the new year. Tell someone what it is.',
+    completionLine: 'You welcomed the new year loudly. The old one is officially retired.',
+    xp: 200, expiresAt: '2027-01-01T02:00:00+02:00', tags: ['new year', 'fireworks', 'seasonal'],
+  }),
+  q({
+    id: 'sea-garden-route', title: 'Garden Route Summer Road Trip', emoji: '🚗',
+    category: 'adventure', province: 'WC', city: 'Knysna', region: 'garden-route',
+    lat: -34.0360, lng: 23.0480,
+    durationMin: 300, cost: 150, players: [2, 6], difficulty: 2,
+    vibe: ['outdoors', 'chaotic'],
+    description: 'December is road-trip season — at least one coastal stop, one lighthouse photo, and one legendary pie along the Garden Route.',
+    completionLine: 'You road-tripped like it was a national sport. It basically is.',
+    xp: 320, expiresAt: '2027-01-08T21:00:00+02:00', tags: ['road trip', 'garden route', 'summer'],
+  }),
+  // ── SUMMER INTO AUTUMN (2027) ───────────────────────────────────────────────
+  q({
+    id: 'sea-kirstenbosch', title: 'Kirstenbosch Picnic Concert', emoji: '🎶',
+    category: 'event', province: 'WC', city: 'Cape Town', region: 'cape-town',
+    lat: -33.9877, lng: 18.4324,
+    durationMin: 180, cost: 120, players: [2, 8], difficulty: 1,
+    vibe: ['chill', 'entertainment'],
+    description: 'Summer concert season at Kirstenbosch — bring a blanket and a questionable picnic and watch the sun set behind Table Mountain to live music.',
+    completionLine: 'Music, mountains, blanket, people. This is what summer was invented for.',
+    xp: 220, expiresAt: '2027-03-31T21:00:00+02:00', tags: ['music', 'picnic', 'seasonal'],
+  }),
+  q({
+    id: 'sea-cape-carnival', title: 'Cape Town Carnival Colour', emoji: '🎭',
+    category: 'event', province: 'WC', city: 'Cape Town', region: 'cape-town',
+    lat: -33.9249, lng: 18.4241,
+    durationMin: 120, cost: 50, players: [1, 10], difficulty: 1,
+    vibe: ['entertainment', 'social'],
+    description: 'The Cape Town Carnival lights up the Fan Walk in March — join in with your best get-up, or cheer the floats from the side.',
+    completionLine: 'You cheered, you danced, you went home glowing. Carnival done right.',
+    xp: 190, expiresAt: '2027-03-22T21:00:00+02:00', tags: ['carnival', 'cape town', 'seasonal'],
+  }),
+  q({
+    id: 'sea-varsity-cup', title: 'Varsity Cup Finals Week', emoji: '🎓',
+    category: 'event', province: 'GP', city: 'Johannesburg', region: 'jhb',
+    lat: -26.2041, lng: 28.0473,
+    durationMin: 90, cost: 50, players: [1, 10], difficulty: 1,
+    vibe: ['competitive', 'social'],
+    description: 'Student rugby finals week — find a campus or a spot showing the final and join the noise. Bonus points for face paint.',
+    completionLine: 'You survived finals week. The student-rugby one, anyway.',
+    xp: 180, expiresAt: '2027-04-16T21:00:00+02:00', tags: ['rugby', 'students', 'seasonal'],
+  }),
+  q({
+    id: 'sea-splashy-fen', title: 'Splashy Fen Long Weekend', emoji: '⛺',
+    category: 'event', province: 'KZN', city: 'Underberg', region: 'drakensberg',
+    lat: -29.7917, lng: 29.4980,
+    durationMin: 300, cost: 250, players: [2, 8], difficulty: 2,
+    vibe: ['outdoors', 'entertainment'],
+    description: 'Easter weekend at Splashy Fen — camp energy, live music, and the Drakensberg as your backdrop. Even a day visit counts.',
+    completionLine: 'You camped, you listened, you came back with dirt under your nails and stories.',
+    xp: 300, expiresAt: '2027-04-06T21:00:00+02:00', tags: ['festival', 'camping', 'seasonal'],
+  }),
+  q({
+    id: 'sea-two-oceans', title: 'Two Oceans Marathon Cheer', emoji: '🏃',
+    category: 'activity', province: 'WC', city: 'Cape Town', region: 'cape-town',
+    lat: -33.9573, lng: 18.4602,
+    durationMin: 120, cost: 0, players: [1, 8], difficulty: 1,
+    vibe: ['competitive', 'social'],
+    description: 'Easter Saturday is Two Oceans day — find a spot on the route and cheer like you mean it. Your voice is the runners’ fuel.',
+    completionLine: 'You cheered strangers up a hill. Somewhere, a runner finished because of you.',
+    xp: 140, expiresAt: '2027-04-04T21:00:00+02:00', tags: ['running', 'cape town', 'seasonal'],
+  }),
+  q({
+    id: 'sea-afrikaburn', title: 'AfrikaBurn Dust Spirit', emoji: '🎨',
+    category: 'event', province: 'NC', city: 'Tankwa Karoo', region: 'upington',
+    lat: -32.2680, lng: 19.9950,
+    durationMin: 120, cost: 0, players: [1, 6], difficulty: 2,
+    vibe: ['random', 'social'],
+    description: 'Burn week in the Tankwa — even if you only drive past, do something wonderfully weird in honour of the desert city.',
+    completionLine: 'You carried a little bit of the burn’s weirdness into the real world. The desert approves.',
+    xp: 240, expiresAt: '2027-05-04T21:00:00+02:00', tags: ['afrikaburn', 'tankwa', 'seasonal'],
+  }),
+  q({
+    id: 'sea-comrades', title: 'Comrades Weekend Cheer', emoji: '🥇',
+    category: 'activity', province: 'KZN', city: 'Durban', region: 'durban',
+    lat: -29.8286, lng: 31.0306,
+    durationMin: 120, cost: 0, players: [1, 8], difficulty: 1,
+    vibe: ['competitive', 'social'],
+    description: 'Comrades weekend — find the route, cheer a stranger, and learn the difference between the Up run and the Down run.',
+    completionLine: 'You witnessed the ultimate human ultramarathon. Respect levels: maximum.',
+    xp: 160, expiresAt: '2027-06-14T21:00:00+02:00', tags: ['comrades', 'running', 'seasonal'],
+  }),
+  q({
+    id: 'sea-national-arts', title: 'National Arts Festival Run', emoji: '🎭',
+    category: 'event', province: 'EC', city: 'Makhanda', region: 'gebeha',
+    lat: -33.3106, lng: 26.5256,
+    durationMin: 180, cost: 100, players: [1, 8], difficulty: 1,
+    vibe: ['entertainment', 'chill'],
+    description: 'The National Arts Festival is on in Makhanda — catch any show: comedy, theatre, or a street act that defies explanation.',
+    completionLine: 'You watched art you cannot explain. That is the whole point of the festival.',
+    xp: 230, expiresAt: '2027-07-05T21:00:00+02:00', tags: ['arts', 'festival', 'seasonal'],
+  }),
+]

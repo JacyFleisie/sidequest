@@ -34,7 +34,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Grab a bench in the square, take the mandatory photo with the giant Mandela statue, and rate the people walking past.',
     completionLine: 'You watched Sandton go by from the best bench in town. The statue nodded approvingly.',
     xp: 120, trending: true, tags: ['sandton', 'people-watching', 'statue'],
-    completedCount: 2140,
   }),
   q({
     id: 'sandton-food-court', title: 'Sandton City Food Court Battle', emoji: '🍜',
@@ -45,7 +44,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Everyone gets R80. Best meal from the food court wins. Bonus points for something you can\'t pronounce.',
     completionLine: 'You ate your way through the food court like a champion. The escalator saluted you.',
     xp: 160, tags: ['food court', 'mall', 'challenge'],
-    completedCount: 1230,
   }),
   q({
     id: 'melrose-arch-walk', title: 'Melrose Arch Window-Shopping Walk', emoji: '🛍️',
@@ -56,7 +54,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The prettiest precinct in Joburg. Walk the cobbles, judge every shop window, find the best-dressed person.',
     completionLine: 'You window-shopped for 75 minutes and bought nothing. The most powerful flex in retail.',
     xp: 140, tags: ['walk', 'mall', 'free'],
-    completedCount: 980,
   }),
   q({
     id: 'mall-of-africa-weird', title: 'Mall of Africa Weirdest Display', emoji: '🔎',
@@ -67,7 +64,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Walk every level of the biggest mall in Africa. Find the single weirdest window display. Photo proof. Vote.',
     completionLine: 'You found a mannequin doing something that cannot be un-seen. The group is scarred. Winner.',
     xp: 170, tags: ['mall', 'challenge', 'funny'],
-    completedCount: 760,
   }),
   q({
     id: 'menlyn-milkshake', title: 'Menlyn Park Milkshake Showdown', emoji: '🥤',
@@ -78,7 +74,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Two shakes, one verdict. Everyone gets R60 and must rate their milkshake like a serious food critic.',
     completionLine: 'You used the word "tannins" about a milkshake in a mall. Pretoria will never recover.',
     xp: 130, tags: ['milkshake', 'mall', 'challenge'],
-    completedCount: 840,
   }),
   q({
     id: 'gateway-arcade', title: 'Gateway Arcade Battle', emoji: '🕹️',
@@ -89,7 +84,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The biggest mall in the southern hemisphere, one arcade, one winner. High score or nothing.',
     completionLine: 'Your name is now on a high-score screen. You are basically famous in Umhlanga.',
     xp: 240, tags: ['arcade', 'mall', 'competition'],
-    completedCount: 1150,
   }),
   q({
     id: 'canal-walk-loop', title: 'Century City & Canal Walk Loop', emoji: '⛲',
@@ -100,7 +94,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Walk the canals around Century City, past the mall, around the lake, and rate the swans.',
     completionLine: 'You walked a full loop around a mall. Exercise and retail in one. Efficient.',
     xp: 150, tags: ['walk', 'canals', 'free'],
-    completedCount: 890,
   }),
   q({
     id: 'baywest-food-court', title: 'Baywest Mall Food Court Race', emoji: '🍟',
@@ -111,7 +104,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Gqeberha\'s biggest mall. R80 each, one food court, everyone must rate every bite out loud.',
     completionLine: 'You rated chips with the seriousness of a wine sommelier. The Bay is impressed.',
     xp: 150, tags: ['food court', 'mall', 'challenge'],
-    completedCount: 620,
   }),
   q({
     id: 'hemmingways-esplanade', title: 'Hemmingways & the Esplanade', emoji: '🌊',
@@ -122,7 +114,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The mall, then the esplanade, then the beach. The classic East London loop in one afternoon.',
     completionLine: 'You did the mall-to-sea walk. East London\'s greatest hits in 90 minutes.',
     xp: 140, tags: ['mall', 'esplanade', 'walk'],
-    completedCount: 540,
   }),
   q({
     id: 'mimosa-icecream', title: 'Mimosa Mall Ice Cream Hunt', emoji: '🍨',
@@ -133,7 +124,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'One mall, three ice cream spots, one winner. Judge them fairly. Then judge them again.',
     completionLine: 'You compared three ice creams in a mall. Your palate has been certified by Mimosa.',
     xp: 120, tags: ['ice cream', 'mall', 'treat'],
-    completedCount: 430,
   }),
   q({
     id: 'savannah-window', title: 'Savannah Mall Window Walk', emoji: '🪟',
@@ -144,7 +134,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Polokwane\'s biggest mall. Walk it top to bottom and pick the store with the best window display.',
     completionLine: 'You walked the whole mall and chose a winner. The escalators have seen it all now.',
     xp: 110, tags: ['mall', 'walk', 'free'],
-    completedCount: 380,
   }),
   q({
     id: 'ilanga-botanical', title: 'Ilanga Mall & Botanical Walk', emoji: '🌺',
@@ -155,7 +144,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The mall for supplies, then straight into the Lowveld Botanical Garden across the road. Best of both worlds.',
     completionLine: 'You went from shopping to nature in 60 seconds. Mbombela is showing off and we love it.',
     xp: 190, tags: ['mall', 'garden', 'walk'],
-    completedCount: 460,
   }),
   q({
     id: 'diamond-cinema', title: 'Diamond Pavilion Cinema Night', emoji: '🎬',
@@ -166,7 +154,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Pick the worst-sounding movie showing tonight and watch it. The group that survives wins.',
     completionLine: 'You watched a questionable movie with your whole heart. The Big Hole has seen worse.',
     xp: 220, tags: ['cinema', 'mall', 'night'],
-    completedCount: 350,
   }),
 
   // ── PARKS & GARDENS ────────────────────────────────────────────────────────
@@ -179,7 +166,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Blanket, snacks, and the best people-and-duck-watching in Joburg. Bring a ball if you\'re feeling sporty.',
     completionLine: 'You had a picnic and the ducks reviewed it. Five stars from the feathered critics.',
     xp: 150, tags: ['park', 'picnic', 'free'],
-    completedCount: 1240,
   }),
   q({
     id: 'emmarentia-dam', title: 'Emmarentia Dam Loop Walk', emoji: '🌳',
@@ -190,7 +176,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The dam loop, the botanical gardens, and the dogs. The most Johannesburg walk there is.',
     completionLine: 'You walked the dam loop and counted at least 40 dogs. A perfect ratio.',
     xp: 140, tags: ['dam', 'walk', 'dogs'],
-    completedCount: 1090,
   }),
   q({
     id: 'james-gray-park', title: 'James & Ethel Gray Park Sunset', emoji: '🌇',
@@ -201,7 +186,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The park with the best skyline view in Joburg. Time it for golden hour and just sit.',
     completionLine: 'You watched the city light up from a park bench. Peak Johannesburg romance.',
     xp: 130, tags: ['park', 'sunset', 'view'],
-    completedCount: 720,
   }),
   q({
     id: 'melville-koppies', title: 'Melville Koppies City View', emoji: '⛰️',
@@ -212,7 +196,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Joburg\'s oldest protected nature area, right in the middle of the city. Walk up for a view that costs nothing.',
     completionLine: 'You climbed a koppie older than the city itself. The skyline below is younger than your walk.',
     xp: 170, tags: ['hike', 'koppies', 'free'],
-    completedCount: 830,
   }),
   q({
     id: 'klipriviersberg', title: 'Klipriviersberg Trail Run', emoji: '🏃',
@@ -223,7 +206,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The south\'s best-kept secret: kilometres of trails, koppies and kudu in the middle of the city.',
     completionLine: 'You saw a kudu on a trail inside Johannesburg. Nobody believes you. Correct.',
     xp: 260, tags: ['trail', 'nature', 'free'],
-    completedCount: 610,
   }),
   q({
     id: 'pretoria-botanical', title: 'Pretoria Botanical Garden Meander', emoji: '🌿',
@@ -234,7 +216,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Succulent gardens, forest trails and a dam. The prettiest free afternoon in Pretoria.',
     completionLine: 'You meandered through 50 hectares of plants. Your phone now has 100 new wallpapers.',
     xp: 150, tags: ['garden', 'free', 'walk'],
-    completedCount: 940,
   }),
   q({
     id: 'groenkloof', title: 'Groenkloof Nature Reserve Hike', emoji: '🥾',
@@ -245,7 +226,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The oldest nature reserve in the country, on Pretoria\'s doorstep. Giraffes included, right next to the city.',
     completionLine: 'You hiked past a giraffe while Pretoria watched from the hills. Absurd. Beautiful. True.',
     xp: 280, tags: ['hike', 'nature reserve', 'giraffes'],
-    completedCount: 780,
   }),
   q({
     id: 'faerie-glen', title: 'Faerie Glen Stream Walk', emoji: '🏞️',
@@ -256,7 +236,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'A stream, a kloof and actual fairies (probably). The easiest escape from the city.',
     completionLine: 'You walked beside a stream in a city. The fairies are real. You saw one. Probably.',
     xp: 140, tags: ['walk', 'stream', 'free'],
-    completedCount: 560,
   }),
   q({
     id: 'rietvlei', title: 'Rietvlei Game Reserve Drive', emoji: '🦓',
@@ -267,7 +246,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'A full game reserve inside the city limits. Self-drive, own car, zero crowds.',
     completionLine: 'You went on a game drive before dinner. Pretoria has a reserve and uses it. Legend.',
     xp: 240, tags: ['game reserve', 'self-drive', 'city'],
-    completedCount: 890,
   }),
   q({
     id: 'wonderboom', title: 'The Wonderboom Fig Tree', emoji: '🌳',
@@ -278,7 +256,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'A giant fig tree that\'s 1,000 years old and covers half a hectare. It has seen everything. It will see you.',
     completionLine: 'You stood under a tree older than countries. It judged you. You passed.',
     xp: 160, tags: ['ancient tree', 'nature', 'weird'],
-    completedCount: 640,
   }),
   q({
     id: 'companys-garden', title: 'Company\'s Garden Squirrel Quest', emoji: '🐿️',
@@ -289,7 +266,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Cape Town\'s oldest garden, full of squirrels that have no fear of humans. Make a friend.',
     completionLine: 'A squirrel ate out of your hand. You have been adopted by Cape Town\'s most powerful family.',
     xp: 130, tags: ['garden', 'squirrels', 'free'],
-    completedCount: 1650,
   }),
   q({
     id: 'green-point-park', title: 'Green Point Urban Park Sunset', emoji: '🌅',
@@ -300,7 +276,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The park with the mountain view. Grass, sunset, and the city doing its thing below.',
     completionLine: 'You watched the sun set over the mountain from a park. Cape Town has no notes.',
     xp: 130, tags: ['park', 'sunset', 'free'],
-    completedCount: 870,
   }),
   q({
     id: 'de-waal-park', title: 'De Waal Park Dog-Spotting', emoji: '🐕',
@@ -311,7 +286,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The most famous dog park in the country. Count the breeds, rate the fetch skills, pet responsibly.',
     completionLine: 'You rated the fetch form of 30 dogs. The judges (the dogs) approve.',
     xp: 120, tags: ['dogs', 'park', 'free'],
-    completedCount: 730,
   }),
   q({
     id: 'tokai-forest', title: 'Tokai Forest Pines Walk', emoji: '🌲',
@@ -322,7 +296,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Pine forest, gravel roads and views over the southern suburbs. Feels like a mountain holiday, 20 minutes from town.',
     completionLine: 'You walked through a pine forest that smells like a holiday. Free of charge. Unfair advantage.',
     xp: 190, tags: ['forest', 'walk', 'free'],
-    completedCount: 920,
   }),
   q({
     id: 'newlands-forest', title: 'Newlands Forest Waterfall Walk', emoji: '💧',
@@ -333,7 +306,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'A proper forest path with a waterfall at the top. Cooler than the city by five degrees and a million worries.',
     completionLine: 'You found a waterfall in a forest in a city. Three layers of surprise. Excellent.',
     xp: 180, tags: ['forest', 'waterfall', 'free'],
-    completedCount: 850,
   }),
   q({
     id: 'umgeni-bird-park', title: 'Umgeni River Bird Park', emoji: '🦜',
@@ -344,7 +316,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Hundreds of birds, a waterfall and an aviary you can walk through. Bring your best bird impression.',
     completionLine: 'You made eye contact with a macaw. It understood you completely. You are friends now.',
     xp: 190, tags: ['birds', 'park', 'family'],
-    completedCount: 980,
   }),
   q({
     id: 'burman-bush', title: 'Burman Bush Forest Walk', emoji: '🌴',
@@ -355,7 +326,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'An untouched coastal forest in the middle of Durban. Monkeys may or may not mug you for snacks.',
     completionLine: 'You walked a wild forest in the city. The monkeys watched. They have opinions about your snacks.',
     xp: 150, tags: ['forest', 'free', 'nature'],
-    completedCount: 690,
   }),
   q({
     id: 'kenneth-stainbank', title: 'Kenneth Stainbank Nature Reserve', emoji: '🦌',
@@ -366,7 +336,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Zebra, antelope and trails in the south of Durban. Walk it and count the species.',
     completionLine: 'You spotted zebra inside Durban\'s city limits. The city is basically a safari park. No complaints.',
     xp: 240, tags: ['nature reserve', 'wildlife', 'walk'],
-    completedCount: 540,
   }),
   q({
     id: 'settlers-park', title: 'Settlers Park Nature Walk', emoji: '🌄',
@@ -377,7 +346,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'A green valley right behind the city centre with bushbuck and monkeys. The Bay\'s best free secret.',
     completionLine: 'You walked a wild valley in the middle of Gqeberha. The bushbuck barely looked up. Impressive.',
     xp: 170, tags: ['nature', 'free', 'walk'],
-    completedCount: 480,
   }),
   q({
     id: 'kragga-kamma', title: 'Kragga Kamma Walk With Rhinos', emoji: '🦏',
@@ -388,7 +356,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'A game park you can walk. Rhinos, giraffes and zebra on foot, at your own pace. The closest you\'ll get on purpose.',
     completionLine: 'You walked past a rhino on foot and kept your cool. (You did not keep your cool.)',
     xp: 280, trending: true, tags: ['rhinos', 'walk', 'game park'],
-    completedCount: 640,
   }),
   q({
     id: 'franklin-reserve', title: 'Franklin Game Reserve City Wildlife', emoji: '🦙',
@@ -399,7 +366,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Antelope and zebra roaming a reserve inside Bloemfontein. Free, walkable and genuinely wild.',
     completionLine: 'You walked among game in a city and paid nothing. Bloemfontein is the most underrated place on Earth.',
     xp: 180, tags: ['game reserve', 'free', 'city'],
-    completedCount: 590,
   }),
   q({
     id: 'polokwane-bird-park', title: 'Polokwane Bird & Reptile Park', emoji: '🐍',
@@ -410,7 +376,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Birds, snakes and the most relaxed afternoon in Limpopo\'s capital. Hold the snake. Or don\'t. No pressure.',
     completionLine: 'You looked a snake in the eye. It blinked first. You are now the alpha of Polokwane.',
     xp: 170, tags: ['birds', 'reptiles', 'park'],
-    completedCount: 480,
   }),
   q({
     id: 'lowveld-botanical', title: 'Lowveld Botanical Garden & Crocodile River', emoji: '🐊',
@@ -421,7 +386,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'A tropical garden on the banks of the Crocodile River. Baobabs, cycads and croc-spotting from the bridge.',
     completionLine: 'You walked a tropical garden in Mpumalanga. The baobabs have accepted you as one of their own.',
     xp: 190, tags: ['garden', 'river', 'free'],
-    completedCount: 560,
   }),
   q({
     id: 'kamfers-dam', title: 'Kamfers Dam Flamingo Watch', emoji: '🦩',
@@ -432,7 +396,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Thousands of flamingos, right next to Kimberley. One of the largest flamingo populations in the world. Free.',
     completionLine: 'You watched a pink lake of flamingos. Northern Cape flexing again. Unfair.',
     xp: 160, trending: true, tags: ['flamingos', 'birds', 'free'],
-    completedCount: 520,
   }),
 
   // ── HIKES & TRAILS ─────────────────────────────────────────────────────────
@@ -445,7 +408,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The most famous hike in the country. Start in the dark, chains and ladders near the top, sunrise over the bay.',
     completionLine: 'You watched the sun rise over Cape Town from a mountain with a chain section. Certified legend.',
     xp: 420, trending: true, tags: ['hike', 'sunrise', 'iconic'],
-    completedCount: 2380,
   }),
   q({
     id: 'platteklip-gorge', title: 'Platteklip Gorge Stairmaster', emoji: '🧗',
@@ -456,7 +418,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The direct route up Table Mountain. Steep, honest, and the fastest way to earn the view.',
     completionLine: 'You climbed a mountain on a staircase of rock. The city below has no idea how hard that was.',
     xp: 450, tags: ['hike', 'table mountain', 'steep'],
-    completedCount: 1290,
   }),
   q({
     id: 'skeleton-gorge', title: 'Skeleton Gorge Forest Hike', emoji: '🌲',
@@ -467,7 +428,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Up through indigenous forest, past waterfalls, onto the Table Mountain plateau. The greenest way up.',
     completionLine: 'You climbed through a jungle onto a flat mountain. The forest is proud of you.',
     xp: 480, tags: ['hike', 'forest', 'mountain'],
-    completedCount: 870,
   }),
   q({
     id: 'hennops', title: 'Hennops Hiking Trail', emoji: '🏞️',
@@ -478,7 +438,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The classic Gauteng trail: koppies, the Hennops river and views over the Cradle of Humankind.',
     completionLine: 'You hiked Gauteng\'s most famous trail. The koppies remember you now.',
     xp: 320, tags: ['hike', 'trail', 'cradle'],
-    completedCount: 1120,
   }),
   q({
     id: 'giba-gorge', title: 'Giba Gorge Mountain Biking', emoji: '🚵',
@@ -489,7 +448,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Durban\'s go-to trail park. Hire a bike or bring your own and hit the berms.',
     completionLine: 'You rode the berms at Giba and only fell once. The mountain bikers nodded at you.',
     xp: 300, tags: ['mountain bike', 'trails', 'adventure'],
-    completedCount: 740,
   }),
   q({
     id: 'krantzkloof', title: 'Krantzkloof Falls Hike', emoji: '💦',
@@ -500,7 +458,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Two massive waterfalls in a kloof just outside Durban. The roar reaches you before the falls do.',
     completionLine: 'You hiked to a double waterfall in Kloof. The kloof has claimed another explorer. Welcome.',
     xp: 310, tags: ['waterfall', 'hike', 'kloof'],
-    completedCount: 820,
   }),
 
   // ── FOOD SPOTS ─────────────────────────────────────────────────────────────
@@ -513,7 +470,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Cape Town\'s greatest invention: a metre-long roll stuffed with everything. Find the best one. Rate the sauce-to-filling ratio.',
     completionLine: 'You ate a Gatsby and reviewed it like a critic. The Cape has blessed you.',
     xp: 190, trending: true, tags: ['gatsby', 'iconic', 'cape town'],
-    completedCount: 1430,
   }),
   q({
     id: 'fish-chips-dbn', title: 'Fish & Chips by the Sea', emoji: '🐟',
@@ -524,7 +480,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The North Beach classic: fish and chips with the Indian Ocean as the dining room.',
     completionLine: 'You ate fish and chips 20 metres from the sea. The seagulls filed a formal complaint about your leftovers.',
     xp: 160, tags: ['fish and chips', 'beach', 'food'],
-    completedCount: 980,
   }),
   q({
     id: 'fish-chips-pe', title: 'Boardwalk Fish & Chips', emoji: '🍤',
@@ -535,7 +490,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Gqeberha\'s seafront: fish and chips on the boardwalk while the surfers do their thing.',
     completionLine: 'You ate seafood while watching surfers. The Bay delivered as always.',
     xp: 160, tags: ['fish and chips', 'boardwalk', 'food'],
-    completedCount: 720,
   }),
   q({
     id: 'samoosa-run', title: 'The Great Samoosa Run', emoji: '🥟',
@@ -546,7 +500,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Three spots, one mission: the best samoosa in the CBD. Everyone R40, compare, and vote with your mouth.',
     completionLine: 'You ate seven samoosas to find the best one. Science required sacrifice. You volunteered.',
     xp: 170, tags: ['samoosa', 'street food', 'challenge'],
-    completedCount: 640,
   }),
 
   // ── TEEN ENTERTAINMENT ─────────────────────────────────────────────────────
@@ -559,7 +512,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Wall-to-wall trampolines, dodgeball and foam pits. Best trick wins, worst fall is the real winner.',
     completionLine: 'You attempted a flip and mostly succeeded. The foam pit witnessed everything.',
     xp: 230, tags: ['trampoline', 'dodgeball', 'fun'],
-    completedCount: 1320,
   }),
   q({
     id: 'trampoline-ct', title: 'Bounce Battle at Century City', emoji: '🤸',
@@ -570,7 +522,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Ninja courses, trampolines and the eternal question: who bounces the highest?',
     completionLine: 'You bounced higher than anyone. Gravity respectfully disagrees but allowed it.',
     xp: 230, tags: ['trampoline', 'ninja course', 'fun'],
-    completedCount: 1090,
   }),
   q({
     id: 'bowling-jhb', title: 'Bowling Night Challenge', emoji: '🎳',
@@ -581,7 +532,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Lanes, greasy fries and the most unskilled bowling you\'ve ever seen. Winner buys the milkshakes.',
     completionLine: 'You bowled a gutter ball and blamed the lane. The lane has heard every excuse before.',
     xp: 210, tags: ['bowling', 'night out', 'competition'],
-    completedCount: 1210,
   }),
   q({
     id: 'bowling-ct', title: 'Strikers Bowling Showdown', emoji: '🎳',
@@ -592,7 +542,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Glow-in-the-dark lanes, terrible form, excellent vibes. The definitive Cape Town night out.',
     completionLine: 'You bowled under disco lights and won exactly one frame. It counts. It all counts.',
     xp: 210, tags: ['bowling', 'glow', 'night'],
-    completedCount: 940,
   }),
   q({
     id: 'escape-room-jhb', title: 'Escape Room Race', emoji: '🧩',
@@ -603,7 +552,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Sixty minutes, one locked room, zero outside help. Who finds the first clue wins eternal bragging rights.',
     completionLine: 'You escaped with 4 minutes to spare. The room is still recovering from your teamwork.',
     xp: 260, tags: ['escape room', 'puzzle', 'team'],
-    completedCount: 860,
   }),
 
   // ── SMALL TOWNS ────────────────────────────────────────────────────────────
@@ -616,7 +564,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Walk the Vaal through town, watch the rowers and kayakers, find the best river-view bench.',
     completionLine: 'You walked the Vaal in Parys and the river approved. Small-town Saturday, perfected.',
     xp: 140, tags: ['river', 'walk', 'free'],
-    completedCount: 560,
   }),
   q({
     id: 'parys-antiques', title: 'Parys Antique & Curiosity Hunt', emoji: '🕰️',
@@ -627,7 +574,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Parys is the antique capital. Everyone gets R50 and must find the single strangest thing for sale.',
     completionLine: 'You bought an object that nobody can identify. It is now the best thing you own.',
     xp: 190, trending: true, tags: ['antiques', 'hunting', 'funny'],
-    completedCount: 480,
   }),
   q({
     id: 'parys-cafe', title: 'Coffee on the Vaal', emoji: '☕',
@@ -638,7 +584,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Find the riverside café, order the house special, and rate the view harder than the coffee.',
     completionLine: 'You rated a river view against a cappuccino. The river won by a nose. Excellent.',
     xp: 120, tags: ['coffee', 'river', 'cafe'],
-    completedCount: 430,
   }),
   q({
     id: 'dullstroom-milkshake', title: 'The Dullstroom Milkshake Showdown', emoji: '🥤',
@@ -649,7 +594,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Dullstroom is famous for one thing and one thing only. Two cafés, one winner, and it\'s a serious competition.',
     completionLine: 'You settled the town\'s greatest debate. The milkshake gods have spoken. (It was a tie.)',
     xp: 150, trending: true, tags: ['milkshake', 'dullstroom', 'iconic'],
-    completedCount: 760,
   }),
   q({
     id: 'dullstroom-trout', title: 'Dullstroom Tarn & Trout Walk', emoji: '🎣',
@@ -660,7 +604,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Wander between the trout dams, watch the fly-fishers, and breathe the coldest cleanest air in the country.',
     completionLine: 'You walked the trout dams and felt your lungs reset. Dullstroom air is a paid service elsewhere.',
     xp: 160, tags: ['trout', 'dams', 'walk'],
-    completedCount: 520,
   }),
   q({
     id: 'dullstroom-meander', title: 'Dullstroom Village Meander', emoji: '🏘️',
@@ -671,7 +614,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The whole village is basically one long curiosity shop. Walk it and find the weirdest thing in each store.',
     completionLine: 'You walked the entire village and found a shop that sells only puzzles. You are now a regular.',
     xp: 130, tags: ['village', 'walk', 'free'],
-    completedCount: 460,
   }),
   q({
     id: 'jbay-beach-walk', title: 'JBay Super Tubes Beach Walk', emoji: '🏄',
@@ -682,7 +624,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Walk the world-famous Super Tubes break, watch the surfers, and collect the best shell on the beach.',
     completionLine: 'You walked a world-famous surf break and found a perfect shell. JBay delivered as promised.',
     xp: 150, tags: ['beach', 'surf', 'walk'],
-    completedCount: 830,
   }),
   q({
     id: 'jbay-surf', title: 'Catch a Wave at JBay', emoji: '🌊',
@@ -693,7 +634,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Surf lessons on one of the most famous waves on Earth. Standing up once is a lifelong achievement.',
     completionLine: 'You surfed at JBay. The ocean will remember your name. (Probably not, but still.)',
     xp: 380, tags: ['surf', 'lesson', 'famous wave'],
-    completedCount: 690,
   }),
   q({
     id: 'jbay-sunset', title: 'Sunset at the Point', emoji: '🌅',
@@ -704,7 +644,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The Point, sunset, the ocean doing its thing. Nothing else required.',
     completionLine: 'You watched the sun drop into the sea at the Point. The Eastern Cape has completed you.',
     xp: 130, tags: ['sunset', 'beach', 'free'],
-    completedCount: 610,
   }),
   q({
     id: 'margate-beachfront', title: 'Margate Beachfront Stroll', emoji: '🦀',
@@ -715,7 +654,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The classic South Coast beachfront: sand, sea, ice cream shops and the eternal holiday feeling.',
     completionLine: 'You walked the Margate beachfront and felt instantly on holiday. The South Coast works its magic again.',
     xp: 140, tags: ['beach', 'south coast', 'free'],
-    completedCount: 720,
   }),
   q({
     id: 'margate-fish-chips', title: 'Fish & Chips on the Margate Seafront', emoji: '🍟',
@@ -726,7 +664,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The South Coast rite of passage: fish and chips on the seafront, seagulls circling like tiny vultures.',
     completionLine: 'You ate fish and chips by the sea in Margate. The gulls held a press conference about you.',
     xp: 150, tags: ['fish and chips', 'seafront', 'food'],
-    completedCount: 580,
   }),
   q({
     id: 'margate-waterpark', title: 'Wild Waves Splash', emoji: '💦',
@@ -737,7 +674,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Slides, wave pools and the official South Coast school-holiday experience. Scream loudly.',
     completionLine: 'You conquered the slides at Wild Waves. Your scream echoed across the South Coast.',
     xp: 280, tags: ['water park', 'slides', 'holiday'],
-    completedCount: 980,
   }),
   q({
     id: 'pmb-city-walk', title: 'Pietermaritzburg City Walk', emoji: '🏛️',
@@ -748,7 +684,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The city hall, the red-brick streets, the historic arcade. The most underrated architecture walk in SA.',
     completionLine: 'You walked past the biggest red-brick building in the southern hemisphere. PMB is flexing.',
     xp: 150, tags: ['city walk', 'architecture', 'free'],
-    completedCount: 490,
   }),
   q({
     id: 'pmb-alexandra-park', title: 'Alexandra Park Meander', emoji: '🌳',
@@ -759,7 +694,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'PMB\'s oldest park: trees older than the city, a river, and the best lawn in the Midlands.',
     completionLine: 'You meandered through a park older than the country itself. The trees have seen it all.',
     xp: 140, tags: ['park', 'midlands', 'free'],
-    completedCount: 430,
   }),
   q({
     id: 'pmb-worlds-view', title: 'World\'s View Lookout', emoji: '🌄',
@@ -770,7 +704,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'A viewpoint over the whole city, plus something strange hidden on the ridge. Find it and report back.',
     completionLine: 'You found the ridge\'s hidden surprise and the best view of PMB. Two discoveries, one hike.',
     xp: 170, tags: ['view', 'lookout', 'hidden'],
-    completedCount: 380,
   }),
 
   // ── THINGS TO DO (go-karts, mini golf, paintball, ice, climbing, lasers) ──
@@ -784,7 +717,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     purpose: 'Settle the argument over who\'s the best driver.',
     completionLine: 'You won the race (or lost gloriously). The podium remembers your name.',
     xp: 260, trending: true, tags: ['go-kart', 'racing', 'competition'],
-    completedCount: 1420,
   }),
   q({
     id: 'go-kart-ct', title: 'Cape Go-Kart Grand Prix', emoji: '🏁',
@@ -795,7 +727,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Killarney raceway, a fleet of karts, and your friends pretending they\'re Formula One drivers.',
     completionLine: 'You raced at Killarney and did NOT hit the barriers. (You hit one barrier.)',
     xp: 260, tags: ['go-kart', 'racing'],
-    completedCount: 1180,
   }),
   q({
     id: 'go-kart-dbn', title: 'Durban Karting Rumble', emoji: '🏎️',
@@ -806,7 +737,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Fast karts, tight corners, and the most competitive group of friends in KZN.',
     completionLine: 'You overtook someone on a corner. The kart has been retired in your honour.',
     xp: 260, tags: ['go-kart', 'racing'],
-    completedCount: 960,
   }),
   q({
     id: 'mini-golf-jhb', title: 'Crazy Golf Showdown', emoji: '⛳',
@@ -817,7 +747,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Windmills, ramps and pure luck. Lowest score wins, worst excuse loses.',
     completionLine: 'You putted through a windmill and scored a hole-in-one. The windmill denies everything.',
     xp: 180, tags: ['mini golf', 'putt-putt', 'fun'],
-    completedCount: 1080,
   }),
   q({
     id: 'mini-golf-ct', title: 'Mini Golf by the Mountains', emoji: '⛳',
@@ -828,7 +757,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Putting with a mountain behind you and a hole that absolutely has a trick to it.',
     completionLine: 'You read the crazy putt perfectly. The mountain clapped. (It did not clap.)',
     xp: 180, tags: ['mini golf', 'putt-putt'],
-    completedCount: 860,
   }),
   q({
     id: 'mini-golf-dbn', title: 'Beachfront Mini Golf', emoji: '⛳',
@@ -839,7 +767,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Mini golf steps from the beach. Loser swims. Winner also swims because it\'s Durban.',
     completionLine: 'You conquered the beachfront course and then the ocean. Two wins in one afternoon.',
     xp: 170, tags: ['mini golf', 'beach'],
-    completedCount: 720,
   }),
   q({
     id: 'paintball-jhb', title: 'Paintball Platoon Battle', emoji: '🔫',
@@ -850,7 +777,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Two teams, one bunker field, and 100% guaranteed welts. The group chat will talk about this for weeks.',
     completionLine: 'You took a paintball for the team. Your shirt is now abstract art. Valuable.',
     xp: 320, tags: ['paintball', 'team', 'adrenaline'],
-    completedCount: 830,
   }),
   q({
     id: 'paintball-pt', title: 'Paintball in the Bush', emoji: '🎯',
@@ -861,7 +787,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Bushveld paintball outside Pretoria. Camouflage optional, bravery mandatory.',
     completionLine: 'You ambushed your best friend behind a tree. The friendship survived. Barely.',
     xp: 320, tags: ['paintball', 'bush', 'team'],
-    completedCount: 640,
   }),
   q({
     id: 'skate-jhb', title: 'Ice Skating First-Timers', emoji: '⛸️',
@@ -872,7 +797,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Rink, skates, and the eternal debate: who falls first? (It\'s you.)',
     completionLine: 'You fell exactly once and filmed it. The rink has seen worse. Much worse.',
     xp: 190, tags: ['ice skating', 'rink', 'fun'],
-    completedCount: 940,
   }),
   q({
     id: 'skate-ct', title: 'Ice Skating at GrandWest', emoji: '⛸️',
@@ -883,7 +807,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Glide (or cling to the wall) at the GrandWest rink. Holding hands with the barrier counts as romance.',
     completionLine: 'You skated a full lap without touching the wall. The wall misses you already.',
     xp: 190, tags: ['ice skating', 'grandwest'],
-    completedCount: 810,
   }),
   q({
     id: 'skate-dbn', title: 'Gateway IcePark Glide', emoji: '⛸️',
@@ -894,7 +817,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Durban\'s rink: ice in a subtropical city. The most unnatural thing you\'ll do this week.',
     completionLine: 'You skated on ice in Durban. Thermodynamics is confused but impressed.',
     xp: 190, tags: ['ice skating', 'gateway'],
-    completedCount: 690,
   }),
   q({
     id: 'climb-jhb', title: 'Indoor Climbing Wall Race', emoji: '🧗',
@@ -905,7 +827,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Bouldering and top-rope at the climbing gym. Highest route wins, chalk dust everywhere.',
     completionLine: 'You reached the top of a wall and looked down at your friends. A king. Briefly.',
     xp: 250, tags: ['climbing', 'bouldering', 'gym'],
-    completedCount: 760,
   }),
   q({
     id: 'climb-ct', title: 'Climb the Bouldering Wall', emoji: '🧗',
@@ -916,7 +837,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'A bouldering gym in the city. No ropes, just you, the wall and your ego.',
     completionLine: 'You solved a problem the wall set you. The wall has hundreds more. You will be back.',
     xp: 250, tags: ['climbing', 'bouldering'],
-    completedCount: 640,
   }),
   q({
     id: 'lasertag-jhb', title: 'Laser Tag Squad Battle', emoji: '🔦',
@@ -927,7 +847,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'A neon arena, laser vests, and intense tactics that fall apart in 10 seconds.',
     completionLine: 'Your squad won the arena. Your tactics were flawless. (They were not.)',
     xp: 200, tags: ['laser tag', 'arena', 'team'],
-    completedCount: 690,
   }),
   q({
     id: 'lasertag-ct', title: 'Laser Tag Cape Showdown', emoji: '🔦',
@@ -938,7 +857,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The arena, the smoke, the laser vests. Cape Town\'s most dramatic 60 minutes.',
     completionLine: 'You emerged from the smoke victorious. The arena lights dimmed in respect.',
     xp: 200, tags: ['laser tag', 'arena'],
-    completedCount: 580,
   }),
   q({
     id: 'escape-room-ct', title: 'Escape Room Cape Town', emoji: '🧩',
@@ -949,7 +867,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Sixty minutes to escape. The room wins most groups. Will it win yours?',
     completionLine: 'You escaped with seconds to spare. The room is filing a complaint with the puzzle association.',
     xp: 260, tags: ['escape room', 'puzzle'],
-    completedCount: 720,
   }),
   q({
     id: 'escape-room-dbn', title: 'Escape Room Durban', emoji: '🧩',
@@ -960,7 +877,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Locked room, ticking clock, and the friend who \'knows the answer\' but never does.',
     completionLine: 'You escaped and immediately wanted to do another one. The addiction has begun.',
     xp: 260, tags: ['escape room', 'puzzle'],
-    completedCount: 590,
   }),
   q({
     id: 'bowling-dbn', title: 'Durban Bowling Night', emoji: '🎳',
@@ -971,7 +887,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Lanes, disco lights and the friend who bowls between their legs and wins. Somehow.',
     completionLine: 'The between-the-legs bowler won again. You are reconsidering everything you know about physics.',
     xp: 210, tags: ['bowling', 'night'],
-    completedCount: 780,
   }),
   q({
     id: 'beach-volleyball-dbn', title: 'Beach Volleyball on the Golden Mile', emoji: '🏐',
@@ -982,7 +897,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Public courts on the beachfront. Two teams, sand everywhere, and the ocean as the audience.',
     completionLine: 'You dove for a ball in the sand and the beach cheered. The sand is now in places it should not be.',
     xp: 200, tags: ['volleyball', 'beach', 'free'],
-    completedCount: 660,
   }),
 
   // ── FOOD & WEEKEND RITUALS ─────────────────────────────────────────────────
@@ -995,7 +909,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Three bakeries, one mission: the best doughnut in Joburg. Everyone R60, judge them like a pro.',
     completionLine: 'You ate three doughnuts and declared a winner. Your dentist has been notified.',
     xp: 150, tags: ['doughnuts', 'bakery', 'challenge'],
-    completedCount: 820,
   }),
   q({
     id: 'bake-ct', title: 'Cape Town Doughnut Dash', emoji: '🍩',
@@ -1006,7 +919,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The Cape has strong opinions about doughnuts. Find the best one and be ready to defend it.',
     completionLine: 'You found the best doughnut in the Cape and defended it with your life. Correct.',
     xp: 150, tags: ['doughnuts', 'bakery'],
-    completedCount: 740,
   }),
   q({
     id: 'chicken-jhb', title: 'Best Chicken Spot in Joburg', emoji: '🍗',
@@ -1017,7 +929,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The great Joburg debate: whose chicken is best? Everyone R70, taste test, settle it.',
     completionLine: 'You settled the greatest chicken debate in Joburg history. The city is at peace.',
     xp: 140, tags: ['chicken', 'taste test'],
-    completedCount: 780,
   }),
   q({
     id: 'chicken-dbn', title: 'Durban Chicken Challenge', emoji: '🍗',
@@ -1028,7 +939,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Durban takes its chicken seriously. Two spots, one winner, no takebacks.',
     completionLine: 'You picked the winner and the loser has been banned from the group chat for 24 hours.',
     xp: 140, tags: ['chicken', 'challenge'],
-    completedCount: 690,
   }),
   q({
     id: 'boardgame-cafe-jhb', title: 'Board Game Café Night', emoji: '🎲',
@@ -1039,7 +949,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Hundreds of board games, snacks, and the friend who reads the rules for 20 minutes. Every time.',
     completionLine: 'You played a game you cannot explain and won somehow. The café has adopted your group.',
     xp: 220, tags: ['board games', 'cafe', 'night'],
-    completedCount: 590,
   }),
   q({
     id: 'parkrun-jhb', title: 'Parkrun Saturday (Joburg)', emoji: '🏃',
@@ -1050,7 +959,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The Saturday ritual: 5km, free, no excuses. Walk it, run it, or spectate with coffee.',
     completionLine: 'You did a parkrun and got a time. The barcode scan heard your story. It was moved.',
     xp: 130, tags: ['parkrun', 'run', 'free'],
-    completedCount: 1240,
   }),
   q({
     id: 'parkrun-ct', title: 'Parkrun Saturday (Cape Town)', emoji: '🏃',
@@ -1061,7 +969,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The Green Point parkrun: ocean on one side, mountain on the other, everyone welcome.',
     completionLine: 'You parkran with a mountain view. The other cities are simply jealous.',
     xp: 130, tags: ['parkrun', 'run', 'free'],
-    completedCount: 1090,
   }),
   q({
     id: 'parkrun-dbn', title: 'Parkrun Saturday (Durban)', emoji: '🏃',
@@ -1072,7 +979,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Burman Bush parkrun: run a forest in the city, then brunch. The Durban way.',
     completionLine: 'You ran a forest parkrun in Durban and brunched after. Peak Saturday.',
     xp: 130, tags: ['parkrun', 'run', 'free'],
-    completedCount: 870,
   }),
   q({
     id: 'emperors-walk', title: 'Emperors Palace Lakeside Walk', emoji: '🦢',
@@ -1083,7 +989,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The palace gardens and lake, free to walk, absurdly pretty. Bring nothing, take photos.',
     completionLine: 'You walked palace grounds for free. The swans looked at you like you owned the place. You do now.',
     xp: 130, tags: ['lakeside', 'walk', 'free'],
-    completedCount: 640,
   }),
 
   // ── SMALL TOWNS, ROUND TWO ────────────────────────────────────────────────
@@ -1096,7 +1001,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The canals of St Francis: houses on the water, boats in the driveways, pure coastal bliss.',
     completionLine: 'You walked the canals and now want to move here. Everyone does. It\'s a known hazard.',
     xp: 150, tags: ['canals', 'coast', 'walk'],
-    completedCount: 480,
   }),
   q({
     id: 'clarens-meander', title: 'Clarens Village Meander', emoji: '🏘️',
@@ -1107,7 +1011,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The mountain village everyone drives to: galleries, delis and the friendliest streets in the Free State.',
     completionLine: 'You meandered Clarens and bought exactly one thing you did not need. Perfect village behaviour.',
     xp: 160, tags: ['village', 'clarens', 'walk'],
-    completedCount: 890,
   }),
   q({
     id: 'clarens-pizza', title: 'Clarens Pizza & Art Walk', emoji: '🍕',
@@ -1118,7 +1021,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Two things Clarens does best: wood-fired pizza and galleries. Do both. In that order.',
     completionLine: 'You ate legendary pizza and critiqued art. The mountains approved of both.',
     xp: 190, tags: ['pizza', 'art', 'village'],
-    completedCount: 760,
   }),
   q({
     id: 'tzaneen-dam', title: 'Tzaneen Dam Picnic', emoji: '🏝️',
@@ -1129,7 +1031,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The dam in the bushveld, mango trees everywhere, and the best swimming water in Limpopo.',
     completionLine: 'You picnicked at the dam and swam in water so clean it\'s unfair. Limpopo wins again.',
     xp: 200, tags: ['dam', 'picnic', 'swim'],
-    completedCount: 520,
   }),
   q({
     id: 'debengeni', title: 'Debengeni Falls', emoji: '💦',
@@ -1140,7 +1041,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The hidden waterfall of Magoebaskloof: forest walk, cold plunge, mountain air. Essential Limpopo.',
     completionLine: 'You plunged into a mountain waterfall and emerged reborn. The forest witnessed it.',
     xp: 320, tags: ['waterfall', 'forest', 'swim'],
-    completedCount: 460,
   }),
   q({
     id: 'kgaswane', title: 'Kgaswane Nature Reserve Hike', emoji: '⛰️',
@@ -1151,7 +1051,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The mountain reserve on Rustenburg\'s doorstep: waterfalls, kudu and views over the Magaliesberg.',
     completionLine: 'You hiked Kgaswane and saw the Magaliesberg from above. The North West has flexed again.',
     xp: 340, tags: ['hike', 'mountain', 'nature'],
-    completedCount: 430,
   }),
   q({
     id: 'harties-lunch', title: 'Hartbeespoort Lakeside Lunch', emoji: '🦆',
@@ -1162,7 +1061,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Lunch on the water\'s edge with the dam as the view and the cableway as the backdrop.',
     completionLine: 'You had lakeside lunch in Harties. The dam has seen happier tables. None.',
     xp: 190, tags: ['lunch', 'lake', 'weekend'],
-    completedCount: 740,
   }),
   q({
     id: 'upington-river', title: 'Upington Orange River Walk', emoji: '🌅',
@@ -1173,7 +1071,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The Orange River through the desert town, date palms and the widest sky in the country.',
     completionLine: 'You walked the Orange River in Upington. The desert sky has adopted you now.',
     xp: 170, tags: ['river', 'desert', 'walk'],
-    completedCount: 380,
   }),
   q({
     id: 'upington-sakkie', title: 'Sakkie Sakkie Boat Ride', emoji: '🛶',
@@ -1184,7 +1081,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The famous moonlit pontoon cruise on the Orange River. Music, stars and the desert at night.',
     completionLine: 'You drifted down the Orange River under the stars. The moon approved the playlist.',
     xp: 240, tags: ['river cruise', 'night', 'iconic'],
-    completedCount: 430,
   }),
 
   // ── Irene / Centurion: The Big Red Barn & the hangouts around it ──────────
@@ -1197,7 +1093,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Pick your own flowers at The Big Red Barn in Sunlawns AH, Irene. Snip a bouquet of dahlias, sunflowers and zinnias straight from the field — then pose with your haul.',
     completionLine: 'You picked flowers like a field boss. The bouquet now owns your kitchen table.',
     xp: 200, trending: true, tags: ['flowers', 'instagram', 'bouquet', 'farm'],
-    completedCount: 1240,
   }),
   q({
     id: 'rietvlei-drive', title: 'Rietvlei Self-Drive Safari', emoji: '🦓',
@@ -1208,7 +1103,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The world\'s largest urban nature reserve on your doorstep: buffalo, zebra, blesbok and birdlife on a self-drive loop past the dam. Keep the windows up, mostly.',
     completionLine: 'You went on safari 20 minutes from home. The buffalo are still judging your driving.',
     xp: 280, tags: ['game drive', 'nature reserve', 'animals'],
-    completedCount: 890,
   }),
   q({
     id: 'smuts-house-walk', title: 'Smuts House Time Travel', emoji: '🏛️',
@@ -1219,7 +1113,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Wander the thatched home and gardens of Jan Smuts, twice prime minister and the only person to sign both world war peace treaties. Spot the WWII-era plane memorabilia.',
     completionLine: 'You toured a prime minister\'s house and now know more history than the group chat.',
     xp: 160, tags: ['museum', 'history', 'garden'],
-    completedCount: 610,
   }),
   q({
     id: 'irene-dairy-icecream', title: 'Irene Dairy Farm Ice Cream Run', emoji: '🍦',
@@ -1230,7 +1123,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'A working dairy farm that\'s been around since 1889. Pet the calves, watch the milking, then demolish the famous homemade ice cream.',
     completionLine: 'You befriended a calf and ate ice cream. Peak day.',
     xp: 170, tags: ['ice cream', 'farm', 'animals'],
-    completedCount: 720,
   }),
   q({
     id: 'zwartkops-race-day', title: 'Zwartkops Race Day', emoji: '🏎️',
@@ -1241,7 +1133,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'South Africa\'s oldest permanent racetrack. Pick a driver in the crowd, cheer like a fanatic, and argue about lap times the whole way home.',
     completionLine: 'You lost your voice screaming at cars going in circles. Tradition upheld.',
     xp: 320, tags: ['motorsport', 'racing', 'day out'],
-    completedCount: 540,
   }),
   q({
     id: 'supersport-park-cricket', title: 'SuperSport Park Cricket Day', emoji: '🏏',
@@ -1252,7 +1143,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Catch a match at the fortress of South African cricket. Sunscreen, a straw hat and loudly disagreeing with the umpire are all mandatory.',
     completionLine: 'You watched cricket for five hours and understood none of the jargon. Perfect day.',
     xp: 300, tags: ['cricket', 'sport', 'day out'],
-    completedCount: 480,
   }),
   q({
     id: 'irene-village-market', title: 'Irene Village Mall Meander', emoji: '🛍️',
@@ -1263,7 +1153,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'A village-style mall with a weekly farmers\' market vibe: artisanal food, coffee roasters and small boutiques. Find the weirdest thing under R50.',
     completionLine: 'You bought something artisan and photographed it from 47 angles.',
     xp: 140, tags: ['mall', 'market', 'shopping'],
-    completedCount: 390,
   }),
 
   // ── QUICK QUESTS (10–20 min) across the main cities ────────────────────────
@@ -1277,7 +1166,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'From the Constitution Hill side, grab the one skyline shot that looks like movie opening credits. Best angle wins.',
     completionLine: 'You got the shot. Somewhere, a movie poster designer just felt inadequate.',
     xp: 70, tags: ['photo', 'skyline', 'quick'],
-    completedCount: 510,
   }),
   q({
     id: 'maboneng-mural-hunt', title: 'Maboneng Mural Hunt', emoji: '🎨',
@@ -1288,7 +1176,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Maboneng is an outdoor gallery. Find the biggest mural you can in 15 minutes and rate it out of ten.',
     completionLine: 'You rated Maboneng street art like a museum critic. The streets approve.',
     xp: 70, tags: ['street-art', 'maboneng', 'quick'],
-    completedCount: 430,
   }),
   q({
     id: 'braamfontein-graffiti', title: 'Braamfontein Graffiti Hunt', emoji: '🖌️',
@@ -1299,7 +1186,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Braamfontein walls do not stay blank for long. Find the freshest piece and guess what it means.',
     completionLine: 'You decoded Braamfontein graffiti. The artist would probably disagree with your reading.',
     xp: 70, tags: ['graffiti', 'braamfontein', 'quick'],
-    completedCount: 390,
   }),
   q({
     id: 'gandhi-square-council', title: 'Gandhi Square Pigeon Council', emoji: '🐦',
@@ -1310,7 +1196,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Gandhi Square is run by pigeons. Sit for ten minutes, observe the council in session, and give the lead pigeon a name.',
     completionLine: 'The Pigeon Council of Gandhi Square has reviewed your application. Denied, but respected.',
     xp: 60, tags: ['pigeons', 'cbd', 'quick'],
-    completedCount: 280,
   }),
   q({
     id: 'joubert-park-bench', title: 'Best Park Bench in Joburg', emoji: '🪑',
@@ -1321,7 +1206,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Joubert Park hides one perfect bench. Find it, sit on it, and decide what it would be named after.',
     completionLine: 'You found the bench. It is now yours, forever, in spirit.',
     xp: 70, tags: ['park', 'bench', 'quick'],
-    completedCount: 310,
   }),
   q({
     id: 'jhb-vetkoek-snack', title: 'Vetkoek from a Street Stall', emoji: '🫓',
@@ -1332,7 +1216,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Find a street stall, order a vetkoek, and rate the mince-to-bread ratio like a food critic.',
     completionLine: 'You ate a proper street vetkoek. Your standards for bread are now permanently higher.',
     xp: 80, tags: ['vetkoek', 'street-food', 'quick'],
-    completedCount: 460,
   }),
   q({
     id: 'melville-cafe-dash', title: 'Melville Café Rating Dash', emoji: '☕',
@@ -1343,7 +1226,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Melville has more cafés than streetlights. Visit two, compare the flat whites, and pick a winner in 20 minutes.',
     completionLine: 'You ran a full Melville café election. The people have spoken: caffeine.',
     xp: 85, tags: ['melville', 'coffee', 'quick'],
-    completedCount: 350,
   }),
   q({
     id: 'newtown-brick-wall', title: 'Newtown Brick Lane Photo', emoji: '🧱',
@@ -1354,7 +1236,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Newtown\'s red-brick district is the arts heart of Joburg. Take the most dramatic brick-wall photo you can manage.',
     completionLine: 'You captured Newtown brick in dramatic lighting. Very pretentious. Very good.',
     xp: 70, tags: ['newtown', 'photo', 'quick'],
-    completedCount: 300,
   }),
   q({
     id: 'sea-point-promenade', title: 'Sea Point Promenade Sprint', emoji: '🌊',
@@ -1365,7 +1246,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The promenade with the Atlantic on one side and Table Mountain on the other. Walk, jog, or dramatically stride — just cover a section in 15 minutes.',
     completionLine: 'You powered down the Sea Point promenade. The Atlantic applauded politely.',
     xp: 70, tags: ['promenade', 'sea', 'quick'],
-    completedCount: 540,
   }),
   q({
     id: 'bo-kaap-colour-hunt', title: 'Bo-Kaap Colour Hunt', emoji: '🏠',
@@ -1376,7 +1256,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Bo-Kaap\'s houses refuse to be subtle. Find the boldest colour combination on the cobbles and name it like a paint colour.',
     completionLine: 'You found a house colour that does not exist in nature. Bo-Kaap wins again.',
     xp: 75, tags: ['bo-kaap', 'colour', 'quick'],
-    completedCount: 480,
   }),
   q({
     id: 'wharf-seal-spot', title: 'Spot the V&A Harbour Seal', emoji: '🦭',
@@ -1387,7 +1266,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'There is always at least one seal doing its best at the V&A. Find it, photograph it, and give it a name.',
     completionLine: 'You found the harbour seal. It has been named and is now legally yours.',
     xp: 70, tags: ['v-and-a', 'seal', 'quick'],
-    completedCount: 620,
   }),
   q({
     id: 'long-street-neons', title: 'Long Street Neon Sign Tally', emoji: '✨',
@@ -1398,7 +1276,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Long Street glows after dark. Count the neon signs in one stretch and pick the most stylish.',
     completionLine: 'You counted the neon of Long Street. The street glows on, unbothered.',
     xp: 70, tags: ['long-street', 'neon', 'quick'],
-    completedCount: 320,
   }),
   q({
     id: 'adderley-statue-sprint', title: 'Adderley Street Statue Sprint', emoji: '🗿',
@@ -1409,7 +1286,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Adderley Street is lined with people frozen in bronze. Find the one that looks most like someone you know and recreate their pose.',
     completionLine: 'You impersonated a bronze statue on Adderley. History is now slightly inaccurate.',
     xp: 70, tags: ['statues', 'cbd', 'quick'],
-    completedCount: 340,
   }),
   q({
     id: 'kloof-coffee-dash', title: 'Kloof Street Coffee Dash', emoji: '☕',
@@ -1420,7 +1296,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Kloof Street\'s coffee game is strong. Grab one, walk it up the hill, and rate the view while the cup is still hot.',
     completionLine: 'You conquered Kloof Street with a coffee in hand. Peak Cape Town behaviour.',
     xp: 80, tags: ['coffee', 'kloof', 'quick'],
-    completedCount: 410,
   }),
   q({
     id: 'golden-mile-sprint', title: 'Golden Mile Sea-Air Sprint', emoji: '🌴',
@@ -1431,7 +1306,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The Indian Ocean, the pier and the skyline. Cover a stretch of the Golden Mile and take the most Durban photo possible.',
     completionLine: 'You breathed the Durban sea air. Your lungs are now 10% saltier and 100% happier.',
     xp: 70, tags: ['beachfront', 'golden-mile', 'quick'],
-    completedCount: 520,
   }),
   q({
     id: 'moses-mabhida-arch', title: 'Moses Mabhida Arch Selfie', emoji: '🏟️',
@@ -1442,7 +1316,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The arch that made Durban\'s skyline famous. Get the selfie that makes it look like you are holding the arch up.',
     completionLine: 'You held up the Moses Mabhida arch. Durban\'s engineers were not consulted and remain baffled.',
     xp: 70, tags: ['moses-mabhida', 'stadium', 'quick'],
-    completedCount: 450,
   }),
   q({
     id: 'victoria-market-spice', title: 'Victoria Street Market Spice Test', emoji: '🧂',
@@ -1453,7 +1326,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The spice stalls of Victoria Street will rearrange your senses. Buy one thing you have never cooked with and smell it dramatically.',
     completionLine: 'You left Victoria Street carrying spices from another dimension.',
     xp: 80, tags: ['market', 'spices', 'quick'],
-    completedCount: 380,
   }),
   q({
     id: 'florida-road-dash', title: 'Florida Road Foodie Dash', emoji: '🍝',
@@ -1464,7 +1336,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Florida Road is Durban\'s food strip. Grab one takeaway bite and rate the street\'s vibe while you eat it.',
     completionLine: 'You ate on Florida Road like you own the pavement. You do now, emotionally.',
     xp: 85, tags: ['florida-road', 'food', 'quick'],
-    completedCount: 400,
   }),
   q({
     id: 'durban-art-walk', title: 'Durban Promenade Street-Art Spot', emoji: '🎨',
@@ -1475,7 +1346,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The Durban promenade is sprinkled with public art. Find the piece you would steal if you were a very specific kind of villain.',
     completionLine: 'You found your dream public artwork. The heist planning starts now.',
     xp: 70, tags: ['public-art', 'promenade', 'quick'],
-    completedCount: 300,
   }),
   q({
     id: 'church-square-photo', title: 'Church Square Photo Dash', emoji: '🏛️',
@@ -1486,7 +1356,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Church Square has more statues and pigeons than you can shake a stick at. Get the definitive Pretoria photo in 15 minutes.',
     completionLine: 'You captured Church Square in all its statue-filled glory. Kruger would be proud.',
     xp: 70, tags: ['church-square', 'pretoria', 'quick'],
-    completedCount: 360,
   }),
   q({
     id: 'up-campus-stroll', title: 'University of Pretoria Campus Stroll', emoji: '🎓',
@@ -1497,7 +1366,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The UP campus is a park pretending to be a university. Stroll the main walkway and find the best spot a student would nap.',
     completionLine: 'You found the optimal UP napping spot. Academics have been disturbed by your insight.',
     xp: 70, tags: ['campus', 'pretoria', 'quick'],
-    completedCount: 290,
   }),
   q({
     id: 'hatfield-food-dash', title: 'Hatfield Street Food Dash', emoji: '🌮',
@@ -1508,7 +1376,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Hatfield feeds a small army of students every day. Join the queue, grab a quick bite, and report back on the value.',
     completionLine: 'You survived the Hatfield lunch rush. A student nodded at you. You have arrived.',
     xp: 80, tags: ['hatfield', 'street-food', 'quick'],
-    completedCount: 420,
   }),
   q({
     id: 'pretoria-mural-hunt', title: 'Pretoria Mural Hunt', emoji: '🎨',
@@ -1519,7 +1386,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The capital has a mural habit. Find the most political one and decide what it is actually saying.',
     completionLine: 'You interpreted a Pretoria mural. The artist will neither confirm nor deny.',
     xp: 70, tags: ['mural', 'pretoria', 'quick'],
-    completedCount: 260,
   }),
   q({
     id: 'loftus-stairs', title: 'Loftus Versfeld Stairs Challenge', emoji: '🏉',
@@ -1530,7 +1396,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The Loftus stands are a monument to staircases. Climb to the top, touch the railing, and come back down without stopping.',
     completionLine: 'You conquered the Loftus stairs. The Bulls would sign you as a fitness coach.',
     xp: 90, tags: ['loftus', 'sport', 'fitness'],
-    completedCount: 330,
   }),
   q({
     id: 'pmb-city-hall', title: 'PMB City Hall Photo Dash', emoji: '🏛️',
@@ -1541,7 +1406,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Pietermaritzburg\'s City Hall is the largest red-brick building in the Southern Hemisphere. Make it look dramatic in a photo.',
     completionLine: 'You captured the biggest brick building in the hemisphere. Your arms hurt from the effort.',
     xp: 70, tags: ['city-hall', 'pmb', 'quick'],
-    completedCount: 240,
   }),
   q({
     id: 'alexandra-park-loop', title: 'Alexandra Park Quick Loop', emoji: '🌳',
@@ -1552,7 +1416,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Alexandra Park is PMB\'s green heart. Do a quick loop and find the weirdest tree in the park.',
     completionLine: 'You found the weirdest tree in Alexandra Park. It has been judged and found excellent.',
     xp: 70, tags: ['park', 'pmb', 'quick'],
-    completedCount: 220,
   }),
   q({
     id: 'pmb-mural-hunt', title: 'Church Street Mural Hunt', emoji: '🎨',
@@ -1563,7 +1426,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Church Street\'s walls are getting bolder by the year. Find the mural with the most attitude.',
     completionLine: 'You found the sassiest mural in PMB. It is now your favourite wall in town.',
     xp: 70, tags: ['mural', 'pmb', 'quick'],
-    completedCount: 190,
   }),
   q({
     id: 'naval-hill-view', title: 'Naval Hill Statue & View', emoji: '🦒',
@@ -1574,7 +1436,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Naval Hill has the whole city at its feet and a giant giraffe keeping watch. Say hello to the giraffe and take the view.',
     completionLine: 'You visited the giraffe of Naval Hill. It has seen every Bloemfontein sunset and is unimpressed.',
     xp: 70, tags: ['naval-hill', 'view', 'quick'],
-    completedCount: 280,
   }),
   q({
     id: 'bloem-cbd-mural', title: 'Bloemfontein CBD Mural Dash', emoji: '🎨',
@@ -1585,7 +1446,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Bloemfontein\'s CBD is quietly becoming a gallery. Find the most colourful wall and photograph it like a pro.',
     completionLine: 'You found colour in the Bloemfontein CBD. It was there all along, being subtle.',
     xp: 70, tags: ['mural', 'bloemfontein', 'quick'],
-    completedCount: 200,
   }),
   q({
     id: 'bloem-coffee-dash', title: 'Bloemfontein Coffee Dash', emoji: '☕',
@@ -1596,7 +1456,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Find a coffee spot near the city centre, grab a flat white, and rate the best people-watching window seat.',
     completionLine: 'You found the prime people-watching seat in Bloem. The city walked past, unaware of your power.',
     xp: 80, tags: ['coffee', 'bloemfontein', 'quick'],
-    completedCount: 230,
   }),
   q({
     id: 'boardwalk-photo', title: 'The Boardwalk Photo Sprint', emoji: '🎡',
@@ -1607,7 +1466,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The Boardwalk has the ocean, the lake and the wheel. Take the most Gqeberha photo possible in 15 minutes.',
     completionLine: 'You captured the Boardwalk in peak form. The wheel kept spinning, unbothered.',
     xp: 70, tags: ['boardwalk', 'gqeberha', 'quick'],
-    completedCount: 310,
   }),
   q({
     id: 'donkin-lighthouse', title: 'Donkin Reserve Lighthouse Selfie', emoji: '🗼',
@@ -1618,7 +1476,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The pyramid-topped lighthouse watches over the Donkin Reserve. Get the selfie and read the history tiles below it.',
     completionLine: 'You paid your respects to the lighthouse of Gqeberha. It remembered you instantly.',
     xp: 70, tags: ['lighthouse', 'donkin', 'quick'],
-    completedCount: 270,
   }),
   q({
     id: 'hobie-beach-waves', title: 'Hobie Beach Wave Count', emoji: '🌊',
@@ -1629,7 +1486,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Hobie Beach is famous for its waves and its wind. Count ten waves and rate which one was the best.',
     completionLine: 'You counted ten waves and crowned a champion. The ocean accepted the result.',
     xp: 60, tags: ['beach', 'waves', 'quick'],
-    completedCount: 250,
   }),
   q({
     id: 'polokwane-cbd-walk', title: 'Polokwane CBD Photo Walk', emoji: '📸',
@@ -1640,7 +1496,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The capital of Limpopo deserves better photos. Take the best shot of the CBD you can manage in 15 minutes.',
     completionLine: 'You documented Polokwane in style. The city thanks you for the free publicity.',
     xp: 70, tags: ['polokwane', 'photo', 'quick'],
-    completedCount: 210,
   }),
   q({
     id: 'polokwane-coffee', title: 'Kruger Street Coffee Dash', emoji: '☕',
@@ -1651,7 +1506,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Grab a coffee on Kruger Street and rate the CBD buzz while you sip it.',
     completionLine: 'You caffeinated in the Limpopo capital. Kruger Street nodded approvingly.',
     xp: 80, tags: ['coffee', 'polokwane', 'quick'],
-    completedCount: 190,
   }),
   q({
     id: 'nelspruit-promenade', title: 'Mbombela Promenade Quick Walk', emoji: '🌴',
@@ -1662,7 +1516,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The Nelspruit promenade is a leafy walkway through the city\'s heart. Find the spot that feels the most like the Lowveld.',
     completionLine: 'You walked the promenade like you grew up here. The Lowveld air approves.',
     xp: 70, tags: ['promenade', 'mbombela', 'quick'],
-    completedCount: 240,
   }),
   q({
     id: 'lowveld-mango', title: 'The Lowveld\'s Best Mango Hunt', emoji: '🥭',
@@ -1673,7 +1526,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Mbombela is mango country. Find a fruit stall, buy one mango, and rate it out of ten with full ceremony.',
     completionLine: 'You have now tasted the Lowveld at peak ripeness. Every other mango is a disappointment.',
     xp: 80, tags: ['mango', 'lowveld', 'quick'],
-    completedCount: 260,
   }),
   q({
     id: 'big-hole-view', title: 'Big Hole Viewing Deck', emoji: '⛏️',
@@ -1684,7 +1536,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'A hole so big it rewrote history. Stand on the viewing deck and try to comprehend that people dug this by hand.',
     completionLine: 'You stared into the Big Hole. It stared back, mostly empty and very deep.',
     xp: 90, tags: ['big-hole', 'kimberley', 'diamond'],
-    completedCount: 340,
   }),
   q({
     id: 'oppenheimer-gardens', title: 'Oppenheimer Gardens Quick Walk', emoji: '🌸',
@@ -1695,7 +1546,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The gardens next to the mine museum are Kimberley\'s green answer to the dust. Do a quick loop and find the prettiest flower bed.',
     completionLine: 'You found the best bed in Oppenheimer Gardens. The roses agree.',
     xp: 70, tags: ['gardens', 'kimberley', 'quick'],
-    completedCount: 200,
   }),
   q({
     id: 'el-beachfront', title: 'East London Beachfront Photo', emoji: '🌊',
@@ -1706,7 +1556,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The beachfront where the Nahoon meets the sea. Take the definitive East London photo in 15 minutes.',
     completionLine: 'You captured the East London coastline. The sea breeze said thank you.',
     xp: 70, tags: ['beachfront', 'east-london', 'quick'],
-    completedCount: 230,
   }),
   q({
     id: 'el-lighthouse-spot', title: 'East London Lighthouse Spot', emoji: '🗼',
@@ -1717,7 +1566,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The East London lighthouse has been blinking over the harbour for over a century. Find it and blink back.',
     completionLine: 'You blinked at the lighthouse. It blinked back with perfect rhythm, as it has for 120 years.',
     xp: 60, tags: ['lighthouse', 'east-london', 'quick'],
-    completedCount: 210,
   }),
   q({
     id: 'stellenbosch-oaks', title: 'Stellenbosch Oak Avenue Walk', emoji: '🌳',
@@ -1728,7 +1576,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Stellenbosch was built under oaks. Walk one oak-lined street and find the tree with the best personality.',
     completionLine: 'You communed with a Stellenbosch oak. It has seen 300 years of students and remains unbothered.',
     xp: 70, tags: ['stellenbosch', 'oaks', 'quick'],
-    completedCount: 310,
   }),
   q({
     id: 'stellenbosch-coffee', title: 'Stellenbosch Coffee Sprint', emoji: '☕',
@@ -1739,7 +1586,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Student-town coffee is serious business. Grab one near the university and rate it against the standards of people who study caffeine.',
     completionLine: 'You passed the Stellenbosch coffee test. The students grant you an honorary degree.',
     xp: 80, tags: ['coffee', 'stellenbosch', 'quick'],
-    completedCount: 350,
   }),
   q({
     id: 'harties-dam-wall', title: 'Hartbeespoort Dam Wall Photo', emoji: '🌊',
@@ -1750,7 +1596,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The dam wall with the Magaliesberg behind it. Get the shot that makes it look bigger than it is (it is big).',
     completionLine: 'You captured the Harties dam wall. The mountain behind you nodded in approval.',
     xp: 70, tags: ['harties', 'dam', 'quick'],
-    completedCount: 330,
   }),
   q({
     id: 'harties-village-dash', title: 'Harties Village Eatery Dash', emoji: '🍟',
@@ -1761,7 +1606,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Harties village feeds the day-trippers well. Grab a quick bite and rate the lake-view factor of the eatery.',
     completionLine: 'You ate in Harties like a day-tripper with taste. The dam approved of your choice.',
     xp: 80, tags: ['harties', 'food', 'quick'],
-    completedCount: 300,
   }),
 
   // ── KRUGERSDORP & WEST RAND (the Cradle side of Joburg) ───────────────────
@@ -1774,7 +1618,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'A real game reserve inside the town limits: zebra, springbok and wildebeest with the West Rand ridge behind them. Drive or walk the loops and spot the big five — of Gauteng.',
     completionLine: 'You saw game in Krugersdorp. Krugersdorp! Even you are impressed.',
     xp: 200, tags: ['game-reserve', 'wildlife', 'west-rand'],
-    completedCount: 640,
   }),
   q({
     id: 'paardekraal-monument', title: 'Paardekraal Monument Time-Trip', emoji: '🗿',
@@ -1785,7 +1628,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The stone ring that gave Krugersdorp its name — a quiet piece of 1880s history in the middle of town. Find the plaques and figure out why a town is named after a vow ceremony.',
     completionLine: 'You stood where a town was willed into existence. The stones felt heavier than they looked.',
     xp: 110, tags: ['history', 'monument', 'free'],
-    completedCount: 310,
   }),
   q({
     id: 'huddle-park-loop', title: 'Huddle Park Lakeside Loop', emoji: '🦆',
@@ -1796,7 +1638,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The big green lung of Krugersdorp: dams, ducks and the ridge overhead. Walk the full loop, name the ducks, and find the best spot to lie in the grass.',
     completionLine: 'You completed the Huddle Park loop. The ducks have seen it all before and still judged you.',
     xp: 120, tags: ['park', 'lake', 'free'],
-    completedCount: 420,
   }),
   q({
     id: 'krugersdorp-ridge-sunset', title: 'Krugersdorp Ridge Sunset Hike', emoji: '⛰️',
@@ -1807,7 +1648,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The koppies above town give you the whole West Rand at your feet — Joburg skyline one way, the Cradle the other. Time it for sunset and stay for the lights coming on.',
     completionLine: 'You watched the West Rand switch itself on from above. Peak ridge energy.',
     xp: 170, tags: ['hike', 'sunset', 'ridge'],
-    completedCount: 380,
   }),
   q({
     id: 'key-west-food-court', title: 'Key West Mall Food Court Crawl', emoji: '🍔',
@@ -1818,7 +1658,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Key West is the beating heart of Krugersdorp. Do the food-court circuit, rate every option on fries-to-portion ratio, and crown a winner.',
     completionLine: 'You ran a full food-court election in Krugersdorp. Democracy tasted great.',
     xp: 140, tags: ['mall', 'food-court', 'challenge'],
-    completedCount: 510,
   }),
   q({
     id: 'krugersdorp-coffee-crawl', title: 'Krugersdorp CBD Coffee Crawl', emoji: '☕',
@@ -1829,7 +1668,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Krugersdorp has a coffee scene hiding under the mining-town surface. Find two cafés, order something you have never tried, and rate the baristas\' moustache-to-latte-art ratio.',
     completionLine: 'You found the good coffee in Krugersdorp. Locals nodded in approval, which is the highest honour.',
     xp: 120, tags: ['coffee', 'cbd', 'chill'],
-    completedCount: 290,
   }),
   q({
     id: 'kagiso-kota-hunt', title: 'Kagiso Kota & Township Walk', emoji: '🥪',
@@ -1840,7 +1678,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Kagiso, the township next door to Krugersdorp, serves legendary kotas. Hunt one down, load it properly (polony is non-negotiable), and take it somewhere with a view.',
     completionLine: 'You ate a proper Kagiso kota. Your hands are dirty and your standards are ruined forever.',
     xp: 150, tags: ['kota', 'township', 'street-food'],
-    completedCount: 460,
   }),
   q({
     id: 'silverstar-lake-walk', title: 'Silverstar Lake & Wheel Walk', emoji: '🎡',
@@ -1851,7 +1688,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Silverstar\'s lake, casino and the big wheel light up the Muldersdrift sky. Walk the lake, ride the wheel, and lose exactly R20 at the slots so you can say you gambled.',
     completionLine: 'You walked a casino lake and rode a wheel. The R20 was a sacrifice to the slots gods.',
     xp: 160, tags: ['casino', 'lake', 'muldersdrift'],
-    completedCount: 580,
   }),
   q({
     id: 'cradlestone-mall', title: 'Cradlestone Mall Explorer', emoji: '🛍️',
@@ -1862,7 +1698,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The mall where the Cradle meets Muldersdrift. Find the dinosaur theming (yes, really), grab a bite, and photograph the strangest thing in the building.',
     completionLine: 'You found the dinosaur mall. The Cradle is watching, and it approves.',
     xp: 130, tags: ['mall', 'muldersdrift', 'shopping'],
-    completedCount: 350,
   }),
   q({
     id: 'muldersdrift-farm-stalls', title: 'Muldersdrift Farm Stall Hopping', emoji: '🥧',
@@ -1873,7 +1708,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The country road through Muldersdrift is a gauntlet of farm stalls and bakeries. Hit two, compare their pies, and buy the weirdest jam you can find.',
     completionLine: 'You survived the Muldersdrift pie gauntlet and came home with jam you will never open.',
     xp: 160, tags: ['farm-stall', 'pies', 'road-trip'],
-    completedCount: 330,
   }),
   q({
     id: 'sterkfontein-caves', title: 'Sterkfontein Caves — Where Humanity Began', emoji: '🦴',
@@ -1884,7 +1718,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Mrs Ples and Little Foot live here — the caves where some of humanity\'s oldest fossils were found. Take the guided tour underground and touch 2.5-million-year-old rock.',
     completionLine: 'You walked where human ancestors walked. Your ancestors are judging your quest completion rate.',
     xp: 280, trending: true, tags: ['cradle', 'caves', 'fossils', 'unesco'],
-    completedCount: 720,
   }),
   q({
     id: 'maropeng-cradle', title: 'Maropeng & the Cradle of Humankind', emoji: '🌍',
@@ -1895,7 +1728,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'The official visitor centre of the Cradle of Humankind — an underground boat ride through the elements and the story of how we got here. Then walk the site above.',
     completionLine: 'You rode a boat through the story of humanity. The planet has seen weirder tourists.',
     xp: 320, trending: true, tags: ['cradle', 'museum', 'unesco', 'day-trip'],
-    completedCount: 690,
   }),
   q({
     id: 'rhino-lion-park', title: 'Rhino & Lion Nature Reserve', emoji: '🦁',
@@ -1906,7 +1738,6 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'Lions, cheetahs and white rhinos on the Cradle\'s doorstep. Do the self-drive, catch a feeding, and get unreasonably close to a big cat (safely, behind glass).',
     completionLine: 'You heard a lion roar in Gauteng. Your heart is still doing parkour.',
     xp: 340, trending: true, tags: ['big-cats', 'wildlife', 'cradle'],
-    completedCount: 830,
   }),
   q({
     id: 'wonder-cave', title: 'The Wonder Cave', emoji: '🕳️',
@@ -1917,7 +1748,678 @@ export const HANGOUT_QUESTS: Quest[] = [
     description: 'One of the biggest cave chambers in the country, right beside the Rhino & Lion Park. A guided descent into a cathedral of stalactites older than most countries.',
     completionLine: 'You went underground at the Wonder Cave and came back with a new favourite ceiling.',
     xp: 210, tags: ['cave', 'cradle', 'adventure'],
-    completedCount: 470,
+  }),
+
+  // ── BATCH 2: MORE PLACES, EVERY PROVINCE ──────────────────────────────────
+  q({
+    id: 'orlando-towers', title: 'Orlando Towers Landmark', emoji: '🗼',
+    category: 'activity', province: 'GP', city: 'Soweto', region: 'jhb',
+    lat: -26.2337, lng: 27.9145,
+    durationMin: 30, cost: 0, players: [1, 8], difficulty: 1,
+    vibe: ['entertainment', 'funny'],
+    description: 'The famous twin cooling towers of Soweto\'s skyline. See them up close and take the photo that announces you\'ve been to the real Johannesburg.',
+    completionLine: 'You stood at the foot of the Orlando Towers. Soweto said: welcome, now go bungee another day.',
+    xp: 90, tags: ['soweto', 'landmark'],
+  }),
+  q({
+    id: 'walter-sisulu-square', title: 'Walter Sisulu Square of Dedication', emoji: '🕊️',
+    category: 'free', province: 'GP', city: 'Kliptown', region: 'jhb',
+    lat: -26.2696, lng: 27.8932,
+    durationMin: 45, cost: 0, players: [1, 6], difficulty: 1,
+    vibe: ['chill', 'social'],
+    description: 'Where the Freedom Charter was adopted in 1955. Walk the square where a nation\'s future was written, and read the charter on the pylons.',
+    completionLine: 'You walked the square where the Freedom Charter was born. History felt a lot closer than a textbook.',
+    xp: 120, tags: ['history', 'soweto', 'freedom-charter'],
+  }),
+  q({
+    id: 'joburg-zoo', title: 'Joburg Zoo Afternoon', emoji: '🦁',
+    category: 'activity', province: 'GP', city: 'Johannesburg', region: 'jhb',
+    lat: -26.1658, lng: 28.0385,
+    durationMin: 120, cost: 100, players: [1, 8], difficulty: 1,
+    vibe: ['entertainment', 'chill'],
+    description: 'The city\'s big green zoo in Parkview — lions, elephants, gorillas and a reptile house. An easy half-day with a packed lunch.',
+    completionLine: 'You made eye contact with a bored leopard and immediately understood the food chain.',
+    xp: 180, tags: ['zoo', 'animals', 'family'],
+  }),
+  q({
+    id: 'montecasino', title: 'Montecasino Boulevard', emoji: '🎰',
+    category: 'activity', province: 'GP', city: 'Fourways', region: 'jhb',
+    lat: -26.024, lng: 28.0138,
+    durationMin: 90, cost: 50, players: [1, 8], difficulty: 1,
+    vibe: ['entertainment', 'chill'],
+    description: 'An Italian piazza in the middle of Fourways — fake sky, real pizza, cinema, birds in the piazza and slot machines behind glass you must not feed.',
+    completionLine: 'You wandered a piazza that thinks it\'s in Tuscany. The fake sky was surprisingly convincing.',
+    xp: 130, tags: ['casino', 'piazza', 'cinema'],
+  }),
+  q({
+    id: 'nirox-sculpture-park', title: 'Nirox Sculpture Park', emoji: '🗿',
+    category: 'chill', province: 'GP', city: 'Krugersdorp', region: 'jhb',
+    lat: -26.033, lng: 27.739,
+    durationMin: 120, cost: 100, players: [1, 6], difficulty: 1,
+    vibe: ['chill', 'romantic'],
+    description: 'Art scattered through a koppie and around a dam in the Cradle of Humankind — giant installations you can walk right up to.',
+    completionLine: 'You found a giant art piece in a valley and felt briefly cultured. Very briefly.',
+    xp: 160, tags: ['art', 'cradle', 'outdoor-gallery'],
+  }),
+  q({
+    id: 'suikerbosrand-loop', title: 'Suikerbosrand Loop', emoji: '🏞️',
+    category: 'adventure', province: 'GP', city: 'Heidelberg', region: 'jhb',
+    lat: -26.5, lng: 28.23,
+    durationMin: 180, cost: 60, players: [1, 8], difficulty: 3,
+    vibe: ['outdoors', 'social'],
+    description: 'Rolling Highveld grassland just south of Joburg with springbok, zebra and views forever. Do the Ring Road drive or the waterfall trail.',
+    completionLine: 'You found the Highveld\'s open sky. The city disappeared and your shoulders dropped about four inches.',
+    xp: 260, tags: ['nature-reserve', 'game', 'hike'],
+  }),
+  q({
+    id: 'fountains-valley', title: 'Fountains Valley Stroll', emoji: '💧',
+    category: 'free', province: 'GP', city: 'Pretoria', region: 'pretoria',
+    lat: -25.793, lng: 28.185,
+    durationMin: 60, cost: 0, players: [1, 8], difficulty: 1,
+    vibe: ['outdoors', 'chill'],
+    description: 'The oldest nature reserve in Pretoria — springs, shady trails and the Fountains stream where the city began.',
+    completionLine: 'You found the spring where Pretoria started. The water was still running. The city\'s thanks are implied.',
+    xp: 90, tags: ['springs', 'pretoria', 'walk'],
+  }),
+  q({
+    id: 'moreleta-klip', title: 'Moreleta Kloof Trail', emoji: '🦌',
+    category: 'free', province: 'GP', city: 'Pretoria', region: 'pretoria',
+    lat: -25.809, lng: 28.28,
+    durationMin: 75, cost: 0, players: [1, 6], difficulty: 2,
+    vibe: ['outdoors'],
+    description: 'A quiet kloof in the east of Pretoria with a waterfall, zebra and blesbok — and no entrance fee at all.',
+    completionLine: 'You hiked a free waterfall in Pretoria. The zebras clocked you and decided you were fine.',
+    xp: 110, tags: ['kloof', 'waterfall', 'free'],
+  }),
+  q({
+    id: 'freedom-park', title: 'Freedom Park Lookout', emoji: '🕯️',
+    category: 'chill', province: 'GP', city: 'Pretoria', region: 'pretoria',
+    lat: -25.771, lng: 28.191,
+    durationMin: 90, cost: 60, players: [1, 6], difficulty: 1,
+    vibe: ['chill', 'social'],
+    description: 'A hilltop memorial to those who fought for freedom, with a flame, a garden of remembrance and views over the city.',
+    completionLine: 'You stood at the eternal flame and looked out over Pretoria. Some afternoons stay with you.',
+    xp: 140, tags: ['memorial', 'history', 'view'],
+  }),
+  q({
+    id: 'kalk-bay-harbour', title: 'Kalk Bay Harbour Morning', emoji: '⛵',
+    category: 'chill', province: 'WC', city: 'Kalk Bay', region: 'cape-town',
+    lat: -34.128, lng: 18.45,
+    durationMin: 60, cost: 0, players: [1, 8], difficulty: 1,
+    vibe: ['chill', 'food'],
+    description: 'Working fishing boats, seals, vintage shops and fish and chips. Watch the boats come in and the seals negotiate for scraps.',
+    completionLine: 'You watched a seal try its luck with a fisherman. The seal\'s negotiation skills need work but the harbour was perfect.',
+    xp: 100, tags: ['harbour', 'seals', 'coastal'],
+  }),
+  q({
+    id: 'hout-bay-harbour', title: 'Hout Bay Harbour Lunch', emoji: '🦐',
+    category: 'food', province: 'WC', city: 'Hout Bay', region: 'cape-town',
+    lat: -34.043, lng: 18.346,
+    durationMin: 75, cost: 120, players: [1, 8], difficulty: 1,
+    vibe: ['food', 'chill'],
+    description: 'The harbour bowl under Sentinel Peak. Eat the freshest snoek or fish and chips while the gulls hold a board meeting above you.',
+    completionLine: 'You ate seafood in a mountain bowl. The gulls filed a formal complaint about your chips.',
+    xp: 120, tags: ['harbour', 'seafood', 'lunch'],
+  }),
+  q({
+    id: 'stony-point-penguins', title: 'Stony Point Penguins', emoji: '🐧',
+    category: 'activity', province: 'WC', city: 'Betty\'s Bay', region: 'cape-town',
+    lat: -34.374, lng: 18.925,
+    durationMin: 60, cost: 40, players: [1, 8], difficulty: 1,
+    vibe: ['outdoors', 'entertainment'],
+    description: 'An African penguin colony on a boardwalk — wild penguins waddling inches from the path, without the Boulders crowd.',
+    completionLine: 'You got side-eyed by a penguin with main-character energy. Worth every rand.',
+    xp: 140, tags: ['penguins', 'coastal', 'wildlife'],
+  }),
+  q({
+    id: 'cape-agulhas', title: 'Cape Agulhas — Southern Tip', emoji: '🧭',
+    category: 'adventure', province: 'WC', city: 'Agulhas', region: 'cape-town',
+    lat: -34.828, lng: 20.01,
+    durationMin: 120, cost: 60, players: [1, 8], difficulty: 2,
+    vibe: ['outdoors', 'funny'],
+    description: 'Stand where the Indian and Atlantic oceans meet — the actual southernmost point of Africa. The lighthouse and the roaring sea do the rest.',
+    completionLine: 'You stood at the bottom of Africa. Everything from here on is north, which is a weird feeling.',
+    xp: 220, tags: ['southern-tip', 'lighthouse', 'ocean'],
+  }),
+  q({
+    id: 'paternoster-village', title: 'Paternoster White-Wash Walk', emoji: '🐚',
+    category: 'chill', province: 'WC', city: 'Paternoster', region: 'west-coast',
+    lat: -32.806, lng: 17.89,
+    durationMin: 90, cost: 0, players: [1, 6], difficulty: 1,
+    vibe: ['chill', 'romantic'],
+    description: 'The classic whitewashed West Coast fishing village. Walk the beach, count the lobsters on the rocks, and have a coffee that tastes of salt air.',
+    completionLine: 'You walked a postcard. Paternoster\'s lobster population remains unimpressed but intact.',
+    xp: 110, tags: ['west-coast', 'village', 'beach'],
+  }),
+  q({
+    id: 'langebaan-lagoon', title: 'Langebaan Lagoon Paddle', emoji: '🦩',
+    category: 'activity', province: 'WC', city: 'Langebaan', region: 'west-coast',
+    lat: -33.089, lng: 18.034,
+    durationMin: 120, cost: 150, players: [1, 6], difficulty: 2,
+    vibe: ['outdoors', 'chill'],
+    description: 'A crystal lagoon inside a national park — kayak or SUP over sandbanks and flamingos in the distance.',
+    completionLine: 'You paddled a lagoon that looks like the Caribbean had a quiet sibling. Flamingos approved.',
+    xp: 190, tags: ['lagoon', 'kayak', 'national-park'],
+  }),
+  q({
+    id: 'wolfberg-arch', title: 'Wolfberg Arch', emoji: '⛰️',
+    category: 'adventure', province: 'WC', city: 'Cederberg', region: 'cederberg',
+    lat: -32.462, lng: 19.284,
+    durationMin: 300, cost: 60, players: [2, 6], difficulty: 4,
+    vibe: ['outdoors', 'social'],
+    description: 'A full-day hike in the Cederberg to a natural sandstone arch you can walk under. Big views, big silence, big burn.',
+    completionLine: 'You stood under a giant stone arch the mountains made on purpose. Your legs filed a formal protest.',
+    xp: 380, tags: ['hike', 'cederberg', 'arch'],
+  }),
+  q({
+    id: 'citrusdal-baths', title: 'Citrusdal Hot Springs', emoji: '♨️',
+    category: 'chill', province: 'WC', city: 'Citrusdal', region: 'cederberg',
+    lat: -32.573, lng: 19.066,
+    durationMin: 120, cost: 120, players: [1, 8], difficulty: 1,
+    vibe: ['chill', 'romantic'],
+    description: 'Natural hot springs in the Cederberg foothills. Soak, steam, and let the mountains watch over you.',
+    completionLine: 'You soaked in water warmed by the earth itself. Your muscles have filed for permanent residency.',
+    xp: 150, tags: ['hot-springs', 'relax', 'cederberg'],
+  }),
+  q({
+    id: 'barrydale-route62', title: 'Barrydale on Route 62', emoji: '🛣️',
+    category: 'chill', province: 'WC', city: 'Barrydale', region: 'route-62',
+    lat: -33.902, lng: 20.722,
+    durationMin: 90, cost: 50, players: [1, 6], difficulty: 1,
+    vibe: ['chill', 'funny'],
+    description: 'The quirky Karoo town on the world\'s longest wine route — a life-size vintage caravan, a weird museum and a legendary roadside milkshake.',
+    completionLine: 'You found the giant caravan in the desert. Route 62 remains undefeated at weird.',
+    xp: 110, tags: ['route-62', 'karoo', 'roadtrip'],
+  }),
+  q({
+    id: 'montagu-springs', title: 'Montagu Hot Springs Pool', emoji: '🏊',
+    category: 'chill', province: 'WC', city: 'Montagu', region: 'route-62',
+    lat: -33.806, lng: 20.127,
+    durationMin: 120, cost: 100, players: [1, 8], difficulty: 1,
+    vibe: ['chill'],
+    description: 'Warm mineral pools between the cliffs of the Langeberg. The classic halfway stop on the Route 62 loop.',
+    completionLine: 'You floated in mineral water under a mountain. The world\'s problems failed to reach you.',
+    xp: 140, tags: ['hot-springs', 'pool', 'relax'],
+  }),
+  q({
+    id: 'darling-route', title: 'Darling & the Long Street', emoji: '🎭',
+    category: 'event', province: 'WC', city: 'Darling', region: 'west-coast',
+    lat: -33.378, lng: 18.381,
+    durationMin: 90, cost: 50, players: [1, 6], difficulty: 1,
+    vibe: ['entertainment', 'funny'],
+    description: 'A little town of vineyards, a brewery and the legendary Evita se Perron. Even if the show is off, the town is the show.',
+    completionLine: 'You found a town that thinks it\'s a stage. Darling, you\'ll be back.',
+    xp: 120, tags: ['theatre', 'wine', 'karoo-adjacent'],
+  }),
+  q({
+    id: 'gansbaai-shark-town', title: 'Gansbaai & Kleinbaai', emoji: '🦈',
+    category: 'adventure', province: 'WC', city: 'Gansbaai', region: 'overberg',
+    lat: -34.599, lng: 19.352,
+    durationMin: 180, cost: 150, players: [1, 6], difficulty: 2,
+    vibe: ['outdoors', 'entertainment'],
+    description: 'Great White Shark capital of the world — the boat trip alone is worth it. Watch (from a cage or the boat) while gannets dive-bomb the water.',
+    completionLine: 'You went to shark town and left with a healthy respect for the ocean\'s top of the food chain.',
+    xp: 240, tags: ['sharks', 'coastal', 'adventure'],
+  }),
+  q({
+    id: 'swellendam-streets', title: 'Swellendam Heritage Stroll', emoji: '🏛️',
+    category: 'chill', province: 'WC', city: 'Swellendam', region: 'overberg',
+    lat: -34.022, lng: 20.441,
+    durationMin: 75, cost: 0, players: [1, 6], difficulty: 1,
+    vibe: ['chill', 'social'],
+    description: 'Cape\'s third-oldest town — white gables, oak trees and the Drostdy Museum. A slow walk through 250 years.',
+    completionLine: 'You strolled a town that hasn\'t aged a day since 1810. The gables were photogenic and knew it.',
+    xp: 100, tags: ['heritage', 'town', 'museum'],
+  }),
+  q({
+    id: 'ballito-beach', title: 'Ballito Beach Session', emoji: '🏄',
+    category: 'chill', province: 'KZN', city: 'Ballito', region: 'north-coast',
+    lat: -29.539, lng: 31.214,
+    durationMin: 90, cost: 0, players: [1, 8], difficulty: 1,
+    vibe: ['outdoors', 'chill'],
+    description: 'Golden sand, a tidal pool and a promenade on the Dolphin Coast. Bring a towel and a healthy respect for the rip.',
+    completionLine: 'You had a Ballito beach day. The dolphins sent their regards from offshore.',
+    xp: 100, tags: ['beach', 'north-coast', 'dolphins'],
+  }),
+  q({
+    id: 'oribi-gorge', title: 'Oribi Gorge Swing', emoji: '🪂',
+    category: 'adventure', province: 'KZN', city: 'Port Shepstone', region: 'south-coast',
+    lat: -30.693, lng: 30.274,
+    durationMin: 150, cost: 200, players: [1, 6], difficulty: 3,
+    vibe: ['outdoors', 'entertainment'],
+    description: 'A gorge with a swing that drops you into the void — or just walk the viewpoints and the famous Oribi Gorge bridges.',
+    completionLine: 'You swung over a green gorge and screamed in several languages. The gorge absorbed it all.',
+    xp: 260, tags: ['gorge', 'swing', 'adventure'],
+  }),
+  q({
+    id: 'st-lucia-estuary', title: 'St Lucia Estuary Cruise', emoji: '🦛',
+    category: 'adventure', province: 'KZN', city: 'St Lucia', region: 'elephant-coast',
+    lat: -28.375, lng: 32.42,
+    durationMin: 180, cost: 250, players: [1, 8], difficulty: 2,
+    vibe: ['outdoors', 'entertainment'],
+    description: 'Hippos and crocodiles in a lake bigger than you think — take the boat cruise at dusk when the hippos come out.',
+    completionLine: 'You cruised past a hippo yawning. You now understand the phrase \'mortal threat\' on a personal level.',
+    xp: 280, tags: ['hippos', 'estuary', 'wildlife'],
+  }),
+  q({
+    id: 'hluhluwe-rhino', title: 'Hluhluwe-iMfolozi Rhino Drive', emoji: '🦏',
+    category: 'adventure', province: 'KZN', city: 'Hluhluwe', region: 'elephant-coast',
+    lat: -28.058, lng: 32.055,
+    durationMin: 240, cost: 220, players: [1, 8], difficulty: 2,
+    vibe: ['outdoors', 'social'],
+    description: 'Africa\'s oldest game reserve and the place that saved the white rhino. Big five country on your own self-drive loop.',
+    completionLine: 'You drove the reserve that brought the rhino back from the edge. The rhinos seemed okay with that.',
+    xp: 320, tags: ['game-reserve', 'rhino', 'big-five'],
+  }),
+  q({
+    id: 'sodwana-dive', title: 'Sodwana Bay Reef Day', emoji: '🐠',
+    category: 'adventure', province: 'KZN', city: 'Sodwana', region: 'elephant-coast',
+    lat: -27.531, lng: 32.685,
+    durationMin: 300, cost: 400, players: [1, 8], difficulty: 3,
+    vibe: ['outdoors', 'social'],
+    description: 'World-class coral reefs right off the beach — dive, snorkel, or just stand on the dunes watching the ocean do its thing.',
+    completionLine: 'You swam with the fish of a coral city. Your next shower was an anticlimax.',
+    xp: 340, tags: ['diving', 'reef', 'ocean'],
+  }),
+  q({
+    id: 'midmar-dam', title: 'Midmar Dam Picnic', emoji: '🚤',
+    category: 'chill', province: 'KZN', city: 'Pietermaritzburg', region: 'pmb',
+    lat: -29.491, lng: 30.19,
+    durationMin: 90, cost: 40, players: [1, 8], difficulty: 1,
+    vibe: ['chill', 'outdoors'],
+    description: 'A big clear dam surrounded by forest where the world-famous Midmar Mile swim happens. Picnic, paddle, repeat.',
+    completionLine: 'You picnicked by the dam that hosts a mile-long swim. You chose the biscuit option. Correct choice.',
+    xp: 100, tags: ['dam', 'picnic', 'swim'],
+  }),
+  q({
+    id: 'monks-cowl', title: 'Monk\'s Cowl Trail', emoji: '🏔️',
+    category: 'adventure', province: 'KZN', city: 'Drakensberg', region: 'berg',
+    lat: -28.941, lng: 29.375,
+    durationMin: 240, cost: 60, players: [1, 8], difficulty: 3,
+    vibe: ['outdoors', 'social'],
+    description: 'One of the most beautiful corners of the Drakensberg — river pools, grassland and the Amphitheatre\'s quieter cousin looming above.',
+    completionLine: 'You hiked beneath the great Berg wall. Everything else now feels like a low ceiling.',
+    xp: 300, tags: ['drakensberg', 'hike', 'mountains'],
+  }),
+  q({
+    id: 'tala-game-reserve', title: 'Tala Game Reserve Drive', emoji: '🦒',
+    category: 'activity', province: 'KZN', city: 'Camperdown', region: 'durban',
+    lat: -29.874, lng: 30.562,
+    durationMin: 150, cost: 150, players: [1, 8], difficulty: 1,
+    vibe: ['outdoors', 'chill'],
+    description: 'A malaria-free game reserve 45 minutes from Durban — rhino, giraffe and wildebeest on an easy self-drive with views of the valley.',
+    completionLine: 'You saw giraffes grazing on a hillside 45 minutes from the city. Durban\'s backyard is showing off.',
+    xp: 200, tags: ['game-reserve', 'giraffe', 'day-trip'],
+  }),
+  q({
+    id: 'hillcrest-market', title: 'Hillcrest Farmers Market', emoji: '🥑',
+    category: 'food', province: 'KZN', city: 'Hillcrest', region: 'durban',
+    lat: -29.777, lng: 30.771,
+    durationMin: 90, cost: 80, players: [1, 8], difficulty: 1,
+    vibe: ['food', 'chill'],
+    description: 'A Saturday institution — live music, street food, crafts and coffee in the KZN Midlands foothills.',
+    completionLine: 'You ate your way through a farmers market on a Saturday. Your taste buds have joined a union.',
+    xp: 130, tags: ['market', 'food', 'weekend'],
+  }),
+  q({
+    id: 'sardinia-bay', title: 'Sardinia Bay Beach', emoji: '🐚',
+    category: 'chill', province: 'EC', city: 'Gqeberha', region: 'gebeha',
+    lat: -34.01, lng: 25.51,
+    durationMin: 90, cost: 0, players: [1, 8], difficulty: 1,
+    vibe: ['chill', 'outdoors'],
+    description: 'A wild, undeveloped beach in a nature reserve just south of Gqeberha — dune forest, no crowds, and the sea doing all the talking.',
+    completionLine: 'You walked a beach with no shops and no queue. The Bay\'s best-kept secret stays safe.',
+    xp: 110, tags: ['beach', 'dunes', 'wild'],
+  }),
+  q({
+    id: 'bathurst-pineapple', title: 'The Big Pineapple', emoji: '🍍',
+    category: 'event', province: 'EC', city: 'Bathurst', region: 'sunshine-coast',
+    lat: -33.484, lng: 26.842,
+    durationMin: 60, cost: 40, players: [1, 8], difficulty: 1,
+    vibe: ['funny', 'entertainment'],
+    description: 'A giant pineapple you can climb, on a farm full of the real thing. The most honest roadside attraction in the country.',
+    completionLine: 'You climbed inside a 16-metre pineapple. Your life now has a new high-water mark for weird.',
+    xp: 90, tags: ['pineapple', 'roadside', 'quirky'],
+  }),
+  q({
+    id: 'port-alfred-beach', title: 'Port Alfred River & Sea', emoji: '🛶',
+    category: 'chill', province: 'EC', city: 'Port Alfred', region: 'sunshine-coast',
+    lat: -33.599, lng: 26.889,
+    durationMin: 90, cost: 0, players: [1, 8], difficulty: 1,
+    vibe: ['chill', 'outdoors'],
+    description: 'Where the Kowie River meets the sea — a sleepy town with a boardwalk, paddle options and the famous Kowie rail path.',
+    completionLine: 'You watched a river run into the ocean. Port Alfred clocked you as a tourist and forgave you instantly.',
+    xp: 100, tags: ['river', 'coastal', 'town'],
+  }),
+  q({
+    id: 'roberg-nature-reserve', title: 'Robberg Peninsula Walk', emoji: '🌊',
+    category: 'adventure', province: 'EC', city: 'Plettenberg Bay', region: 'garden-route',
+    lat: -34.087, lng: 23.391,
+    durationMin: 180, cost: 60, players: [1, 8], difficulty: 3,
+    vibe: ['outdoors', 'social'],
+    description: 'A peninsula of sandstone sticking into the sea — seals, seabirds and a trail along the cliffs with the Indian Ocean below.',
+    completionLine: 'You walked a peninsula to its point and back. The seals watched your whole journey. No notes.',
+    xp: 240, tags: ['peninsula', 'hike', 'seals'],
+  }),
+  q({
+    id: 'cango-caves', title: 'Cango Caves Cathedral', emoji: '🕳️',
+    category: 'adventure', province: 'WC', city: 'Oudtshoorn', region: 'klein-karoo',
+    lat: -33.442, lng: 22.218,
+    durationMin: 90, cost: 150, players: [1, 8], difficulty: 2,
+    vibe: ['outdoors', 'entertainment'],
+    description: 'One of the world\'s great cave systems — limestone chambers the size of cathedrals and the famous squeeze through the Devil\'s Chimney.',
+    completionLine: 'You walked through a cathedral made by dripping water over a million years. Standing ovation for the water.',
+    xp: 220, tags: ['caves', 'ostrich-country', 'limestone'],
+  }),
+  q({
+    id: 'valley-of-desolation', title: 'Valley of Desolation', emoji: '🏜️',
+    category: 'adventure', province: 'EC', city: 'Graaff-Reinet', region: 'karoo',
+    lat: -32.262, lng: 24.542,
+    durationMin: 150, cost: 40, players: [1, 8], difficulty: 2,
+    vibe: ['outdoors', 'chill'],
+    description: 'Dolerite pillars standing in a red valley at sunset — one of the most photographed sights in the Karoo, and it earns it.',
+    completionLine: 'You watched the sunset paint a valley of stone pillars. The Karoo said: that\'s the show.',
+    xp: 200, tags: ['karoo', 'sunset', 'viewpoint'],
+  }),
+  q({
+    id: 'owl-house', title: 'The Owl House', emoji: '🦉',
+    category: 'event', province: 'EC', city: 'Nieu-Bethesda', region: 'karoo',
+    lat: -31.87, lng: 24.556,
+    durationMin: 90, cost: 60, players: [1, 6], difficulty: 1,
+    vibe: ['funny', 'entertainment'],
+    description: 'Helen Martins turned her Karoo home into a luminous garden of cement owls, camels and wise men. Strange, beautiful, unforgettable.',
+    completionLine: 'You visited a house that became art. The owls are watching. They have been for decades.',
+    xp: 150, tags: ['art', 'karoo', 'quirky'],
+  }),
+  q({
+    id: 'coffee-bay-hike', title: 'Coffee Bay & Hole in the Wall', emoji: '🏖️',
+    category: 'adventure', province: 'EC', city: 'Coffee Bay', region: 'wild-coast',
+    lat: -31.99, lng: 29.15,
+    durationMin: 240, cost: 0, players: [1, 8], difficulty: 3,
+    vibe: ['outdoors', 'social'],
+    description: 'The Wild Coast\'s most famous walk — from the backpacker village along green cliffs to the sea arch the waves punch through.',
+    completionLine: 'You walked to a hole the ocean made in a cliff. The Wild Coast has no chill and we love it.',
+    xp: 280, tags: ['wild-coast', 'cliffs', 'walk'],
+  }),
+  q({
+    id: 'port-st-johns', title: 'Port St Johns River Mouth', emoji: '🌴',
+    category: 'chill', province: 'EC', city: 'Port St Johns', region: 'wild-coast',
+    lat: -31.629, lng: 29.54,
+    durationMin: 90, cost: 0, players: [1, 8], difficulty: 1,
+    vibe: ['chill', 'outdoors'],
+    description: 'Two rivers, a lagoon and jungle-green hills — the Wild Coast town where the mountains walk into the sea.',
+    completionLine: 'You stood where the Umzimvubu meets the sea. The town\'s reputation for doing nothing extremely well is earned.',
+    xp: 120, tags: ['wild-coast', 'lagoon', 'jungle'],
+  }),
+  q({
+    id: 'ficksburg-cherries', title: 'Ficksburg Cherry Season', emoji: '🍒',
+    category: 'event', province: 'FS', city: 'Ficksburg', region: 'eastern-free-state',
+    lat: -28.872, lng: 27.878,
+    durationMin: 120, cost: 80, players: [1, 8], difficulty: 1,
+    vibe: ['food', 'entertainment'],
+    description: 'The cherry capital of South Africa — in season, pick your own cherries on the farms around the sandstone town.',
+    completionLine: 'You picked cherries off a tree. The fruit bowl at home will never compare.',
+    xp: 140, tags: ['cherries', 'harvest', 'town'],
+  }),
+  q({
+    id: 'sentinel-peak', title: 'Sentinel Peak & the Chains', emoji: '🧗',
+    category: 'adventure', province: 'FS', city: 'Witsieshoek', region: 'golden-gate',
+    lat: -28.699, lng: 28.903,
+    durationMin: 360, cost: 100, players: [1, 8], difficulty: 5,
+    vibe: ['outdoors', 'social'],
+    description: 'The chain ladders up the Amphitheatre to the top of the Drakensberg escarpment. Hard, exposed, and the best view in the country.',
+    completionLine: 'You climbed the Amphitheatre\'s chain ladders. The Tugela Falls thundered beside you. Legend status: unlocked.',
+    xp: 420, tags: ['amphitheatre', 'climb', 'tugela'],
+  }),
+  q({
+    id: 'vredefort-dome', title: 'Vredefort Dome Crater', emoji: '🪐',
+    category: 'mystery', province: 'FS', city: 'Parys', region: 'parys',
+    lat: -26.93, lng: 27.4,
+    durationMin: 120, cost: 0, players: [1, 6], difficulty: 2,
+    vibe: ['outdoors', 'chill'],
+    description: 'Stand inside the oldest and largest visible meteor impact crater on Earth. The hills around Parys are the rim of a two-billion-year-old scar.',
+    completionLine: 'You stood on the rim of a crater made by an asteroid. Your day-to-day problems have been resized accordingly.',
+    xp: 160, tags: ['crater', 'geology', 'unesco'],
+  }),
+  q({
+    id: 'gariep-dam', title: 'Gariep Dam Wall', emoji: '🌉',
+    category: 'chill', province: 'FS', city: 'Gariep', region: 'southern-free-state',
+    lat: -30.613, lng: 25.514,
+    durationMin: 90, cost: 0, players: [1, 6], difficulty: 1,
+    vibe: ['chill', 'outdoors'],
+    description: 'South Africa\'s biggest dam — walk the wall where the Orange River was tamed and watch the sun drop into the Free State.',
+    completionLine: 'You walked a wall that holds back a sea of orange water. Engineering, meet sunset. Sunset, meet awe.',
+    xp: 110, tags: ['dam', 'orange-river', 'view'],
+  }),
+  q({
+    id: 'bela-bela-baths', title: 'Bela-Bela Warm Springs', emoji: '♨️',
+    category: 'chill', province: 'LP', city: 'Bela-Bela', region: 'waterberg',
+    lat: -24.886, lng: 28.281,
+    durationMin: 150, cost: 120, players: [1, 8], difficulty: 1,
+    vibe: ['chill'],
+    description: 'The hot springs town on the road to the bushveld — a warm natural pool between the trees, an hour from Pretoria.',
+    completionLine: 'You soaked in water that comes out of the ground warm. Bela-Bela: the original spa town.',
+    xp: 130, tags: ['hot-springs', 'waterberg', 'relax'],
+  }),
+  q({
+    id: 'marakele', title: 'Marakele & the Waterberg', emoji: '🦅',
+    category: 'adventure', province: 'LP', city: 'Thabazimbi', region: 'waterberg',
+    lat: -24.422, lng: 27.632,
+    durationMin: 240, cost: 150, players: [1, 8], difficulty: 2,
+    vibe: ['outdoors', 'social'],
+    description: 'A mountain reserve with a herd of elephants and the biggest colony of Cape vultures in the world — drive the summit loop at sunset.',
+    completionLine: 'You watched vultures spiral over the Waterberg. The mountain made you feel small, in the best way.',
+    xp: 300, tags: ['vultures', 'elephants', 'waterberg'],
+  }),
+  q({
+    id: 'lake-fundudzi', title: 'Lake Fundudzi', emoji: '🪞',
+    category: 'mystery', province: 'LP', city: 'Venda', region: 'venda',
+    lat: -22.866, lng: 30.258,
+    durationMin: 180, cost: 50, players: [1, 6], difficulty: 3,
+    vibe: ['outdoors', 'social'],
+    description: 'A sacred lake in the mountains of Venda, created by a landslide and protected by legend — nobody is allowed to fish or swim in it.',
+    completionLine: 'You stood by a lake the ancestors watch over. You kept your voice down, out of respect.',
+    xp: 220, tags: ['sacred', 'venda', 'mystical'],
+  }),
+  q({
+    id: 'hoedspruit-wildlife', title: 'Hoedspruit Endangered Species', emoji: '🐆',
+    category: 'activity', province: 'LP', city: 'Hoedspruit', region: 'kruger-west',
+    lat: -24.351, lng: 30.918,
+    durationMin: 120, cost: 200, players: [1, 8], difficulty: 1,
+    vibe: ['outdoors', 'entertainment'],
+    description: 'A conservation centre breeding cheetahs, wild dogs and vultures at the gates of the Kruger — a behind-the-scenes look at saving species.',
+    completionLine: 'You met a cheetah that had no idea how famous it is. Conservation: sneakily the best show in town.',
+    xp: 220, tags: ['cheetah', 'conservation', 'kruger'],
+  }),
+  q({
+    id: 'haenertsburg-village', title: 'Haenertsburg Village & View', emoji: '🍂',
+    category: 'chill', province: 'LP', city: 'Haenertsburg', region: 'magoebaskloof',
+    lat: -23.946, lng: 29.944,
+    durationMin: 90, cost: 0, players: [1, 6], difficulty: 1,
+    vibe: ['chill', 'romantic'],
+    description: 'The little English village in the misty Magoebaskloof mountains — trout, oaks, fynbos and a lookout over the Lowveld far below.',
+    completionLine: 'You found the village above the clouds. The Lowveld glowed beneath you like a promise.',
+    xp: 120, tags: ['village', 'magoebaskloof', 'mist'],
+  }),
+  q({
+    id: 'pilgrims-rest', title: 'Pilgrim\'s Rest Time Warp', emoji: '⛏️',
+    category: 'event', province: 'MP', city: 'Pilgrim\'s Rest', region: 'panorama',
+    lat: -24.908, lng: 30.752,
+    durationMin: 120, cost: 60, players: [1, 8], difficulty: 1,
+    vibe: ['entertainment', 'funny'],
+    description: 'A gold-rush town preserved exactly as it was in the 1880s — dig for gold, visit the museum and drink from the old bottle store.',
+    completionLine: 'You stepped into 1880 and back out again. Your phone worked the whole time, which ruined the illusion slightly.',
+    xp: 140, tags: ['gold-rush', 'history', 'panorama'],
+  }),
+  q({
+    id: 'mac-mac-falls', title: 'Mac-Mac Falls', emoji: '💦',
+    category: 'free', province: 'MP', city: 'Sabie', region: 'panorama',
+    lat: -25.025, lng: 30.729,
+    durationMin: 45, cost: 0, players: [1, 8], difficulty: 1,
+    vibe: ['outdoors', 'chill'],
+    description: 'Twin waterfalls dropping 65 metres into the forest on the Panorama Route — a short boardwalk to a proper wall of water.',
+    completionLine: 'You stood at a waterfall that splits in two. The spray misted your face like the forest was applauding.',
+    xp: 90, tags: ['waterfall', 'panorama', 'free'],
+  }),
+  q({
+    id: 'waterval-boven', title: 'Waterval Boven Climb', emoji: '🧗',
+    category: 'adventure', province: 'MP', city: 'Waterval Boven', region: 'escarpment',
+    lat: -25.638, lng: 30.344,
+    durationMin: 240, cost: 100, players: [1, 6], difficulty: 3,
+    vibe: ['outdoors', 'social'],
+    description: 'The climbing capital of South Africa — granite crags above a waterfall town. Even non-climbers should walk under the cliffs.',
+    completionLine: 'You touched granite that thousands of climbers have blessed with chalk. The town\'s shoes say it all.',
+    xp: 260, tags: ['climbing', 'crags', 'escarpment'],
+  }),
+  q({
+    id: 'kaapschehoop', title: 'Kaapschehoop Ghost Town', emoji: '🐴',
+    category: 'mystery', province: 'MP', city: 'Kaapschehoop', region: 'escarpment',
+    lat: -25.585, lng: 30.65,
+    durationMin: 90, cost: 0, players: [1, 6], difficulty: 1,
+    vibe: ['funny', 'chill'],
+    description: 'A misty gold-rush hamlet with wild horses in the streets, famous for its ghost stories. Try the pie shop; avoid the ghosts.',
+    completionLine: 'You shared the street with wild horses and the possibility of ghosts. The pie was excellent; the ghosts, elusive.',
+    xp: 120, tags: ['ghosts', 'wild-horses', 'quirky'],
+  }),
+  q({
+    id: 'chrissiesmeer', title: 'Chrissiesmeer Lakes', emoji: '🦢',
+    category: 'chill', province: 'MP', city: 'Chrissiesmeer', region: 'highveld',
+    lat: -26.272, lng: 30.214,
+    durationMin: 90, cost: 0, players: [1, 6], difficulty: 1,
+    vibe: ['chill', 'outdoors'],
+    description: 'The lake district of South Africa — over 270 lakes around one little town, alive with flamingos in season.',
+    completionLine: 'You found the town with 270 lakes. The flamingos nodded in recognition of a fellow traveller.',
+    xp: 110, tags: ['lakes', 'flamingos', 'highveld'],
+  }),
+  q({
+    id: 'magaliesburg-village', title: 'Magaliesburg Village & Cider', emoji: '🍎',
+    category: 'chill', province: 'NW', city: 'Magaliesburg', region: 'magaliesberg',
+    lat: -25.993, lng: 27.551,
+    durationMin: 120, cost: 60, players: [1, 6], difficulty: 1,
+    vibe: ['chill', 'food'],
+    description: 'A mountain-valley village with a farm stall that does legendary apple cider and pies — the classic Joburg day trip.',
+    completionLine: 'You drank cider made from mountain apples under the Magaliesberg. The city felt a hundred years away.',
+    xp: 120, tags: ['cider', 'farm-stall', 'mountains'],
+  }),
+  q({
+    id: 'groot-marico', title: 'Groot Marico & the Oog', emoji: '💧',
+    category: 'mystery', province: 'NW', city: 'Groot Marico', region: 'marico',
+    lat: -25.553, lng: 26.321,
+    durationMin: 120, cost: 0, players: [1, 6], difficulty: 1,
+    vibe: ['chill', 'social'],
+    description: 'Herman Charles Bosman country — a clear spring called the Oog bubbling up out of the bushveld, mampoer and old stories.',
+    completionLine: 'You stared into the Oog, a spring so clear you can see the bottom. Bosman would have written a story about you.',
+    xp: 130, tags: ['spring', 'bosman', 'bushveld'],
+  }),
+  q({
+    id: 'madikwe', title: 'Madikwe Big Five Drive', emoji: '🐘',
+    category: 'adventure', province: 'NW', city: 'Madikwe', region: 'marico',
+    lat: -24.794, lng: 26.259,
+    durationMin: 240, cost: 250, players: [1, 8], difficulty: 2,
+    vibe: ['outdoors', 'social'],
+    description: 'A malaria-free Big Five reserve on the Botswana border — lions on the plains and elephants at the waterholes, minus the Kruger crowds.',
+    completionLine: 'You watched an elephant drink at sunset in Madikwe. The Big Five checklist just got a lot closer to done.',
+    xp: 320, tags: ['big-five', 'malaria-free', 'safari'],
+  }),
+  q({
+    id: 'potch-dam', title: 'Potchefstroom Dam & City Walk', emoji: '🚶',
+    category: 'chill', province: 'NW', city: 'Potchefstroom', region: 'potch',
+    lat: -26.715, lng: 27.091,
+    durationMin: 75, cost: 0, players: [1, 8], difficulty: 1,
+    vibe: ['chill', 'social'],
+    description: 'A leafy university town with a lake in the middle of it — walk the dam wall, the campus oaks and the oldest street in the North West.',
+    completionLine: 'You looped the dam in the middle of town. Potchefstroom\'s oak trees watched approvingly.',
+    xp: 100, tags: ['dam', 'university-town', 'walk'],
+  }),
+  q({
+    id: 'mafikeng-reserve', title: 'Mafikeng Game Reserve Loop', emoji: '🦌',
+    category: 'activity', province: 'NW', city: 'Mafikeng', region: 'mafikeng',
+    lat: -25.85, lng: 25.63,
+    durationMin: 150, cost: 80, players: [1, 8], difficulty: 1,
+    vibe: ['outdoors', 'chill'],
+    description: 'A self-drive reserve on the edge of town with white rhino and buffalo — proof the North West is underrated.',
+    completionLine: 'You did a safari that started ten minutes from a mall. The North West is quietly showing off.',
+    xp: 180, tags: ['game-reserve', 'rhino', 'self-drive'],
+  }),
+  q({
+    id: 'eye-of-kuruman', title: 'The Eye of Kuruman', emoji: '⛲',
+    category: 'mystery', province: 'NC', city: 'Kuruman', region: 'kuruman',
+    lat: -27.452, lng: 23.434,
+    durationMin: 60, cost: 0, players: [1, 6], difficulty: 1,
+    vibe: ['chill', 'social'],
+    description: 'A spring that pours 20 million litres of crystal water a day out of the Kalahari — the oasis that made the town famous.',
+    completionLine: 'You watched a desert spring that never runs dry. The Kalahari kept its secret and shared its water.',
+    xp: 120, tags: ['spring', 'kalahari', 'water'],
+  }),
+  q({
+    id: 'sutherland-salt', title: 'Sutherland & the Stars', emoji: '🔭',
+    category: 'event', province: 'NC', city: 'Sutherland', region: 'karoo',
+    lat: -32.397, lng: 20.661,
+    durationMin: 120, cost: 100, players: [1, 6], difficulty: 1,
+    vibe: ['chill', 'romantic'],
+    description: 'The coldest town in SA and the home of SALT, the biggest telescope in the southern hemisphere. Tour the observatory, then look up at night.',
+    completionLine: 'You stood under the darkest, clearest sky in the country. The Milky Way made your phone camera cry.',
+    xp: 160, tags: ['telescope', 'stars', 'karoo'],
+  }),
+  q({
+    id: 'nieuwoudtville-bulbs', title: 'Nieuwoudtville Flower Season', emoji: '🌼',
+    category: 'event', province: 'NC', city: 'Nieuwoudtville', region: 'namaqualand',
+    lat: -31.374, lng: 19.108,
+    durationMin: 120, cost: 50, players: [1, 6], difficulty: 1,
+    vibe: ['outdoors', 'chill'],
+    description: 'The bulb capital of the world — in spring the semi-desert explodes into carpets of daisies and vygies on the Bokkeveld escarpment.',
+    completionLine: 'You walked a desert that had decided to become a garden. The flowers didn\'t ask permission. Neither did you.',
+    xp: 150, tags: ['wildflowers', 'spring', 'namaqualand'],
+  }),
+  q({
+    id: 'richtersveld', title: 'Richtersveld Desert Drive', emoji: '🏜️',
+    category: 'adventure', province: 'NC', city: 'Richtersveld', region: 'north-west-cape',
+    lat: -28.302, lng: 17.139,
+    durationMin: 300, cost: 150, players: [2, 8], difficulty: 4,
+    vibe: ['outdoors', 'social'],
+    description: 'A lunar landscape of mountains and quiver trees where the Orange River cuts the desert in half — 4x4 country at its most epic.',
+    completionLine: 'You crossed a landscape that looks like another planet. The quiver trees waved you through.',
+    xp: 360, tags: ['desert', '4x4', 'quiver-trees'],
+  }),
+  q({
+    id: 'hopetown-diamond', title: 'Hopetown & the First Diamond', emoji: '💎',
+    category: 'event', province: 'NC', city: 'Hopetown', region: 'kimberley',
+    lat: -29.624, lng: 24.086,
+    durationMin: 75, cost: 40, players: [1, 6], difficulty: 1,
+    vibe: ['funny', 'entertainment'],
+    description: 'Where the Eureka Diamond was found in 1867 and started the biggest diamond rush in history — a small museum, a big story.',
+    completionLine: 'You stood where it all began. The 21-carat stone is elsewhere; the story is right here.',
+    xp: 110, tags: ['diamond', 'history', 'karoo'],
+  }),
+  q({
+    id: 'carnarvon-meerkat', title: 'Carnarvon & the MeerKAT', emoji: '📡',
+    category: 'event', province: 'NC', city: 'Carnarvon', region: 'karoo',
+    lat: -30.968, lng: 22.133,
+    durationMin: 90, cost: 0, players: [1, 6], difficulty: 1,
+    vibe: ['chill', 'social'],
+    description: 'A Karoo town that hosts telescopes listening to the universe. Drive past the MeerKAT dishes on the horizon — the largest radio telescope in the southern hemisphere.',
+    completionLine: 'You drove past dishes listening to the edge of the universe. Your signal got better on the way home. Coincidence? Probably.',
+    xp: 130, tags: ['radio-telescope', 'space', 'karoo'],
+  }),
+  q({
+    id: 'amaqola-waterfalls', title: 'Amaqola & Ncome Museum', emoji: '🏞️',
+    category: 'event', province: 'KZN', city: 'Ncome', region: 'zululand',
+    lat: -28.452, lng: 31.052,
+    durationMin: 90, cost: 40, players: [1, 6], difficulty: 1,
+    vibe: ['social', 'chill'],
+    description: 'A museum shaped like buffalo horns on the Ncome River, telling the story of the Battle of Blood River from the Zulu side.',
+    completionLine: 'You heard history from the other side of the river. The horns of the buffalo still stand.',
+    xp: 130, tags: ['history', 'zululand', 'museum'],
+  }),
+  q({
+    id: 'big-bend-makhado', title: 'Makhado & the Soutpansberg', emoji: '⛰️',
+    category: 'activity', province: 'LP', city: 'Makhado', region: 'venda',
+    lat: -23.044, lng: 29.903,
+    durationMin: 150, cost: 80, players: [1, 6], difficulty: 2,
+    vibe: ['outdoors', 'chill'],
+    description: 'Drive the mountain passes of the Soutpansberg and look down over the Limpopo plains — the northernmost mountain range in SA.',
+    completionLine: 'You reached the top of the Soutpansberg. The far horizon was actually another country. Wild.',
+    xp: 200, tags: ['soutpansberg', 'mountains', 'north'],
   }),
 
   // Social & variety quests live in src/data/social.ts

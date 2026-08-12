@@ -5,14 +5,8 @@ import {
   HOME_BASES,
   PROVINCES,
   type Category,
-  type Chain,
   type HomeBase,
   type ProvinceId,
-  type Quest,
-  type Vibe,
-  VIBE_META,
-
-  chainStats,
 } from '../data/quests'
 
 // ── Levels ───────────────────────────────────────────────────────────────────
@@ -229,194 +223,6 @@ export const BADGES: BadgeDef[] = [
 const countCategory = (p: Progress, category: Category): number =>
   p.completedIds.filter((id) => ALL_QUESTS.find((x) => x.id === id)?.category === category).length
 
-// ── Generator ────────────────────────────────────────────────────────────────
-export interface GeneratorInput {
-  people: number // 1 | 2 | 4 | 8
-  maxMinutes: number // 15 | 30 | 120 | 300 | 600
-  budget: number // 0 | 50 | 100 | 250 | Infinity
-  distanceTier: '500m' | '2km' | '5km' | '20km' | 'anywhere'
-  vibe: Vibe
-  base: HomeBase
-  /** When the player typed a custom start place, filter by real km distance */
-  customCoords?: { lat: number; lng: number; label: string }
-  /** Quest ids to skip so recent suggestions don't repeat */
-  exclude?: Set<string>
-}
-
-export interface GeneratedChain {
-  title: string
-  emoji: string
-  quests: Quest[]
-  durationMin: number
-  cost: number
-  players: [number, number]
-  xp: number
-}
-
-export interface GeneratorResult {
-  generated: GeneratedChain | null
-  singles: Quest[]
-  featured: Chain | null
-  matchedCount: number
-  nearbyLabel: string
-  /** Closest quests just outside the player's strict choices, when nothing matched. */
-  nearMisses: { quest: Quest; reason: string }[]
-}
-
-const DISTANCE: Record<GeneratorInput['distanceTier'], number> = {
-  '500m': 500,
-  '2km': 2000,
-  '5km': 5000,
-  '20km': 20000,
-  anywhere: Infinity,
-}
-
-const inRange = (
-  quest: { region: string; lat: number; lng: number },
-  base: HomeBase,
-  meters: number,
-  custom?: { lat: number; lng: number },
-): boolean => {
-  if (meters === Infinity) return true
-  if (custom) return haversineKm(custom.lat, custom.lng, quest.lat, quest.lng) * 1000 <= meters
-  if (quest.region === base.region) return true
-  if (meters >= 20000 && base.neighbors.includes(quest.region)) return true
-  return false
-}
-
-const CATEGORY_HINTS: Partial<Record<Vibe, Category[]>> = {
-  food: ['food'],
-  outdoors: ['adventure', 'free'],
-  entertainment: ['activity', 'event'],
-  chill: ['chill', 'free'],
-  social: ['free', 'activity', 'chill', 'event'],
-  competitive: ['activity', 'adventure'],
-  romantic: ['chill', 'event'],
-  funny: ['mystery', 'food'],
-  chaotic: ['adventure', 'activity'],
-  random: ['mystery', 'free'],
-}
-
-export const generateQuest = (input: GeneratorInput): GeneratorResult => {
-  const { base, vibe, customCoords } = input
-  const meters = DISTANCE[input.distanceTier]
-  // Strict mode: the generator honours the player's exact budget, time and distance
-  // choices. If too few quests match, it says so honestly instead of silently
-  // widening the constraints (that "we loosened things up" behaviour is gone).
-  const budget = input.budget
-  const maxMinutes = input.maxMinutes
-  const distance = meters
-
-  const candidates = (): Quest[] =>
-    ALL_QUESTS.filter(
-      (x) =>
-        !input.exclude?.has(x.id) &&
-        x.cost <= budget &&
-        x.durationMin <= maxMinutes &&
-        x.players[0] <= input.people &&
-        x.players[1] >= input.people &&
-        inRange(x, base, distance, customCoords),
-    )
-
-  const score = (x: Quest): number => {
-    let s = 0
-    if (vibe === 'random' || x.vibe.includes(vibe)) s += 4
-    const hints = CATEGORY_HINTS[vibe] ?? []
-    if (hints.includes(x.category)) s += 2
-    if (x.trending) s += 1
-    // Small jitter breaks score ties so the same combo doesn't always produce
-    // the same chain — the generator should feel fresh, not scripted.
-    s += Math.random() * 1.6
-    return s
-  }
-
-  let matches = candidates()
-  let scored = matches.map((x) => ({ quest: x, score: score(x) })).sort((a, b) => b.score - a.score)
-
-  // Strict mode can legitimately match nothing. Rather than silently widening the
-  // filters, surface the quests that are *just* outside the player's choices so they
-  // know exactly what to tweak.
-  const nearMisses: { quest: Quest; reason: string }[] = []
-  if (scored.length === 0) {
-    const from = customCoords ?? { lat: base.lat, lng: base.lng }
-    const list: { quest: Quest; reason: string; delta: number }[] = []
-    for (const q of ALL_QUESTS) {
-      if (input.exclude?.has(q.id)) continue
-      const inPeople = q.players[0] <= input.people && q.players[1] >= input.people
-      const inBudget = q.cost <= budget
-      const inTime = q.durationMin <= maxMinutes
-      const inDist = inRange(q, base, distance, customCoords)
-      const misses: { reason: string; delta: number }[] = []
-      if (!inBudget) {
-        const d = q.cost - budget
-        misses.push({ reason: `R${d} over your budget`, delta: d })
-      }
-      if (!inTime) {
-        const d = q.durationMin - maxMinutes
-        misses.push({ reason: `${d} min longer than your time`, delta: d })
-      }
-      if (!inDist && distance !== Infinity) {
-        const d = Math.round(haversineKm(from.lat, from.lng, q.lat, q.lng) * 1000 - distance)
-        misses.push({ reason: `${(d / 1000).toFixed(1)} km outside your distance`, delta: d })
-      }
-      if (!inPeople) {
-        misses.push({ reason: `made for ${q.players[1]} person${q.players[1] > 1 ? 's' : ''}`, delta: 1000 + q.players[1] })
-      }
-      if (misses.length === 1) list.push({ quest: q, reason: misses[0].reason, delta: misses[0].delta })
-    }
-    list.sort((a, b) => a.delta - b.delta)
-    nearMisses.push(...list.slice(0, 3).map(({ quest, reason }) => ({ quest, reason })))
-  }
-
-  // Pick a diverse chain: prefer top scores, but avoid repeating categories.
-  const picked: Quest[] = []
-  const usedCats = new Set<Category>()
-  for (const { quest } of scored) {
-    if (picked.length >= 4) break
-    if (usedCats.has(quest.category)) continue
-    picked.push(quest)
-    usedCats.add(quest.category)
-  }
-  // Fill remaining slots with the next best regardless of category.
-  for (const { quest } of scored) {
-    if (picked.length >= 4) break
-    if (!picked.includes(quest)) picked.push(quest)
-  }
-
-  const vibeLabel = VIBE_META[vibe].label
-  const cityName = base.label.split(' ')[0]
-  const generated: GeneratedChain | null =
-    picked.length >= 3
-      ? {
-          title: `The ${vibeLabel} ${cityName} Quest`,
-          emoji: vibe === 'random' ? '🎲' : VIBE_META[vibe].emoji,
-          quests: picked,
-          durationMin: picked.reduce((a, x) => a + x.durationMin, 0),
-          cost: picked.reduce((a, x) => a + x.cost, 0),
-          players: [Math.min(...picked.map((x) => x.players[0])), Math.max(...picked.map((x) => x.players[1]))],
-          xp: picked.reduce((a, x) => a + x.xp, 0) + 150,
-        }
-      : null
-
-  const singles = scored.filter((x) => !picked.includes(x.quest)).map((x) => x.quest).slice(0, 6)
-
-  const featured = CHAINS.filter(
-    (c) =>
-      (vibe === 'random' || c.vibe.includes(vibe)) &&
-      chainStats(c).cost <= budget &&
-      chainStats(c).durationMin <= maxMinutes &&
-      inRange(c, base, distance, customCoords),
-  ).sort((a, b) => (b.trending ? 1 : 0) - (a.trending ? 1 : 0))[0]
-
-  return {
-    generated,
-    singles,
-    featured: featured ?? null,
-    matchedCount: scored.length,
-    nearbyLabel: distance === Infinity ? 'South Africa' : (customCoords?.label ?? base.label),
-    nearMisses,
-  }
-}
 
 // ── Misc formatting helpers ──────────────────────────────────────────────────
 export const fmtDuration = (minutes: number): string => {
@@ -429,14 +235,6 @@ export const fmtDuration = (minutes: number): string => {
 export const fmtCost = (cost: number): string => (cost === 0 ? 'FREE' : `R${cost}`)
 
 export const difficultyStars = (n: number): string => '⭐'.repeat(n)
-
-export const recommendPct = (id: string): number => 86 + (hash(id) % 12) // 86–97%
-
-const hash = (s: string): number => {
-  let h = 0
-  for (let i = 0; i < s.length; i += 1) h = (h * 31 + s.charCodeAt(i)) % 1000
-  return h
-}
 
 export const categoryColor = (category: Category): string => CATEGORY_META[category].color
 

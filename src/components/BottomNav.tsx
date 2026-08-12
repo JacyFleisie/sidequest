@@ -1,12 +1,13 @@
 import { NavLink } from 'react-router-dom'
+import { Icon, type IconName } from './Icon'
 
-const TABS = [
-  { to: '/', label: 'Home', emoji: '🏠' },
-  { to: '/map', label: 'Map', emoji: '🗺️' },
-  { to: '/feed', label: 'Feed', emoji: '📜' },
-  { to: '/builder', label: 'Build', emoji: '🔧' },
-  { to: '/friends', label: 'Friends', emoji: '👥' },
-  { to: '/profile', label: 'Profile', emoji: '🏆' },
+const TABS: { to: string; label: string; icon: IconName }[] = [
+  { to: '/', label: 'Home', icon: 'home' },
+  { to: '/map', label: 'Map', icon: 'map' },
+  { to: '/feed', label: 'Feed', icon: 'feed' },
+  { to: '/builder', label: 'Build', icon: 'build' },
+  { to: '/friends', label: 'Friends', icon: 'friends' },
+  { to: '/profile', label: 'Profile', icon: 'profile' },
 ]
 
 export default function BottomNav() {
@@ -19,7 +20,9 @@ export default function BottomNav() {
           className={({ isActive }) => `nav-item ${isActive ? 'nav-active' : ''}`}
           end={t.to === '/'}
         >
-          <span className="nav-emoji">{t.emoji}</span>
+          <span className="nav-icon">
+            <Icon name={t.icon} size={22} />
+          </span>
           <span className="nav-label">{t.label}</span>
         </NavLink>
       ))}

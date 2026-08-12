@@ -11,6 +11,7 @@ import {
   type Vibe,
 } from '../data/quests'
 import { getUserLocation, haversineKm, reverseGeocodeLabel } from '../lib/game'
+import { supabase } from '../lib/supabase'
 import { taglineOfTheDay } from '../lib/taglines'
 import { useGame, type StartPlace } from '../lib/store'
 import { usePullToRefresh } from '../lib/usePullToRefresh'
@@ -49,7 +50,6 @@ const rowToQuest = (r: CustomQuestRow): Quest => ({
   completionLine: 'Quest complete. You did the thing. Legend.',
   xp: r.draft.xp,
   tags: r.draft.tags,
-  completedCount: 0,
   ownerId: r.ownerId,
   ownerName: r.ownerName,
   ownerEmoji: r.ownerEmoji,
@@ -60,6 +60,24 @@ const CATEGORIES = Object.entries(CATEGORY_META) as [Category, { label: string; 
 const VIBES = Object.entries(VIBE_META) as [Vibe, { label: string; emoji: string }][]
 
 const PAGE = 12
+
+/** Whole days until an ISO date (ceils, so 1 = this time tomorrow). */
+const daysUntil = (iso: string): number => {
+  const ms = new Date(iso).getTime() - Date.now()
+  return Math.ceil(ms / 86_400_000)
+}
+
+/** Compact countdown for seasonal quests: “Ends today / tomorrow / Sunday / in 9 days / 24 Sep”. */
+const expiryLabel = (iso: string): string => {
+  const d = daysUntil(iso)
+  const at = new Date(iso)
+  if (d === 0) return 'Ends today'
+  if (d < 0) return 'Ended'
+  if (d === 1) return 'Ends tomorrow'
+  if (d < 7) return `Ends ${at.toLocaleDateString('en-ZA', { weekday: 'long' })}`
+  if (d < 30) return `Ends in ${d} days`
+  return `Ends ${at.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' })}`
+}
 
 export default function Generator() {
   const {
@@ -79,6 +97,9 @@ export default function Generator() {
   const [remoteQuests, setRemoteQuests] = useState<Quest[]>([])
   const [myUid, setMyUid] = useState<string | null>(null)
   const [createOpen, setCreateOpen] = useState(false)
+  // REAL popularity for the Trending sort — review counts from the server, so
+  // the feed never shows made-up numbers (the old hardcoded counts are gone).
+  const [reviewCounts, setReviewCounts] = useState<Record<string, number>>({})
 
   // Load community quests (mine from other devices + everyone else's) and
   // subscribe so new ones appear live. Registration keeps questById() working
@@ -90,6 +111,17 @@ export default function Generator() {
     const shaped = rows.map(rowToQuest)
     setRemoteQuests(shaped)
     registerCustomQuests(shaped)
+    // Real review tallies — powers Trending. Never throws; empty on failure.
+    try {
+      if (supabase) {
+        const { data } = await supabase.from('quest_reviews').select('quest_id').eq('hidden', false)
+        const counts: Record<string, number> = {}
+        for (const r of data ?? []) counts[r.quest_id] = (counts[r.quest_id] ?? 0) + 1
+        setReviewCounts(counts)
+      }
+    } catch {
+      // trending just falls back to shuffle order
+    }
   }, [])
 
   useEffect(() => {
@@ -106,6 +138,7 @@ export default function Generator() {
   const [trending, setTrending] = useState(false)
   const [anywhereOnly, setAnywhereOnly] = useState(false)
   const [communityOnly, setCommunityOnly] = useState(false)
+  const [seasonalOnly, setSeasonalOnly] = useState(false)
   // Random seed per mount, so every visit starts with a fresh (different) feed.
   const [shuffleKey, setShuffleKey] = useState(() => (Math.random() * 0xffffffff) >>> 0)
   const [shown, setShown] = useState(PAGE)
@@ -150,7 +183,9 @@ export default function Generator() {
     const byId = new Map<string, Quest>()
     for (const q of remoteQuests) byId.set(q.id, q)
     for (const q of myCustomQuests ?? []) if (!byId.has(q.id)) byId.set(q.id, q)
-    return [...ALL_QUESTS, ...byId.values()]
+    // Seasonal quests vanish from the feed once their event date passes — the
+    // countdown chip warned everyone before that.
+    return [...ALL_QUESTS, ...byId.values()].filter((q) => !q.expiresAt || daysUntil(q.expiresAt) > 0)
   }, [remoteQuests, myCustomQuests])
 
   // Optional filters: tap a category, vibe or "Anywhere" and the feed shows only that.
@@ -161,9 +196,10 @@ export default function Generator() {
           (!category || q.category === category) &&
           (!vibe || q.vibe.includes(vibe)) &&
           (!anywhereOnly || q.anywhere) &&
-          (!communityOnly || q.ownerId !== undefined),
+          (!communityOnly || q.ownerId !== undefined) &&
+          (!seasonalOnly || q.expiresAt !== undefined),
       ),
-    [pool, category, vibe, anywhereOnly, communityOnly],
+    [pool, category, vibe, anywhereOnly, communityOnly, seasonalOnly],
   )
 
   const handleDelete = (q: Quest) => {
@@ -173,11 +209,11 @@ export default function Generator() {
   }
 
   // Random order by default (a feed you just scroll); "Trending" flips to
-  // most-completed first. Shuffle re-randomises with a fresh seed.
+  // the quests with the most real reviews first. Shuffle re-randomises.
   const ordered = useMemo(() => {
     const list = [...filtered]
     if (trending) {
-      list.sort((a, b) => b.completedCount - a.completedCount)
+      list.sort((a, b) => (reviewCounts[b.id] ?? 0) - (reviewCounts[a.id] ?? 0))
     } else {
       let seed = (shuffleKey * 2654435761) >>> 0
       const rnd = () => {
@@ -202,7 +238,7 @@ export default function Generator() {
   }
 
   const activeLabel =
-    [category ? CATEGORY_META[category].emoji + ' ' + CATEGORY_META[category].label : null, vibe ? VIBE_META[vibe].emoji + ' ' + VIBE_META[vibe].label : null, anywhereOnly ? '🌍 Anywhere' : null, communityOnly ? '🧑‍🤝‍🧑 Community' : null, trending ? '🔥 Trending' : null]
+    [category ? CATEGORY_META[category].emoji + ' ' + CATEGORY_META[category].label : null, vibe ? VIBE_META[vibe].emoji + ' ' + VIBE_META[vibe].label : null, anywhereOnly ? '🌍 Anywhere' : null, communityOnly ? '🧑‍🤝‍🧑 Community' : null, seasonalOnly ? '⏳ Seasonal' : null, trending ? '🔥 Trending' : null]
       .filter(Boolean)
       .join(' · ') || 'All quests'
 
@@ -211,6 +247,7 @@ export default function Generator() {
     setVibe(null)
     setAnywhereOnly(false)
     setCommunityOnly(false)
+    setSeasonalOnly(false)
     setTrending(false)
     refresh()
   }
@@ -273,6 +310,15 @@ export default function Generator() {
             active={communityOnly}
             onClick={() => {
               setCommunityOnly((v) => !v)
+              refresh()
+            }}
+          />
+          <Chip
+            label="Seasonal"
+            emoji="⏳"
+            active={seasonalOnly}
+            onClick={() => {
+              setSeasonalOnly((v) => !v)
               refresh()
             }}
           />
@@ -384,6 +430,14 @@ function QuestCard({
           <h2 className="feed-card-title">
             {q.title}
             {q.trending && <span className="feed-card-trending"> 🔥</span>}
+            {q.expiresAt && (
+              <span
+                className="feed-card-expiry"
+                title={`Available until ${new Date(q.expiresAt).toLocaleString('en-ZA')}`}
+              >
+                ⏳ {expiryLabel(q.expiresAt)}
+              </span>
+            )}
           </h2>
           <p className="feed-card-sub">
             {q.anywhere ? 'Anywhere' : q.city} · {meta.label}
@@ -430,7 +484,7 @@ function QuestCard({
             </button>
           )}
           <Button variant="gold" className="feed-start-btn" onClick={onStart}>
-            ⚡ START QUEST
+            ⚡ Start quest
           </Button>
         </div>
       </footer>

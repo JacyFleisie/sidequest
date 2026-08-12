@@ -148,7 +148,7 @@ export default function ChainBuilder() {
     <div className="page builder" ref={pageRef}>
       <PullHint pull={pull} refreshing={refreshing} />
       <header className="page-head">
-        <div className="bored-banner">🔧 ASSEMBLE YOUR OWN</div>
+        <div className="bored-banner">🔧 Assemble your own</div>
         <h1 className="page-title">Chain Builder</h1>
         <p className="page-sub">
           Pick stops from the whole of South Africa, order them, and share your quest with friends.
@@ -205,7 +205,7 @@ export default function ChainBuilder() {
                   >
                     ↓
                   </button>
-                  <button className="remove-btn" onClick={() => remove(q.id)} aria-label="Remove">
+                  <button className="step-remove-btn" onClick={() => remove(q.id)} aria-label="Remove">
                     ✕
                   </button>
                 </div>
@@ -218,7 +218,7 @@ export default function ChainBuilder() {
 
         <div className="builder-actions">
           <Button variant="gold" disabled={added.length < 2} onClick={startCurrent}>
-            ▶ START QUEST
+            ▶ Start quest
           </Button>
           <Button variant="ghost" disabled={added.length < 2} onClick={share}>
             📤 SHARE

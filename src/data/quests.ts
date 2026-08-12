@@ -3,6 +3,7 @@
 // Everything is static & free — no APIs, no keys. Coordinates are approximate.
 // ─────────────────────────────────────────────────────────────────────────────
 import { HANGOUT_QUESTS } from './hangouts'
+import { SEASONAL_QUESTS as SEASONAL } from './seasonal'
 
 export type Category =
   | 'free'
@@ -88,8 +89,10 @@ export interface Quest {
   completionLine: string
   xp: number
   trending?: boolean
+  /** ISO date when a seasonal quest ends (tied to a real SA event). Once past,
+   * the quest disappears from the feed with a countdown before that. */
+  expiresAt?: string
   tags: string[]
-  completedCount: number
 }
 
 export const CATEGORY_META: Record<Category, { label: string; color: string; emoji: string }> = {
@@ -212,7 +215,6 @@ export const QUESTS: Quest[] = [
     purpose: 'Prove who has the strongest nerves.',
     completionLine: 'You screamed in public. Twice. Worth it.',
     xp: 500, trending: true, tags: ['theme park', 'rides', 'group'],
-    completedCount: 4123,
   }),
   q({
     id: 'maboneng-art-walk', title: 'Maboneng Street Art Hunt', emoji: '🎨',
@@ -223,7 +225,6 @@ export const QUESTS: Quest[] = [
     description: 'Find the 10 wildest murals in Maboneng. Loser buys coffee.',
     completionLine: 'You now have strong opinions about street art. Excellent.',
     xp: 180, tags: ['art', 'walk', 'free'],
-    completedCount: 2871,
   }),
   q({
     id: 'zoo-lake-paddle', title: 'Zoo Lake Sunset Paddle', emoji: '🦆',
@@ -235,7 +236,6 @@ export const QUESTS: Quest[] = [
     purpose: 'Do absolutely nothing. Properly.',
     completionLine: 'The ducks have adopted you. You cannot return to normal life.',
     xp: 140, tags: ['lake', 'sunset', 'relax'],
-    completedCount: 1984,
   }),
   q({
     id: 'vilakazi-history', title: 'Vilakazi Street History Walk', emoji: '🏛️',
@@ -247,7 +247,6 @@ export const QUESTS: Quest[] = [
     purpose: 'Know where you are. It matters.',
     completionLine: 'You walked where history walked. Now go eat a kota.',
     xp: 320, trending: true, tags: ['history', 'soweto', 'culture'],
-    completedCount: 3540,
   }),
   q({
     id: 'constitution-hill', title: 'Constitution Hill Tour', emoji: '⚖️',
@@ -258,7 +257,6 @@ export const QUESTS: Quest[] = [
     description: 'Old fort, prison, now home to our Constitutional Court. Heavy but essential.',
     completionLine: 'You did the homework your school never gave you. Gold star.',
     xp: 300, tags: ['history', 'museum'],
-    completedCount: 1652,
   }),
   q({
     id: 'melville-diner-race', title: 'Melville Late-Night Diner Race', emoji: '🍔',
@@ -269,7 +267,6 @@ export const QUESTS: Quest[] = [
     description: 'Three diners, one night. Everyone gets R60 and must rate their milkshake like a wine critic.',
     completionLine: 'You critiqued a milkshake with the word "tannins". Legend.',
     xp: 240, tags: ['food', 'night', 'competition'],
-    completedCount: 1108,
   }),
   q({
     id: 'sandton-pool-battle', title: 'Sandton Pool Battle', emoji: '🎱',
@@ -280,7 +277,6 @@ export const QUESTS: Quest[] = [
     description: 'Two teams. Winner stays. Trash talk is mandatory.',
     completionLine: 'You spent 78 minutes playing pool instead of being productive. Excellent.',
     xp: 220, trending: true, tags: ['pool', 'bar', 'competition'],
-    completedCount: 2873,
   }),
   q({
     id: 'walter-sisulu-walk', title: 'Walter Sisulu Garden & Waterfall', emoji: '🦅',
@@ -291,7 +287,6 @@ export const QUESTS: Quest[] = [
     description: 'Waterfall, verreaux\'s eagles, and the best lawn in Joburg for a picnic.',
     completionLine: 'You saw a waterfall in Gauteng. Nobody believes you. Correct.',
     xp: 200, tags: ['nature', 'waterfall', 'free'],
-    completedCount: 2241,
   }),
   q({
     id: 'pretoria-jacaranda-ramble', title: 'Jacaranda Avenue Ramble', emoji: '🌸',
@@ -302,7 +297,6 @@ export const QUESTS: Quest[] = [
     description: 'Walk the purple streets (season permitting) and find the single prettiest photo spot.',
     completionLine: 'You found the prettiest street in Pretoria. It is now your wallpaper.',
     xp: 150, tags: ['walk', 'free', 'pretty'],
-    completedCount: 1902,
   }),
   q({
     id: 'voortrekker-view', title: 'Voortrekker Monument View Quest', emoji: '🗿',
@@ -313,7 +307,6 @@ export const QUESTS: Quest[] = [
     description: 'History, architecture, and the best view of Pretoria from the top.',
     completionLine: 'You climbed a monument for a view. Peak Pretoria behaviour.',
     xp: 230, tags: ['history', 'view'],
-    completedCount: 1347,
   }),
   q({
     id: 'union-buildings-sunset', title: 'Union Buildings Sunset Run', emoji: '🌇',
@@ -324,7 +317,6 @@ export const QUESTS: Quest[] = [
     description: 'The iconic steps, the gardens, the view. Run or walk, just do it at golden hour.',
     completionLine: 'You ran where presidents walk. Now you own the place. Obviously.',
     xp: 160, tags: ['run', 'free', 'sunset'],
-    completedCount: 998,
   }),
   q({
     id: 'modderfontein-hike', title: 'Modderfontein Reserve Sunrise Hike', emoji: '🥾',
@@ -335,7 +327,6 @@ export const QUESTS: Quest[] = [
     description: 'Gauteng\'s secret savannah. Kudu, zebra and a sunrise that fixes you.',
     completionLine: 'You saw zebras before 7am. Your ancestors are proud.',
     xp: 350, tags: ['hike', 'nature', 'sunrise'],
-    completedCount: 1204,
   }),
 
   // ── WESTERN CAPE ───────────────────────────────────────────────────────────
@@ -349,7 +340,6 @@ export const QUESTS: Quest[] = [
     purpose: 'Stand on the mountain the whole world photographs.',
     completionLine: 'You stood on the flat mountain. The city bowed. Correctly.',
     xp: 520, trending: true, tags: ['mountain', 'view', 'iconic'],
-    completedCount: 6981,
   }),
   q({
     id: 'bokap-photo-walk', title: 'Bo-Kaap Colour Walk', emoji: '📸',
@@ -360,7 +350,6 @@ export const QUESTS: Quest[] = [
     description: 'Cobbled streets, candy-coloured houses, one mandatory dramatic photo.',
     completionLine: 'Your camera roll now looks like a paint store exploded. Beautiful.',
     xp: 150, tags: ['photo', 'free', 'colour'],
-    completedCount: 3122,
   }),
   q({
     id: 'kirstenbosch-picnic', title: 'Kirstenbosch Picnic & Treetop Walk', emoji: '🌿',
@@ -371,7 +360,6 @@ export const QUESTS: Quest[] = [
     description: 'Boomslang walkway above the treetops, then a picnic on the lawn.',
     completionLine: 'You walked on a snake made of bridges. The fynbos approves.',
     xp: 210, tags: ['garden', 'picnic', 'nature'],
-    completedCount: 2560,
   }),
   q({
     id: 'boulders-penguins', title: 'Boulders Beach Penguin Watch', emoji: '🐧',
@@ -382,7 +370,6 @@ export const QUESTS: Quest[] = [
     description: 'Watch endangered penguins waddle, swim and absolutely own the beach.',
     completionLine: 'You met the official owners of the beach. They did not charge you rent.',
     xp: 190, tags: ['animals', 'beach', 'family'],
-    completedCount: 4410,
   }),
   q({
     id: 'chapmans-drive', title: 'Chapman\'s Peak Drive Run', emoji: '🛣️',
@@ -393,7 +380,6 @@ export const QUESTS: Quest[] = [
     description: 'The most beautiful drive in the world. Windows down, music loud.',
     completionLine: 'You drove the world\'s most beautiful road and did NOT stop for photos. Liar.',
     xp: 240, tags: ['drive', 'view', 'coast'],
-    completedCount: 3301,
   }),
   q({
     id: 'old-biscuit-mill', title: 'Old Biscuit Mill Food Market', emoji: '🥐',
@@ -404,7 +390,6 @@ export const QUESTS: Quest[] = [
     description: 'One market, unlimited snacks. Everyone must try something they can\'t pronounce.',
     completionLine: 'You ate things you cannot pronounce and loved all of them.',
     xp: 200, trending: true, tags: ['food', 'market', 'weekend'],
-    completedCount: 5203,
   }),
   q({
     id: 'muizenberg-surf', title: 'Muizenberg First Wave', emoji: '🏄',
@@ -415,7 +400,6 @@ export const QUESTS: Quest[] = [
     description: 'Lesson on the friendliest wave in SA. Falling is 90% of the fun.',
     completionLine: 'You stood up. Once. For 2 seconds. It counts. It counts.',
     xp: 380, tags: ['surf', 'beach', 'lesson'],
-    completedCount: 2148,
   }),
   q({
     id: 'waterfront-sunset', title: 'V&A Sunset Ferris Wheel', emoji: '🎡',
@@ -427,7 +411,6 @@ export const QUESTS: Quest[] = [
     purpose: 'One perfect photo. That\'s the quest.',
     completionLine: 'You took THE photo. 94% of people would recommend you.',
     xp: 160, tags: ['ferris wheel', 'sunset', 'photo'],
-    completedCount: 3691,
   }),
   q({
     id: 'stellenbosch-wine-trail', title: 'Stellenbosch Wine & Walk Trail', emoji: '🍷',
@@ -438,7 +421,6 @@ export const QUESTS: Quest[] = [
     description: 'Two estates, one walk between them, zero regrets.',
     completionLine: 'You are now 40% more sophisticated. The vines are proud.',
     xp: 400, tags: ['wine', 'walk', 'winelands'],
-    completedCount: 4120,
   }),
   q({
     id: 'franschhoek-bike', title: 'Franschhoek Valley Bike Ride', emoji: '🚲',
@@ -449,7 +431,6 @@ export const QUESTS: Quest[] = [
     description: 'Ride the wine valley with the mountains behind you. Stop for one mandatory pastry.',
     completionLine: 'You cycled past vineyards and ate a croissant. Peak French. In Africa.',
     xp: 330, tags: ['cycling', 'valley', 'outdoors'],
-    completedCount: 1480,
   }),
   q({
     id: 'hermanus-whales', title: 'Hermanus Whale Watching Walk', emoji: '🐋',
@@ -460,7 +441,6 @@ export const QUESTS: Quest[] = [
     description: 'Walk the cliff path (season permitting) and spot the biggest animals on Earth from land.',
     completionLine: 'You saw a whale from the shore. The whales saw you. Awkward for everyone.',
     xp: 280, tags: ['whales', 'coast', 'walk'],
-    completedCount: 2764,
   }),
 
   // ── KWAZULU-NATAL ──────────────────────────────────────────────────────────
@@ -473,7 +453,6 @@ export const QUESTS: Quest[] = [
     description: 'Walk through the shark tunnel, scream into the glass, survive.',
     completionLine: 'A shark swam above your head and judged your hairstyle.',
     xp: 350, tags: ['aquarium', 'sharks', 'family'],
-    completedCount: 3872,
   }),
   q({
     id: 'moses-mabhida-swing', title: 'Moses Mabhida Big Swing', emoji: '🪂',
@@ -485,7 +464,6 @@ export const QUESTS: Quest[] = [
     purpose: 'Conquer the thing that scares you most.',
     completionLine: 'You swung off a stadium arch. Your heart is still in the air. Send help.',
     xp: 600, trending: true, tags: ['swing', 'adrenaline', 'iconic'],
-    completedCount: 1980,
   }),
   q({
     id: 'golden-mile-walk', title: 'Golden Mile Sunrise Walk', emoji: '🌅',
@@ -496,7 +474,6 @@ export const QUESTS: Quest[] = [
     description: 'The promenade, the pier, the sea air. Start the day properly.',
     completionLine: 'You walked the Golden Mile at sunrise. The ocean high-fived you.',
     xp: 150, tags: ['beach', 'free', 'sunrise'],
-    completedCount: 2904,
   }),
   q({
     id: 'victoria-market-bunny', title: 'Victoria Street Market Bunny Chow', emoji: '🐰',
@@ -507,7 +484,6 @@ export const QUESTS: Quest[] = [
     description: 'Durban\'s greatest invention: a hollowed-out loaf full of curry. Eat it properly.',
     completionLine: 'You ate a bunny chow with your hands. Authentic. Messy. Perfect.',
     xp: 180, trending: true, tags: ['curry', 'iconic', 'street food'],
-    completedCount: 3305,
   }),
   q({
     id: 'thousand-hills-zipline', title: 'Valley of a Thousand Hills Zipline', emoji: '🪢',
@@ -518,7 +494,6 @@ export const QUESTS: Quest[] = [
     description: 'Zip across the valley with the best view in KZN underneath you.',
     completionLine: 'You flew over a thousand hills. The hills did not see it coming.',
     xp: 420, tags: ['zipline', 'adventure', 'valley'],
-    completedCount: 1430,
   }),
   q({
     id: 'howick-falls', title: 'Howick Falls Stop & Stare', emoji: '💦',
@@ -529,7 +504,6 @@ export const QUESTS: Quest[] = [
     description: '95m waterfall, three viewpoints, zero effort. Perfect road-trip fuel stop.',
     completionLine: 'You stared at a 95m waterfall for 10 minutes. Meditative. Wet. Great.',
     xp: 140, tags: ['waterfall', 'free', 'road trip'],
-    completedCount: 2210,
   }),
   q({
     id: 'cathedral-peak-hike', title: 'Cathedral Peak Day Hike', emoji: '⛰️',
@@ -540,7 +514,6 @@ export const QUESTS: Quest[] = [
     description: 'The Berg. Enough said. Bring layers and your sense of awe.',
     completionLine: 'You hiked in the Drakensberg. The mountain has accepted you.',
     xp: 650, tags: ['hike', 'mountain', 'epic'],
-    completedCount: 1874,
   }),
   q({
     id: 'botanical-gardens-dbn', title: 'Durban Botanical Gardens Picnic', emoji: '🌴',
@@ -551,7 +524,6 @@ export const QUESTS: Quest[] = [
     description: 'South Africa\'s oldest botanical garden. Bring snacks, a blanket, and nothing else.',
     completionLine: 'You napped under a 100-year-old tree. Rested. Ancient. Blessed.',
     xp: 190, tags: ['garden', 'picnic', 'relax'],
-    completedCount: 1540,
   }),
   q({
     id: 'umhlanga-pier-run', title: 'Umhlanga Pier Sunrise Run', emoji: '🏃',
@@ -562,7 +534,6 @@ export const QUESTS: Quest[] = [
     description: 'The iconic lighthouse, the long pier, the Indian Ocean at your elbow.',
     completionLine: 'You outran the lighthouse. It never stood a chance.',
     xp: 160, tags: ['run', 'free', 'coast'],
-    completedCount: 1280,
   }),
 
   // ── EASTERN CAPE ───────────────────────────────────────────────────────────
@@ -575,7 +546,6 @@ export const QUESTS: Quest[] = [
     description: '600+ elephants. Your own car, the back roads, zero hurry.',
     completionLine: 'An elephant looked at you and kept walking. You have been judged. You passed.',
     xp: 450, trending: true, tags: ['game drive', 'elephants', 'park'],
-    completedCount: 4210,
   }),
   q({
     id: 'storms-river-swing', title: 'Storms River Mouth & Swing', emoji: '🌉',
@@ -586,7 +556,6 @@ export const QUESTS: Quest[] = [
     description: 'Suspension bridges, the mouth of the river, and the big swing if you\'re brave.',
     completionLine: 'You crossed the bridges. The ocean gave you a standing ovation.',
     xp: 430, tags: ['coast', 'bridges', 'forest'],
-    completedCount: 2650,
   }),
   q({
     id: 'donkin-photo', title: 'Donkin Reserve Sunset Photo Quest', emoji: '🌆',
@@ -597,7 +566,6 @@ export const QUESTS: Quest[] = [
     description: 'The pyramid, the lighthouse, the view over the bay. One dramatic photo each.',
     completionLine: 'You photographed the lighthouse at golden hour. Art. Pure art.',
     xp: 140, tags: ['photo', 'free', 'sunset'],
-    completedCount: 980,
   }),
   q({
     id: 'morgan-bay-beach', title: 'Morgan Bay Beach Day', emoji: '🏖️',
@@ -608,7 +576,6 @@ export const QUESTS: Quest[] = [
     description: 'Wild Coast beach, barely anyone there, the ocean doing all the work.',
     completionLine: 'You had a beach almost to yourself. That\'s the whole quest. Won.',
     xp: 250, tags: ['beach', 'wild coast', 'escape'],
-    completedCount: 760,
   }),
   q({
     id: 'hogsback-fairy', title: 'Hogsback Forest & Fairy Quest', emoji: '🧚',
@@ -619,7 +586,6 @@ export const QUESTS: Quest[] = [
     description: 'Indigenous forest that inspired Tolkien. Find the fairy doors. Report back.',
     completionLine: 'You found a fairy door. You are now officially Middle-Earth adjacent.',
     xp: 300, tags: ['forest', 'tolkien', 'walk'],
-    completedCount: 1120,
   }),
   q({
     id: 'nahoon-sunrise', title: 'Nahoon Beach Sunrise & Coffee', emoji: '☕',
@@ -630,7 +596,6 @@ export const QUESTS: Quest[] = [
     description: 'Surfers, sand, sunrise, coffee. The full East London morning.',
     completionLine: 'You did East London properly: sunrise, sand, caffeine.',
     xp: 160, tags: ['beach', 'coffee', 'sunrise'],
-    completedCount: 840,
   }),
 
   // ── FREE STATE ─────────────────────────────────────────────────────────────
@@ -643,7 +608,6 @@ export const QUESTS: Quest[] = [
     description: 'Sandstone cliffs that turn gold at sunset. Free State\'s best kept secret.',
     completionLine: 'You watched the mountains turn to gold. The Free State forgives you for doubting it.',
     xp: 380, tags: ['hike', 'sunset', 'mountains'],
-    completedCount: 1450,
   }),
   q({
     id: 'naval-hill-giraffes', title: 'Naval Hill Giraffe Walk', emoji: '🦒',
@@ -654,7 +618,6 @@ export const QUESTS: Quest[] = [
     description: 'Giraffes on a hill IN the city. Free. Walk it and pinch yourself.',
     completionLine: 'You saw a giraffe in a city. This is not a dream. It\'s Bloemfontein.',
     xp: 200, trending: true, tags: ['giraffes', 'free', 'city'],
-    completedCount: 1690,
   }),
   q({
     id: 'basotho-village', title: 'Basotho Cultural Village', emoji: '🏠',
@@ -665,7 +628,6 @@ export const QUESTS: Quest[] = [
     description: 'Traditional beehive huts, storytelling and a view that refuses to be beaten.',
     completionLine: 'You sat in a beehive hut and heard stories older than your family. Humbling.',
     xp: 260, tags: ['culture', 'heritage'],
-    completedCount: 890,
   }),
 
   // ── LIMPOPO ────────────────────────────────────────────────────────────────
@@ -678,7 +640,6 @@ export const QUESTS: Quest[] = [
     description: 'Climb the hill where southern Africa\'s first kingdom ruled. The golden rhino knows.',
     completionLine: 'You stood where kings stood. The Limpopo river applauded.',
     xp: 480, tags: ['history', 'world heritage', 'hike'],
-    completedCount: 620,
   }),
   q({
     id: 'modjadji-cycads', title: 'Modjadji Cycad Forest', emoji: '🌵',
@@ -689,7 +650,6 @@ export const QUESTS: Quest[] = [
     description: 'The largest concentration of cycads on Earth, guarded by the Rain Queen\'s realm.',
     completionLine: 'You walked through a forest older than dinosaurs. It remembers. You don\'t.',
     xp: 280, tags: ['nature', 'ancient', 'unique'],
-    completedCount: 430,
   }),
   q({
     id: 'polokwane-reserve', title: 'Polokwane Game Reserve Loop', emoji: '🦓',
@@ -700,7 +660,6 @@ export const QUESTS: Quest[] = [
     description: 'Big five territory IN the city limits. Drive the loop, count the species.',
     completionLine: 'You spotted game in a city. Polokwane is showing off and we love it.',
     xp: 300, tags: ['game drive', 'city', 'wildlife'],
-    completedCount: 980,
   }),
 
   // ── MPUMALANGA ─────────────────────────────────────────────────────────────
@@ -713,7 +672,6 @@ export const QUESTS: Quest[] = [
     description: 'Third deepest canyon on Earth. God\'s Window, Bourke\'s Luck, the works.',
     completionLine: 'You looked through God\'s Window. The view filed a complaint. Too good.',
     xp: 420, trending: true, tags: ['canyon', 'view', 'panorama'],
-    completedCount: 3120,
   }),
   q({
     id: 'graskop-gorge-lift', title: 'Graskop Gorge Lift Ride', emoji: '🛗',
@@ -724,7 +682,6 @@ export const QUESTS: Quest[] = [
     description: 'A lift drops you 51m into a rainforest gorge. Walk the canopy, feel small.',
     completionLine: 'You descended into the gorge and emerged wiser. Also wetter. It rains there.',
     xp: 260, tags: ['lift', 'forest', 'gorge'],
-    completedCount: 1680,
   }),
   q({
     id: 'sudwala-caves', title: 'Sudwala Caves Expedition', emoji: '🕳️',
@@ -735,7 +692,6 @@ export const QUESTS: Quest[] = [
     description: '240-million-year-old caves. Walk the lit route, or do the crystal tour if you dare.',
     completionLine: 'You explored caves older than the dinosaurs. Their occupants were not home. Lucky you.',
     xp: 280, tags: ['caves', 'geology', 'adventure'],
-    completedCount: 1105,
   }),
   q({
     id: 'hazyview-elephants', title: 'Hazyview Elephant Interaction', emoji: '🐘',
@@ -746,7 +702,6 @@ export const QUESTS: Quest[] = [
     description: 'Meet rescued elephants up close, feed them, be humbled by their size.',
     completionLine: 'An elephant took food from your hand. You are now its humble servant.',
     xp: 350, tags: ['elephants', 'animals', 'sanctuary'],
-    completedCount: 2240,
   }),
   q({
     id: 'kruger-sunrise', title: 'Kruger Sunrise Safari Drive', emoji: '🦁',
@@ -757,7 +712,6 @@ export const QUESTS: Quest[] = [
     description: 'Gates open at 5:30. Be first through. The Big Five are not early risers. You are.',
     completionLine: 'You saw the Big Five (or lied about it). The bush never forgets.',
     xp: 600, trending: true, tags: ['safari', 'big five', 'iconic'],
-    completedCount: 5230,
   }),
 
   // ── NORTH WEST ─────────────────────────────────────────────────────────────
@@ -770,7 +724,6 @@ export const QUESTS: Quest[] = [
     description: 'Artificial waves in the bushveld. Slide first, ask questions later.',
     completionLine: 'You surfed a wave in the middle of the bush. The lions are confused. So are you.',
     xp: 450, tags: ['water park', 'slides', 'weekend'],
-    completedCount: 3100,
   }),
   q({
     id: 'pilanesberg-loop', title: 'Pilanesberg Sunset Game Drive', emoji: '🦏',
@@ -781,7 +734,6 @@ export const QUESTS: Quest[] = [
     description: 'A volcanic crater full of game, an hour from Joburg. Sunset drives hit different.',
     completionLine: 'A rhino crossed the road in front of you. You have been blessed. Pass it on.',
     xp: 380, tags: ['game drive', 'sunset', 'crater'],
-    completedCount: 2900,
   }),
   q({
     id: 'harties-cableway', title: 'Hartbeespoort Cableway View', emoji: '🚡',
@@ -792,7 +744,6 @@ export const QUESTS: Quest[] = [
     description: 'Up the Magaliesberg in a cable car, dam below, sundowners above.',
     completionLine: 'You drank a sundowner above the dam. The view paid for the ticket.',
     xp: 280, tags: ['cableway', 'view', 'sundowner'],
-    completedCount: 1870,
   }),
 
   // ── NORTHERN CAPE ──────────────────────────────────────────────────────────
@@ -805,7 +756,6 @@ export const QUESTS: Quest[] = [
     description: 'The largest hand-dug hole on Earth. Diamonds made this country what it is.',
     completionLine: 'You stared into the Big Hole. It stared back. It\'s very big.',
     xp: 300, tags: ['history', 'diamonds', 'museum'],
-    completedCount: 1340,
   }),
   q({
     id: 'augrabies-thunder', title: 'Augrabies Falls Thunder Walk', emoji: '💧',
@@ -816,7 +766,6 @@ export const QUESTS: Quest[] = [
     description: 'The Orange River thundering into a 56m gorge. "Augrabies" means place of great noise.',
     completionLine: 'You heard the falls before you saw them. Your ears will be fine. Probably.',
     xp: 320, tags: ['waterfall', 'desert', 'powerful'],
-    completedCount: 880,
   }),
   q({
     id: 'kgalagadi-dunes', title: 'Kgalagadi Red Dune Drive', emoji: '🐆',
@@ -827,7 +776,6 @@ export const QUESTS: Quest[] = [
     description: 'Red dunes, black-maned lions, and more sky than you have ever seen.',
     completionLine: 'You drove through red dunes under a sky with no horizon. Botswana waved.',
     xp: 550, tags: ['desert', 'big cats', 'epic'],
-    completedCount: 720,
   }),
   q({
     id: 'namaqualand-flowers', title: 'Namaqualand Flower Season', emoji: '🌼',
@@ -838,7 +786,6 @@ export const QUESTS: Quest[] = [
     description: 'One month a year the desert explodes into flowers. Time it right and weep.',
     completionLine: 'You saw the desert bloom. It only happens for a month. You were there.',
     xp: 420, trending: true, tags: ['flowers', 'spring', 'desert'],
-    completedCount: 1560,
   }),
 
   ...HANGOUT_QUESTS,
@@ -852,7 +799,6 @@ export const QUESTS: Quest[] = [
     purpose: 'There is no purpose. That\'s the point.',
     completionLine: 'You walked somewhere new and nothing happened. That\'s the whole quest. Perfect.',
     xp: 100, tags: ['free', 'explore', 'no purpose'],
-    completedCount: 1450,
   }, MAIN_CITIES),
   ...anywhere('weirdest-r50', {
     title: 'The R50 Weirdest Thing', emoji: '🛒',
@@ -861,7 +807,6 @@ export const QUESTS: Quest[] = [
     description: 'Everyone gets R50. Enter a shop. Buy the weirdest thing you can find. Compare. Vote.',
     completionLine: 'Someone bought something that cannot be described. The group is scarred. Winner.',
     xp: 180, tags: ['challenge', 'funny', 'shopping'],
-    completedCount: 890,
   }, MAIN_CITIES),
   ...anywhere('ice-cream-quest', {
     title: 'Buy Ice Cream. That\'s It.', emoji: '🍦',
@@ -871,7 +816,6 @@ export const QUESTS: Quest[] = [
     purpose: 'Some quests are simple. This one is.',
     completionLine: 'You bought ice cream and did the quest. 10/10 efficiency. 10/10 flavour.',
     xp: 80, tags: ['ice cream', 'simple', 'treat'],
-    completedCount: 2030,
   }, MAIN_CITIES),
   ...anywhere('drive-nowhere', {
     title: 'Drive Somewhere You\'ve Never Been', emoji: '🚗',
@@ -880,7 +824,6 @@ export const QUESTS: Quest[] = [
     description: 'Within 20 km of home, find a road you\'ve never driven. Drive it. Stop somewhere random.',
     completionLine: 'You got lost in your own city. Congratulations, you found something new.',
     xp: 200, tags: ['drive', 'explore', 'adventure'],
-    completedCount: 760,
   }, MAIN_CITIES),
   ...anywhere('group-photo', {
     title: 'Recreate Your Oldest Group Photo', emoji: '📸',
@@ -889,7 +832,6 @@ export const QUESTS: Quest[] = [
     description: 'Find that embarrassing old photo. Same people, same pose, same spot if you can.',
     completionLine: 'You recreated the photo. Nobody looks the same. Everything is the same.',
     xp: 220, tags: ['friends', 'memory', 'photo'],
-    completedCount: 540,
   }, MAIN_CITIES),
   ...anywhere('oldest-building', {
     title: 'Find the Oldest Building in 5 km', emoji: '🏚️',
@@ -898,7 +840,6 @@ export const QUESTS: Quest[] = [
     description: 'No cheating. Walk, look up, and find the oldest building within 5 km. Photo proof.',
     completionLine: 'You found a building older than your grandparents. It has stories. You have photos.',
     xp: 160, tags: ['history', 'explore', 'free'],
-    completedCount: 380,
   }, MAIN_CITIES),
 ]
 
@@ -1032,7 +973,6 @@ const EXTRA: Quest[] = [
     description: 'A kota is a quarter loaf of bread with everything in it. Find the best in Soweto.',
     completionLine: 'You ate a kota the size of your face. The spaza shop owner nods at you now.',
     xp: 150, tags: ['kota', 'street food', 'iconic'],
-    completedCount: 1240,
   }),
   q({
     id: 'kofifi-jazz', title: 'Kofifi Jazz Night', emoji: '🎷',
@@ -1043,7 +983,6 @@ const EXTRA: Quest[] = [
     description: 'Live jazz, low lights, high soul. The way Joburg nights are supposed to go.',
     completionLine: 'You sat in a dark room full of jazz and felt 100 years old. In the best way.',
     xp: 220, tags: ['jazz', 'nightlife', 'live music'],
-    completedCount: 980,
   }),
   q({
     id: 'wilderness-lagoon', title: 'Wilderness Lagoon Paddle', emoji: '🛶',
@@ -1054,7 +993,6 @@ const EXTRA: Quest[] = [
     description: 'Paddle the Touw River mouth where it meets the sea. Otters may or may not appear.',
     completionLine: 'You paddled a lagoon and the mountains watched. No notes.',
     xp: 240, tags: ['paddle', 'lagoon', 'nature'],
-    completedCount: 760,
   }),
   q({
     id: 'knysna-heads', title: 'Knysna Heads Viewpoint', emoji: '🌅',
@@ -1065,7 +1003,6 @@ const EXTRA: Quest[] = [
     description: 'Two cliffs guarding the lagoon. The view is worth the entire drive.',
     completionLine: 'You saw the Heads at sunset. Knysna has filed a claim on your heart.',
     xp: 190, tags: ['view', 'coast', 'sunset'],
-    completedCount: 1350,
   }),
   q({
     id: 'sani-pass-top', title: 'Sani Pass: Highest Pub in Africa', emoji: '🍺',
@@ -1076,7 +1013,6 @@ const EXTRA: Quest[] = [
     description: '4x4 up the pass into Lesotho, then a cold one at 2874m. Worth every switchback.',
     completionLine: 'You drank a beer at the highest pub in Africa. Altitude hit. Glory achieved.',
     xp: 350, tags: ['4x4', 'lesotho', 'pub'],
-    completedCount: 820,
   }),
   q({
     id: 'kruger-bush-braai', title: 'Kruger Bush Braai', emoji: '🔥',
@@ -1087,7 +1023,6 @@ const EXTRA: Quest[] = [
     description: 'Fire, boerewors, and the sounds of the bush. The original South African restaurant.',
     completionLine: 'You braaied in the bush. The flames applauded. The lions stayed respectfully away.',
     xp: 260, tags: ['braai', 'bush', 'food'],
-    completedCount: 1130,
   }),
   q({
     id: 'kruger-stargazing', title: 'Kruger Stargazing', emoji: '🌌',
@@ -1098,11 +1033,10 @@ const EXTRA: Quest[] = [
     description: 'No light pollution, no phones. Just the Milky Way doing its thing.',
     completionLine: 'You saw more stars than you knew existed. You are small. The sky is big. Perfect.',
     xp: 180, tags: ['stars', 'night', 'sky'],
-    completedCount: 640,
   }),
 ]
 
-export const ALL_QUESTS: Quest[] = [...QUESTS, ...EXTRA]
+export const ALL_QUESTS: Quest[] = [...QUESTS, ...EXTRA, ...SEASONAL]
 
 // ── Custom-quest registry ───────────────────────────────────────────────────
 // User-made quests aren't in the static ALL_QUESTS array — they're loaded from

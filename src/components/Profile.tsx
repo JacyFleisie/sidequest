@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import { CATEGORY_META, HOME_BASES, PROVINCES, type Category, type ProvinceId } from '../data/quests'
 import { BADGES, completedCountByProvince, levelProgress, playerStats, rankFromXp, totalCompleted, totalQuestsInProvince, type BadgeDef, type Progress } from '../lib/game'
 import { useGame } from '../lib/store'
-import { checkForUpdate, downloadAndInstall, getCurrentVersion, isAndroid, type UpdateInfo } from '../lib/updater'
+import { checkForUpdate, cleanReleaseNotes, downloadAndInstall, fetchLatestRelease, getCurrentVersion, isAndroid, type UpdateInfo } from '../lib/updater'
 import { ensureIdentity, getAccountInfo, onAuthChange, signOutAccount, syncCompletions, syncProfile, type AccountInfo } from '../lib/sync'
 import { usePullToRefresh } from '../lib/usePullToRefresh'
+import DeleteAccount from './DeleteAccount'
 import EditProfile from './EditProfile'
 import PullHint from './PullHint'
 import SignIn from './SignIn'
@@ -93,7 +94,7 @@ export default function Profile() {
           </div>
           {rank.next && (
             <div className="rank-progress">
-              <Bar pct={rank.pct} color="#a55eea" />
+              <Bar pct={rank.pct} color="var(--purple)" />
             </div>
           )}
           <div className="player-xp-row">
@@ -280,6 +281,7 @@ function AccountCard() {
   const [loading, setLoading] = useState(true)
   const [showSignIn, setShowSignIn] = useState(false)
   const [showEditProfile, setShowEditProfile] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
   const [savedToast, setSavedToast] = useState<string | null>(null)
   const toastTimer = useRef<number | null>(null)
 
@@ -338,6 +340,9 @@ function AccountCard() {
               🚪 Sign out
             </button>
           </div>
+          <button className="delete-account-link" onClick={() => setShowDelete(true)}>
+            Delete account — permanently wipes your data and login
+          </button>
         </>
       ) : (
         <>
@@ -354,6 +359,7 @@ function AccountCard() {
       )}
       {showSignIn && <SignIn onClose={() => setShowSignIn(false)} />}
       {showEditProfile && <EditProfile onClose={() => setShowEditProfile(false)} onSaved={usernameSaved} />}
+      {showDelete && <DeleteAccount onClose={() => setShowDelete(false)} />}
       {savedToast && (
         <div className="account-toast">✓ Username updated — your friends now see @{savedToast}</div>
       )}
@@ -365,6 +371,7 @@ function UpdateCard() {
   const [version, setVersion] = useState('…')
   const [status, setStatus] = useState<'idle' | 'checking' | 'latest' | 'available' | 'error'>('idle')
   const [info, setInfo] = useState<UpdateInfo | null>(null)
+  const [showNotes, setShowNotes] = useState(false)
 
   useEffect(() => {
     void getCurrentVersion().then(setVersion)
@@ -425,7 +432,63 @@ function UpdateCard() {
           </button>
         </div>
       )}
+      <button className="update-btn whats-new-btn" onClick={() => void setShowNotes(true)}>
+        📋 What's new
+      </button>
+      {showNotes && <ReleaseNotesSheet onClose={() => setShowNotes(false)} />}
+      <p className="beta-disclaimer">
+        SideQuest is in beta — things may change, break or move as we build. Thanks for questing with us early. 🇿🇦
+      </p>
     </div>
+  )
+}
+
+function ReleaseNotesSheet({ onClose }: { onClose: () => void }) {
+  const [info, setInfo] = useState<{ version: string; lines: string[]; date: string } | null>(null)
+  const [failed, setFailed] = useState(false)
+
+  useEffect(() => {
+    void fetchLatestRelease().then((rel) => {
+      if (!rel) {
+        setFailed(true)
+        return
+      }
+      const lines = cleanReleaseNotes(rel.notes)
+      setInfo({
+        version: rel.version,
+        lines,
+        date: rel.publishedAt ? new Date(rel.publishedAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '',
+      })
+    })
+  }, [])
+
+  return (
+    <Sheet onClose={onClose}>
+      <div className="signin-sheet notes-sheet">
+        <span className="signin-brand">SideQuest</span>
+        <h2 className="signin-title">What's new</h2>
+        {failed ? (
+          <p className="signin-sub">Couldn't load the release notes — check your connection.</p>
+        ) : !info ? (
+          <p className="signin-sub">⏳ Loading…</p>
+        ) : (
+          <>
+            <p className="notes-version">
+              📍 v{info.version} {info.date && `· ${info.date}`}
+            </p>
+            {info.lines.length === 0 ? (
+              <p className="signin-sub">No notes for this release.</p>
+            ) : (
+              <ul className="notes-list">
+                {info.lines.map((l, i) => (
+                  <li key={i}>{l}</li>
+                ))}
+              </ul>
+            )}
+          </>
+        )}
+      </div>
+    </Sheet>
   )
 }
 

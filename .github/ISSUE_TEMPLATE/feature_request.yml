@@ -1,0 +1,55 @@
+name: ✨ Feature request
+description: Suggest an idea for SideQuest
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Great ideas welcome! Check the [Roadmap](https://github.com/JacyFleisie/sidequest#-roadmap)
+        first — it might already be planned.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's the problem?
+      description: What are you trying to do, and why is it hard today?
+      placeholder: "When I'm bored on a free afternoon, I wish I could…"
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: What would fix it?
+      description: Describe the feature or change you'd love to see.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you've considered
+      description: Anything you currently do instead?
+    validations:
+      required: false
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Where should this live?
+      options:
+        - In the app
+        - On the map
+        - In the feed
+        - Friends / squad system
+        - Other
+    validations:
+      required: false
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Mockups, references, or examples help a lot.
+    validations:
+      required: false

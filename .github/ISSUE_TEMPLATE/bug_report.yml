@@ -1,0 +1,90 @@
+name: 🐛 Bug report
+description: Report something that isn't working
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report! The more detail you give, the faster it can be fixed.
+
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: The version shown in Profile → About & updates (e.g. v1.0.16)
+      placeholder: v1.0.16
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - Android app (APK)
+        - Web browser (GitHub Pages demo)
+        - Both
+    validations:
+      required: true
+
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device
+      options:
+        - Samsung
+        - Huawei / Honor
+        - Xiaomi / Redmi / POCO
+        - Oppo / Vivo / OnePlus
+        - Tecno / Infinix / Itel
+        - Other Android
+        - Desktop browser
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect to happen, and what actually happened?
+      placeholder: "I tapped 'Start quest' on the map and…"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: How can someone make this happen?
+      placeholder: |
+        1. Go to the Map tab
+        2. Search for '…'
+        3. Tap the quest
+        4. See the error
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots / screen recording
+      description: Drag and drop images or paste a link to a recording
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant error messages
+      description: Paste any error text you saw (long logs can be pasted in full)
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: security
+    attributes:
+      label: Security issue?
+      description: If this is a security vulnerability, do **not** file it here
+      options:
+        - label: "This is a security vulnerability — I'll report it privately per SECURITY.md instead"
+          required: false

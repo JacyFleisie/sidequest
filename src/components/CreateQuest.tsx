@@ -147,7 +147,6 @@ export default function CreateQuest({ onClose }: { onClose: () => void }) {
       completionLine: `Quest complete. ${cleanTitle} — done. Legend.`,
       xp,
       tags,
-      completedCount: 0,
       ownerId: '',
       ownerName: '',
       ownerEmoji: '',

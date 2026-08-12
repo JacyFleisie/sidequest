@@ -42,7 +42,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Stand dead centre of an empty sports field and scream. Really let it out. Nobody is judging — they are far too far away to hear properly.',
     completionLine: 'You screamed into the void and the void screamed back, slightly impressed.',
     xp: 100, tags: ['social', 'silly', 'free', 'stress relief'],
-    completedCount: 880,
   }),
   qAny({
     id: 'compliment-5', title: 'Compliment 5 Strangers', emoji: '💬',
@@ -53,7 +52,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Five genuine compliments to five people you do not know. Nice trainers, great laugh, cool bag. Watch what one good sentence does to someone\'s whole day.',
     completionLine: 'You made five strangers smile. That is five more than most people manage.',
     xp: 120, tags: ['social', 'confidence', 'free'],
-    completedCount: 760,
   }),
   qAny({
     id: 'directions-lie', title: 'Ask for Directions to Somewhere You Know', emoji: '🧭',
@@ -64,7 +62,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Ask a stranger how to get to a place you are already standing next to. See if they nail it. Secretly enjoy watching them point.',
     completionLine: 'You let a stranger guide you to a place you already were. Comedy achieved.',
     xp: 110, tags: ['social', 'silly', 'free'],
-    completedCount: 640,
   }),
   qAny({
     id: 'high-five-10', title: 'High-Five 10 Strangers', emoji: '🖐️',
@@ -75,7 +72,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Ten high-fives from complete strangers along the promenade. No explanation, just pure energy. Count loudly so the mission is clear.',
     completionLine: 'Ten palms slapped. Zero questions asked. Elite social engineering.',
     xp: 120, tags: ['social', 'free', 'beach'],
-    completedCount: 590,
   }),
   qAny({
     id: 'conga-line', title: 'Start a Conga Line', emoji: '🕺',
@@ -86,7 +82,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Recruit at least four strangers into a conga line. You start it, they join it, chaos follows. Bonus points if you steer it past a restaurant window.',
     completionLine: 'You birthed a conga line in the wild. It will remember you.',
     xp: 150, tags: ['social', 'chaos', 'free', 'night'],
-    completedCount: 420,
   }),
   qAny({
     id: 'pet-portraits', title: 'Photograph 3 Strangers\' Pets', emoji: '🐕',
@@ -97,7 +92,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Find three people walking pets and ask if you can take a portrait. Compliment the pet first — that is the law. Send them the photo.',
     completionLine: 'Three pets photographed, three owners charmed. You are basically a wildlife photographer.',
     xp: 120, tags: ['social', 'pets', 'free'],
-    completedCount: 510,
   }),
   qAny({
     id: 'life-story', title: 'Learn Someone\'s Life Story in 5 Minutes', emoji: '🫖',
@@ -108,7 +102,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Sit with a stranger — a vendor, a barber, a bench regular — and get the real story in five minutes. Ask about their best day ever and their worst job.',
     completionLine: 'You learned a stranger\'s whole life in the time it takes to drink a coffee. That is what this app is for.',
     xp: 130, tags: ['social', 'stories', 'free'],
-    completedCount: 380,
   }),
   qAny({
     id: 'handshake-teacher', title: 'Teach a Stranger Your Secret Handshake', emoji: '🤝',
@@ -119,7 +112,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Invent a secret handshake on the spot and teach it to a stranger until they get it right. Extra points for a spin at the end.',
     completionLine: 'Somewhere out there, a stranger now owes you a complex handshake forever.',
     xp: 120, tags: ['social', 'silly', 'free'],
-    completedCount: 340,
   }),
   qAny({
     id: 'order-accents', title: 'Order Something in a Wild Accent', emoji: '🎭',
@@ -130,7 +122,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Order a drink or snack in the most committed accent you can manage. Keep a straight face through the entire transaction. If you crack, it does not count.',
     completionLine: 'You ordered a smoothie in a pirate voice and the cashier just went with it. Legend.',
     xp: 110, tags: ['social', 'silly', 'free', 'food'],
-    completedCount: 450,
   }),
   qAny({
     id: 'public-dance-off', title: 'Public Dance-Off', emoji: '💃',
@@ -141,7 +132,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Start a dance-off in a public space. Winner is decided by who draws the biggest crowd or makes the other person laugh first.',
     completionLine: 'You danced in public and the public voted with their smiles. Unanimous.',
     xp: 130, tags: ['social', 'dance', 'free'],
-    completedCount: 400,
   }),
   qAny({
     id: 'shop-owner-chat', title: 'Interview a Shop Owner About Their Day', emoji: '🏪',
@@ -152,7 +142,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Walk into a small shop, buy something tiny, and ask the owner three real questions about running the place. You will leave knowing something nobody else does.',
     completionLine: 'You found out the shop opens at 5am and the owner makes the coffee himself. New favourite person.',
     xp: 110, tags: ['social', 'local', 'free'],
-    completedCount: 300,
   }),
   qAny({
     id: 'group-selfie', title: 'Group Selfie with Strangers', emoji: '🤳',
@@ -163,7 +152,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Get a stranger (or three) to join your selfie. Ask nicely, strike a pose together, and send it to them if they want it.',
     completionLine: 'You are now in a stranger\'s camera roll as "that random group selfie". Beautiful.',
     xp: 120, tags: ['social', 'free'],
-    completedCount: 360,
   }),
   qAny({
     id: 'wave-10', title: 'Wave at Everyone for 10 Minutes', emoji: '👋',
@@ -174,7 +162,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'For ten straight minutes, wave at every single person you pass. Most will wave back out of pure confusion. Keep count.',
     completionLine: 'You waved at the whole town and it waved back. You are unofficially beloved.',
     xp: 100, tags: ['social', 'silly', 'free'],
-    completedCount: 470,
   }),
   qAny({
     id: 'stranger-pick', title: 'Let a Stranger Choose Your Next Move', emoji: '🎯',
@@ -185,7 +172,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Ask a stranger to point somewhere — any direction — and walk there for five minutes. Whatever you find becomes your next micro-quest.',
     completionLine: 'A stranger\'s random finger sent you to a place you never would have found. Trust the process.',
     xp: 130, tags: ['social', 'adventure', 'free'],
-    completedCount: 280,
   }),
   qAny({
     id: 'help-carry', title: 'Help Someone Carry Something', emoji: '🛒',
@@ -196,7 +182,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Find someone carrying something awkward — groceries, boxes, a suitcase — and just help. No photos, no speeches. Just help.',
     completionLine: 'You carried a stranger\'s life for one block. They will remember that.',
     xp: 110, tags: ['social', 'kindness', 'free'],
-    completedCount: 520,
   }),
   qAny({
     id: 'outfit-compliment', title: 'Compliment a Stranger\'s Outfit', emoji: '👗',
@@ -207,7 +192,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Spot someone with a great outfit and tell them, specifically. "Those shoes are unreal" beats "nice shirt" every time.',
     completionLine: 'You made someone\'s whole week with one specific sentence. Power.',
     xp: 100, tags: ['social', 'free'],
-    completedCount: 610,
   }),
   qAny({
     id: 'sidequest-question', title: 'Ask 3 People What Their SideQuest Would Be', emoji: '❓',
@@ -218,7 +202,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Ask three strangers: "If you had one free afternoon and no money, what would your side quest be?" Collect the best answer and actually do it.',
     completionLine: 'Someone\'s side quest was "find the best vetkoek in my city". You have a new mission.',
     xp: 120, tags: ['social', 'free', 'ideas'],
-    completedCount: 330,
   }),
   qAny({
     id: 'rps-tournament', title: 'Rock-Paper-Scissors Tournament', emoji: '✊',
@@ -229,7 +212,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Run a best-of-three rock-paper-scissors tournament against strangers until one of you is champion. Loser buys nothing — it is purely about honour.',
     completionLine: 'You went undefeated against the public for nine glorious seconds before losing to a seven-year-old.',
     xp: 110, tags: ['social', 'competitive', 'free'],
-    completedCount: 390,
   }),
   qAny({
     id: 'free-hugs', title: 'Free Hugs (or High-Fives If You\'re Shy)', emoji: '🤗',
@@ -240,7 +222,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Hold a "free hugs" sign for 45 minutes. Shy mode: swap the sign for high-fives. Count every single one.',
     completionLine: 'You hugged (or high-fived) the whole town. Science says this healed something.',
     xp: 120, tags: ['social', 'free', 'kindness'],
-    completedCount: 440,
   }),
   qAny({
     id: 'stranger-photo', title: 'Ask a Stranger to Photograph You', emoji: '📸',
@@ -251,7 +232,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Hand your phone to a complete stranger and ask for a photo. Take a genuinely good one — the kind you would actually post.',
     completionLine: 'A stranger took the best photo of you this year. Send them a copy if they wanted one.',
     xp: 100, tags: ['social', 'free', 'photo'],
-    completedCount: 570,
   }),
   qAny({
     id: 'questions-only', title: 'Speak Only in Questions for 30 Minutes', emoji: '⁉️',
@@ -262,7 +242,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'For half an hour, everything you say must be a question. "Are we going?" "Is it far?" "Do you want a snack?" See how long people last.',
     completionLine: 'You spoke in questions for 30 minutes. Nobody noticed until minute 27. Masterclass.',
     xp: 110, tags: ['social', 'silly', 'free'],
-    completedCount: 350,
   }),
   qAny({
     id: 'nice-note', title: 'Leave a Nice Note Somewhere', emoji: '💌',
@@ -273,7 +252,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Write a short note — "your day is about to get better" — and leave it somewhere someone will find it. A library book, a bus seat, a park bench.',
     completionLine: 'Somewhere out there, a stranger found your note and had a better afternoon.',
     xp: 100, tags: ['social', 'kindness', 'free'],
-    completedCount: 490,
   }),
   qAny({
     id: 'karaoke-corner', title: 'Impromptu Karaoke on a Street Corner', emoji: '🎤',
@@ -284,7 +262,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Pick a corner, pick a song, and perform it with full commitment. Crowd participation is the goal — get at least one stranger singing the chorus.',
     completionLine: 'You turned a street corner into a stage and strangers became a choir. Unreal.',
     xp: 140, tags: ['social', 'music', 'free'],
-    completedCount: 260,
   }),
   qAny({
     id: 'two-truths-lie', title: 'Two Truths, One Lie', emoji: '🎭',
@@ -295,7 +272,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Play two truths and a lie with a group of strangers or friends. The best lies win. Learn something genuinely wild about someone.',
     completionLine: 'You learned that someone once met a baboon in a supermarket. Worth it.',
     xp: 100, tags: ['social', 'games', 'free'],
-    completedCount: 310,
   }),
   qAny({
     id: 'smile-10', title: 'Smile at 10 People', emoji: '😊',
@@ -306,7 +282,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Make eye contact and smile at ten people. Not a smirk — a real one. Notice how many smile back.',
     completionLine: 'You smiled at ten people and at least seven smiled back. The world still works.',
     xp: 90, tags: ['social', 'free', 'chill'],
-    completedCount: 680,
   }),
   qAny({
     id: 'busk-10', title: 'Busk for 10 Minutes', emoji: '🎸',
@@ -317,7 +292,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Perform for ten minutes on the promenade — sing, dance, recite poetry, do impressions. Whatever you\'ve got. People either tip or cheer.',
     completionLine: 'You busked for ten minutes and a toddler applauded. Career made.',
     xp: 140, tags: ['social', 'performance', 'free'],
-    completedCount: 230,
   }),
   qAny({
     id: 'elder-advice', title: 'Ask an Elder for Life Advice', emoji: '🧓',
@@ -328,7 +302,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Find someone with decades on you and ask for one piece of advice you will actually remember. Write it down afterwards.',
     completionLine: 'You now carry advice that cost nothing and is worth everything.',
     xp: 110, tags: ['social', 'stories', 'free'],
-    completedCount: 420,
   }),
   qAny({
     id: 'intro-five', title: 'Introduce Yourself to 5 People', emoji: '🗣️',
@@ -339,7 +312,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Walk up to five people, say your name, and ask theirs. That is the whole quest. The first one is the hardest.',
     completionLine: 'You met five humans by choice. Introvert nightmare, social butterfly dream.',
     xp: 110, tags: ['social', 'confidence', 'free'],
-    completedCount: 500,
   }),
 
   // ── ANYWHERE SOCIAL: short, free, do-anywhere quests ───────────────────────
@@ -352,7 +324,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Spot the person who looks a bit lost — new around here, eating alone, checking their phone — and just go say hi. That\'s the whole quest.',
     completionLine: 'You were someone\'s first friend today without even trying.',
     xp: 120, tags: ['kindness', 'social', 'free'],
-    completedCount: 280,
   }),
   qAny({
     id: 'corridor-backwards', title: 'Walk Backwards Down a Corridor', emoji: '🚶',
@@ -363,7 +334,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Pick a quiet corridor — mall, office, anywhere — and walk its full length backwards. If anyone asks, you are \'practising for something\'. Keep a straight face.',
     completionLine: 'You walked a corridor backwards and nobody even blinked. Legend status: achieved.',
     xp: 90, tags: ['silly', 'social', 'free'],
-    completedCount: 450,
   }),
   qAny({
     id: 'lunch-trade', title: 'Trade Your Lunch Snack', emoji: '🍫',
@@ -374,7 +344,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Trade your snack for something you have never tried. The rules: no backsies, and you have to actually eat what you get.',
     completionLine: 'You swapped your chips for a koeksister and clearly won lunch.',
     xp: 100, tags: ['food', 'social', 'free'],
-    completedCount: 380,
   }),
   qAny({
     id: 'librarian-book', title: 'Make the Librarian Recommend a Book', emoji: '📚',
@@ -385,7 +354,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Ask the librarian to recommend a book based on \'your life right now\'. Read the first chapter before the day ends.',
     completionLine: 'The librarian read you perfectly — the first chapter already has you hooked.',
     xp: 100, tags: ['library', 'reading', 'free'],
-    completedCount: 340,
   }),
   qAny({
     id: 'staring-contest', title: 'Staring Contest Until Someone Laughs', emoji: '👀',
@@ -396,7 +364,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Face a friend across the table and stare until one of you breaks. First laugh loses. Try to hold it as long as you can.',
     completionLine: 'You held it for four minutes before the giggles won. Worth every second.',
     xp: 90, tags: ['silly', 'games', 'free'],
-    completedCount: 430,
   }),
   qAny({
     id: 'groundsman-tree', title: 'Ask the Groundskeeper About the Oldest Tree', emoji: '🌳',
@@ -407,7 +374,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Find the groundskeeper or gardener and ask about the oldest tree on the grounds — a park, a campus, anywhere green. You will get a story nobody else has.',
     completionLine: 'The oak by the gate has been there since before you were born. Now you know.',
     xp: 100, tags: ['stories', 'social', 'free'],
-    completedCount: 300,
   }),
   qAny({
     id: 'paper-football', title: 'Run a Paper Football Tournament', emoji: '⚽',
@@ -418,7 +384,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Fold a paper ball, make a goal from two rulers, and run a quick bracket during your break. Losers provide the next paper ball.',
     completionLine: 'The lunchtime trophy was a pencil. The glory was eternal.',
     xp: 120, tags: ['games', 'competitive', 'free'],
-    completedCount: 290,
   }),
   qAny({
     id: 'water-bottle-pyramid', title: 'Build a Water Bottle Pyramid', emoji: '🥤',
@@ -429,7 +394,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Stack empty water bottles into a pyramid on a table. Keep it standing as long as you can. Bonus points for a tower.',
     completionLine: 'Your pyramid survived the whole afternoon and one very curious cleaner.',
     xp: 90, tags: ['silly', 'games', 'free'],
-    completedCount: 370,
   }),
   qAny({
     id: 'window-wave', title: 'Wave at a Friend Through a Window', emoji: '🪟',
@@ -440,7 +404,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Next time you are in one building and your friend is in another, wave until they see you. Make it a full, theatrical wave.',
     completionLine: 'You made eye contact across the way and it felt like a movie scene.',
     xp: 90, tags: ['silly', 'social', 'free'],
-    completedCount: 400,
   }),
   qAny({
     id: 'class-handshake', title: 'Invent a Secret Handshake with a Friend', emoji: '🤝',
@@ -451,7 +414,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Invent a secret handshake with a friend — a bump, a spin, a snap. Use it every time you pass each other for the rest of the day.',
     completionLine: 'You now have a handshake with a friend that no one else can do.',
     xp: 110, tags: ['silly', 'social', 'free'],
-    completedCount: 310,
   }),
 
   // ── GENERAL VARIETY: fresh activities & spots ──────────────────────────────
@@ -464,7 +426,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Head to an archery range and shoot until you stop embarrassing yourself. First one to hit the gold gets bragging rights for the week.',
     completionLine: 'You hit the target and felt like a medieval legend for exactly one second.',
     xp: 200, tags: ['archery', 'activity', 'indoors'],
-    completedCount: 460,
   }),
   q({
     id: 'axe-throwing', title: 'Axe Throwing', emoji: '🪓',
@@ -475,7 +436,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Throw sharp things at wooden targets like a professional lumberjack. Surprisingly satisfying, weirdly addictive.',
     completionLine: 'You stuck an axe in a target and the primal part of your brain loved it.',
     xp: 210, tags: ['axe throwing', 'activity', 'indoors'],
-    completedCount: 380,
   }),
   q({
     id: 'thrift-treasure', title: 'Thrift Store Treasure Hunt', emoji: '👕',
@@ -486,7 +446,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Hit the thrift racks with a mission: find the single weirdest item under R50, the best vintage find, and the most 90s thing in the store.',
     completionLine: 'You left with a jacket that has a story, a mystery stain, or both.',
     xp: 180, tags: ['thrifting', 'shopping', 'funny'],
-    completedCount: 430,
   }),
   q({
     id: 'vinyl-dig', title: 'Vinyl Record Dig', emoji: '💿',
@@ -497,7 +456,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Find a record shop and dig through the crates. Buy one album you have never heard of and listen to it start to finish.',
     completionLine: 'You now own an album nobody you know has heard of. That is the point.',
     xp: 160, tags: ['vinyl', 'music', 'chill'],
-    completedCount: 310,
   }),
   q({
     id: 'comic-shop', title: 'Comic Book Shop Raid', emoji: '🦸',
@@ -508,7 +466,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Spend an hour in a comic shop and leave with one issue — either a classic or something so obscure the owner respects you for it.',
     completionLine: 'You chose a comic based purely on cover art and it slapped. Expert curation.',
     xp: 150, tags: ['comics', 'geek', 'chill'],
-    completedCount: 290,
   }),
   q({
     id: 'gaming-cafe', title: 'Gaming Café Showdown', emoji: '🎮',
@@ -519,7 +476,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Find a gaming café and run a small tournament with your crew. Winner picks the loser\'s next quest. No respawns, no mercy.',
     completionLine: 'You dominated the lobby, then got absolutely schooled by a twelve-year-old. Humble pie served.',
     xp: 190, tags: ['gaming', 'competitive', 'indoors'],
-    completedCount: 350,
   }),
   q({
     id: 'sunrise-spot', title: 'Sunrise Spot Hunt', emoji: '🌅',
@@ -530,7 +486,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Wake up early enough to watch the sun come up from the best spot you can find. Phone down for the first ten minutes.',
     completionLine: 'You watched the sun rise and felt briefly like the main character. Correct feeling.',
     xp: 160, tags: ['sunrise', 'free', 'outdoors'],
-    completedCount: 400,
   }),
   q({
     id: 'city-stargazing', title: 'City Stargazing Spot', emoji: '🔭',
@@ -541,7 +496,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Find a spot with a clear view of the sky, lie down, and name every constellation you can actually find. Bonus: spot the satellites crossing.',
     completionLine: 'You stared at the sky long enough to remember how small your problems are.',
     xp: 150, tags: ['stargazing', 'free', 'chill'],
-    completedCount: 340,
   }),
   q({
     id: 'mural-hunt', title: 'Street Mural Hunt', emoji: '🎨',
@@ -552,7 +506,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Wander the streets and photograph the best five murals you can find. Rank them. Defend your ranking against anyone who disagrees.',
     completionLine: 'You found art the city painted for free and treated it like a gallery. Because it is.',
     xp: 150, tags: ['street art', 'free', 'photography'],
-    completedCount: 520,
   }),
   q({
     id: 'library-quiet', title: 'Library Quiet Challenge', emoji: '📚',
@@ -563,7 +516,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Go to a library, pick a book from a section you never touch, and read a full chapter. Phones on silent. Watch how fast the world disappears.',
     completionLine: 'You read a whole chapter without checking your phone. Untreated superpower.',
     xp: 100, tags: ['library', 'reading', 'free'],
-    completedCount: 380,
   }),
   q({
     id: 'night-market-stroll', title: 'Night Market Food Stroll', emoji: '🌙',
@@ -574,7 +526,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Hit a night market and eat one thing from every stall that smells good. Vote as a group on the best bite of the night.',
     completionLine: 'You ate your way through the market and crowned a champion dish. Democracy worked.',
     xp: 220, tags: ['night market', 'food', 'street food'],
-    completedCount: 360,
   }),
   q({
     id: 'milkshake-test', title: 'The Great Milkshake Taste Test', emoji: '🥤',
@@ -585,7 +536,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Visit at least two places with milkshakes and judge them blind: thickness, flavour, and whether the straw stands up on its own.',
     completionLine: 'You have strong opinions about milkshakes now. Stronger than about most things.',
     xp: 170, tags: ['milkshake', 'food', 'taste test'],
-    completedCount: 440,
   }),
   q({
     id: 'waffle-hunt', title: 'Waffle Hunt', emoji: '🧇',
@@ -596,7 +546,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Find the best waffle within walking distance. Judging criteria: crispiness, toppings, and how fast it disappears.',
     completionLine: 'You found the waffle. You are now its loyal subject.',
     xp: 170, tags: ['waffles', 'food', 'dessert'],
-    completedCount: 400,
   }),
   q({
     id: 'flea-market-hunt', title: 'Flea Market Bargain Hunt', emoji: '🧺',
@@ -607,7 +556,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Flea market mission: find one item under R50 you will genuinely use, one item you cannot identify, and one item you should definitely not buy. Buy two.',
     completionLine: 'You haggled, you laughed, you bought something unidentifiable. A complete market day.',
     xp: 170, tags: ['flea market', 'bargains', 'shopping'],
-    completedCount: 330,
   }),
   q({
     id: 'pickup-basketball', title: 'Pickup Basketball Game', emoji: '🏀',
@@ -618,7 +566,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Join or start a pickup game at a public court. First to 21. Losers run a lap while the winners narrate.',
     completionLine: 'You ran, you dribbled, you got dunked on (metaphorically) and it was glorious.',
     xp: 180, tags: ['basketball', 'free', 'sport'],
-    completedCount: 390,
   }),
   q({
     id: 'cricket-nets', title: 'Cricket Nets Bowling Test', emoji: '🏏',
@@ -629,7 +576,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Book a net session and see who can bowl the quickest or hit the most boundaries. No experience needed — embarrassment is part of the fun.',
     completionLine: 'You faced one delivery you still think about. It was that quick (or that spinny).',
     xp: 180, tags: ['cricket', 'nets', 'sport'],
-    completedCount: 270,
   }),
   q({
     id: 'chess-park', title: 'Chess in the Park', emoji: '♟️',
@@ -640,7 +586,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Set up a board in a park and play until someone gets genuinely competitive. Winner is officially "park champion" until challenged.',
     completionLine: 'You lost to a stranger who has been playing in that park for twenty years. Respect.',
     xp: 140, tags: ['chess', 'free', 'parks'],
-    completedCount: 320,
   }),
   q({
     id: 'padel-beginners', title: 'Padel for Beginners', emoji: '🎾',
@@ -651,7 +596,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Book a padel court — the fastest-growing sport in SA — and learn together. The walls are your friend, until they are not.',
     completionLine: 'You hit the ball off three walls and into your own face. Official padel initiation complete.',
     xp: 200, tags: ['padel', 'sport', 'activity'],
-    completedCount: 350,
   }),
   q({
     id: 'skate-session', title: 'Skate Park Session', emoji: '🛹',
@@ -662,7 +606,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Hit the skate park on board or bike. Learn one new thing — a drop-in, a line, a trick — and celebrate like it is the Olympics.',
     completionLine: 'You learned one new thing at the park and the locals nodded. High praise.',
     xp: 180, tags: ['skate', 'free', 'activity'],
-    completedCount: 300,
   }),
   q({
     id: 'bakery-tasteoff', title: 'Bakery Taste-Off', emoji: '🥐',
@@ -673,7 +616,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Compare the same pastry from two different bakeries. Score on flakiness, butter, and "would queue again". Crown a winner.',
     completionLine: 'You now have a definitive ranking of local bakeries. People will ask.',
     xp: 170, tags: ['bakery', 'food', 'taste test'],
-    completedCount: 340,
   }),
   q({
     id: 'drive-in-movie', title: 'Drive-In Movie Night', emoji: '🎬',
@@ -684,7 +626,6 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Find a drive-in or outdoor screening and treat it like a full event: snacks in the boot, blankets, terrible whispering during the quiet parts.',
     completionLine: 'You watched a movie under the stars with the windows down. Cinema peaked here.',
     xp: 260, tags: ['movie', 'drive-in', 'night out'],
-    completedCount: 240,
   }),
   q({
     id: 'community-garden', title: 'Community Garden Visit', emoji: '🌱',
@@ -695,6 +636,5 @@ export const SOCIAL_QUESTS: Quest[] = [
     description: 'Find a community or botanical garden and spend an hour there. Learn one plant\'s name and use it in a sentence later that day.',
     completionLine: 'You now know what a strelitzia is called in two languages. Growth.',
     xp: 110, tags: ['garden', 'free', 'chill'],
-    completedCount: 420,
   }),
 ]

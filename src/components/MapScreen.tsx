@@ -351,6 +351,7 @@ export default function MapScreen() {
         <button className="map-brand map-brand-btn" onClick={() => navigate('/')} title="Go to home">
           <div className="brand-line">
             <span className="brand-logo">📍</span> SIDEQUEST <span className="brand-flag">🇿🇦</span>
+            <span className="beta-chip">BETA</span>
           </div>
           <div className="brand-tagline">Your life is the main story. South Africa is your map.</div>
         </button>

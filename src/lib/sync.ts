@@ -876,6 +876,24 @@ export async function signOutAccount(): Promise<void> {
   await supabase.auth.signOut()
 }
 
+/**
+ * Permanently deletes the signed-in account — ALL server-side data (profile,
+ * XP, badges, stats, friends, custom quests) AND the auth credentials, so the
+ * email can never sign in again. Runs in the `delete-account` edge function
+ * with the service role; the client's anon key can't delete auth users.
+ */
+export async function deleteAccount(): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: 'Not connected to the sync server.' }
+  try {
+    const { error } = await supabase.functions.invoke('delete-account', { method: 'POST' })
+    if (error) return { ok: false, error: error.message }
+    cachedUid = null
+    return { ok: true }
+  } catch (e) {
+    return { ok: false, error: (e as Error).message }
+  }
+}
+
 /** Subscribes to auth state changes. Returns an unsubscribe function. */
 export function onAuthChange(cb: (uid: string | null) => void): () => void {
   if (!supabase) return () => {}

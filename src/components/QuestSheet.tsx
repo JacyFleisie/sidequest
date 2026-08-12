@@ -1,6 +1,9 @@
 import { createPortal } from 'react-dom'
-import { ALL_QUESTS, CATEGORY_META, PROVINCES, VIBE_META, chainStats, type Chain, type Quest } from '../data/quests'
-import { fmtDuration, recommendPct } from '../lib/game'
+import { useEffect, useRef, useState } from 'react'
+import { ALL_QUESTS, CATEGORY_META, HOME_BASES, PROVINCES, VIBE_META, chainStats, type Chain, type Quest } from '../data/quests'
+import { fmtDuration, getUserLocation } from '../lib/game'
+import { deleteReview, fetchReviews, reportReview, submitReview, type QuestReview, type ReviewStats } from '../lib/reviews'
+import { ensureIdentity, isNativePlatform } from '../lib/sync'
 import { useGame } from '../lib/store'
 import { Button, QuestStats, Sheet, Tag } from './ui'
 
@@ -15,7 +18,7 @@ export const QuestSheet = ({
   onClose: () => void
   banner?: string
 }) => {
-  const { completed, startQuest, startChain } = useGame()
+  const { completed, startQuest, startChain, homeBaseId, startPlace } = useGame()
 
   if (!quest && !chain) return null
 
@@ -23,7 +26,6 @@ export const QuestSheet = ({
   const stats = chain ? chainStats(chain) : null
   const done = quest ? Boolean(completed[quest.id]) : false
   const meta = quest ? CATEGORY_META[quest.category] : null
-  const proofId = quest?.id ?? chain?.id ?? ''
   const title = quest?.title ?? chain?.title ?? ''
   const emoji = quest?.emoji ?? chain?.emoji ?? '📍'
   const location = quest
@@ -100,10 +102,11 @@ export const QuestSheet = ({
           difficulty={quest?.difficulty}
         />
 
-        <div className="social-proof">
-          <span>🔥 {proofCount(proofId).toLocaleString()} people completed this</span>
-          <span>❤️ {recommendPct(proofId)}% would recommend</span>
-        </div>
+        {quest && !quest.anywhere && !isChain && (
+          <Directions from={{ lat: quest.lat, lng: quest.lng }} fallbackFrom={startPlace} homeBaseId={homeBaseId} />
+        )}
+
+        {quest && <Reviews questId={quest.id} canReview={done} />}
 
         <Button
           className="start-btn"
@@ -113,7 +116,7 @@ export const QuestSheet = ({
             onClose()
           }}
         >
-          {done ? '▶ START AGAIN' : '▶ START QUEST'}
+          {done ? '▶ Start again' : '▶ Start quest'}
         </Button>
       </div>
     </Sheet>,
@@ -123,8 +126,259 @@ export const QuestSheet = ({
 
 const questsById: Record<string, Quest | undefined> = Object.fromEntries(ALL_QUESTS.map((q) => [q.id, q]))
 
-const proofCount = (id: string): number => {
-  let h = 0
-  for (let i = 0; i < id.length; i += 1) h = (h * 31 + id.charCodeAt(i)) % 4000
-  return 120 + h
+// ── Directions: drive time + Google Maps / Waze ─────────────────────────────
+
+function Directions({
+  from,
+  fallbackFrom,
+  homeBaseId,
+}: {
+  from: { lat: number; lng: number }
+  fallbackFrom: { label: string; lat: number; lng: number } | null
+  homeBaseId: string
+}) {
+  const [driveMin, setDriveMin] = useState<number | null>(null)
+  const [origin, setOrigin] = useState<{ lat: number; lng: number } | null>(null)
+
+  useEffect(() => {
+    let alive = true
+    const base = HOME_BASES.find((b) => b.id === homeBaseId) ?? HOME_BASES[0]
+    // Prefer the real device location; fall back to the player's home base.
+    getUserLocation(
+      (lat, lng) => {
+        if (!alive) return
+        setOrigin({ lat, lng })
+        void estimateDrive(lat, lng, from.lat, from.lng).then((m) => alive && setDriveMin(m))
+      },
+      () => {
+        if (!alive) return
+        const o = fallbackFrom ?? { lat: base.lat, lng: base.lng }
+        setOrigin(o)
+        void estimateDrive(o.lat, o.lng, from.lat, from.lng).then((m) => alive && setDriveMin(m))
+      },
+    )
+    return () => {
+      alive = false
+    }
+  }, [from.lat, from.lng, homeBaseId]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const open = (url: string) => {
+    if (isNativePlatform()) window.open(url, '_system')
+    else window.open(url, '_blank', 'noopener')
+  }
+
+  const gmaps = `https://www.google.com/maps/dir/?api=1&destination=${from.lat},${from.lng}${origin ? `&origin=${origin.lat},${origin.lng}` : ''}`
+  const waze = `https://waze.com/ul?ll=${from.lat},${from.lng}&navigate=yes`
+
+  return (
+    <div className="quest-directions">
+      <div className="directions-row">
+        <span className="directions-label">🛣️ {driveMin === null ? 'Getting drive time…' : fmtDrive(driveMin)}</span>
+        <span className="directions-actions">
+          <a href={gmaps} target="_blank" rel="noopener noreferrer" onClick={(e) => { e.preventDefault(); open(gmaps) }}>
+            🗺️ Google Maps
+          </a>
+          <a href={waze} target="_blank" rel="noopener noreferrer" onClick={(e) => { e.preventDefault(); open(waze) }}>
+            🧭 Waze
+          </a>
+        </span>
+      </div>
+      <p className="directions-note">Opens turn-by-turn directions in the app on your phone.</p>
+    </div>
+  )
 }
+
+const haversineKm = (aLat: number, aLng: number, bLat: number, bLng: number): number => {
+  const R = 6371
+  const dLat = ((bLat - aLat) * Math.PI) / 180
+  const dLng = ((bLng - aLng) * Math.PI) / 180
+  const s =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((aLat * Math.PI) / 180) * Math.cos((bLat * Math.PI) / 180) * Math.sin(dLng / 2) ** 2
+  return 2 * R * Math.asin(Math.sqrt(s))
+}
+
+/** Real road time via free OSRM; falls back to a straight-line ~55 km/h estimate. */
+const estimateDrive = async (fromLat: number, fromLng: number, toLat: number, toLng: number): Promise<number> => {
+  try {
+    const res = await fetch(
+      `https://router.project-osrm.org/route/v1/driving/${fromLng},${fromLat};${toLng},${toLat}?overview=false`,
+      { signal: AbortSignal.timeout(6000) },
+    )
+    if (res.ok) {
+      const data = (await res.json()) as { routes?: { duration?: number }[] }
+      const dur = data.routes?.[0]?.duration
+      if (typeof dur === 'number' && dur > 0) return Math.max(1, Math.round(dur / 60))
+    }
+  } catch {
+    // offline or OSRM down — fall through to the estimate
+  }
+  const km = haversineKm(fromLat, fromLng, toLat, toLng)
+  return Math.max(1, Math.round((km / 55) * 60))
+}
+
+const fmtDrive = (min: number): string =>
+  min < 60 ? `About ${min} min drive` : `About ${Math.floor(min / 60)} h ${min % 60 ? `${min % 60} min` : ''} drive`
+
+// ── Reviews: real ratings from players who completed the quest ──────────────
+
+function Reviews({ questId, canReview }: { questId: string; canReview: boolean }) {
+  const [reviews, setReviews] = useState<QuestReview[]>([])
+  const [stats, setStats] = useState<ReviewStats>({ count: 0, avg: null, recommend: null })
+  const [myUid, setMyUid] = useState<string | null>(null)
+  const [stars, setStars] = useState(0)
+  const [comment, setComment] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState<string | null>(null)
+  const [reported, setReported] = useState<Set<string>>(new Set())
+  const loadedFor = useRef('')
+
+  const load = (qid: string) => {
+    void fetchReviews(qid).then(({ reviews: r, stats: s }) => {
+      setReviews(r)
+      setStats(s)
+    })
+  }
+
+  useEffect(() => {
+    if (loadedFor.current === questId) return
+    loadedFor.current = questId
+    setStars(0)
+    setComment('')
+    setMsg(null)
+    load(questId)
+    void ensureIdentity().then((uid) => setMyUid(uid))
+  }, [questId])
+
+  const myReview = reviews.find((r) => r.profile_id === myUid)
+
+  const save = async () => {
+    if (stars === 0) {
+      setMsg('Tap the stars to rate it first.')
+      return
+    }
+    setBusy(true)
+    setMsg(null)
+    const res = await submitReview(questId, stars, comment)
+    setBusy(false)
+    setMsg(res.ok ? '✓ Review saved — thanks!' : res.error ?? 'Could not save — try again.')
+    if (res.ok) {
+      setStars(0)
+      setComment('')
+      load(questId)
+    }
+  }
+
+  const remove = async () => {
+    if (!myReview) return
+    setBusy(true)
+    await deleteReview(questId)
+    setBusy(false)
+    setMsg('Review deleted.')
+    load(questId)
+  }
+
+  const flag = (id: string) => {
+    if (reported.has(id)) return
+    if (!window.confirm('Report this review as spam or inappropriate?')) return
+    void reportReview(id).then((res) => {
+      if (res.ok) {
+        setReported((s) => new Set(s).add(id))
+        setMsg('✓ Reported — thanks for keeping the community clean.')
+      } else {
+        setMsg(res.error ?? 'Could not report.')
+      }
+    })
+  }
+
+  return (
+    <div className="quest-reviews">
+      <div className="reviews-head">
+        <span className="reviews-title">⭐ Ratings & reviews</span>
+        {stats.count > 0 && (
+          <span className="reviews-stats">
+            {stats.avg !== null && <b>{stats.avg.toFixed(1)}</b>}
+            {' · '}
+            {stats.count} {stats.count === 1 ? 'review' : 'reviews'}
+            {stats.recommend !== null && ` · ${stats.recommend}% recommend`}
+          </span>
+        )}
+      </div>
+
+      {stats.count === 0 && <p className="reviews-empty">No reviews yet — be the first after you complete it.</p>}
+
+      {canReview && (
+        <div className="review-form">
+          {myReview ? (
+            <>
+              <p className="review-form-label">
+                Your review: {starsRow(myReview.rating)}
+                {myReview.comment && <span className="review-form-comment">“{myReview.comment}”</span>}
+              </p>
+              <div className="review-form-actions">
+                <button className="review-link" onClick={() => void remove()} disabled={busy}>
+                  Delete my review
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="review-form-label">You completed this — rate your experience</p>
+              <div className="star-picker" role="radiogroup" aria-label="Rating">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <button
+                    key={n}
+                    className={`star-btn ${n <= stars ? 'star-on' : ''}`}
+                    onClick={() => setStars(n)}
+                    aria-label={`${n} star${n === 1 ? '' : 's'}`}
+                  >
+                    {n <= stars ? '★' : '☆'}
+                  </button>
+                ))}
+              </div>
+              <textarea
+                className="review-input"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Short tip for the next person (optional)…"
+                maxLength={280}
+                rows={2}
+              />
+              <button className="review-submit" onClick={() => void save()} disabled={busy}>
+                {busy ? 'Saving…' : 'Post review'}
+              </button>
+            </>
+          )}
+        </div>
+      )}
+
+      {!canReview && (
+        <p className="reviews-gate">Complete this quest to rate it — reviews only come from people who've actually been there.</p>
+      )}
+
+      {msg && <p className="review-msg">{msg}</p>}
+
+      {reviews.length > 0 && (
+        <div className="review-list">
+          {reviews.map((r) => (
+            <div className="review-card" key={r.id}>
+              <div className="review-top">
+                <span className="review-author">
+                  {r.author_emoji} @{r.author_name}
+                </span>
+                <span className="review-stars">{starsRow(r.rating)}</span>
+                <button className="review-flag" onClick={() => flag(r.id)} aria-label="Report review" title="Report review">
+                  🚩
+                </button>
+              </div>
+              {r.comment && <p className="review-comment">{r.comment}</p>}
+              <span className="review-date">{new Date(r.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+const starsRow = (n: number): string => '★'.repeat(Math.max(0, Math.min(5, n))) + '☆'.repeat(Math.max(0, 5 - n))
