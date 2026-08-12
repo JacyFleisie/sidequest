@@ -33,15 +33,18 @@ export const QuestStats = ({
   cost,
   players,
   difficulty,
+  costLabel,
 }: {
   durationMin: number
   cost: number
   players: [number, number]
   difficulty?: number
+  /** Overrides the 💰 stat — used to show the real ticket price on events. */
+  costLabel?: string
 }) => (
   <div className="stat-row">
     <Stat icon="⏱️" label="Duration" value={fmtDuration(durationMin)} />
-    <Stat icon="💰" label="Cost per person" value={fmtCost(cost)} />
+    <Stat icon="💰" label="Cost per person" value={costLabel ?? fmtCost(cost)} />
     <Stat icon="👥" label="Players" value={players[0] === players[1] ? `${players[0]}` : `${players[0]}–${players[1]}`} />
     {difficulty !== undefined && <Stat icon="⭐" label="Difficulty" value={difficultyStars(difficulty)} />}
   </div>

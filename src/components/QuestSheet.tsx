@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom'
 import { useEffect, useRef, useState } from 'react'
 import { ALL_QUESTS, CATEGORY_META, EVENT_TYPE_META, HOME_BASES, PROVINCES, VIBE_META, chainStats, type Chain, type Quest } from '../data/quests'
-import { fmtDuration, getUserLocation } from '../lib/game'
+import { fmtDuration, getUserLocation, questCostLabel } from '../lib/game'
 import { deleteReview, fetchReviews, reportReview, submitReview, type QuestReview, type ReviewStats } from '../lib/reviews'
 import { ensureIdentity, isNativePlatform } from '../lib/sync'
 import { useGame } from '../lib/store'
@@ -98,6 +98,7 @@ export const QuestSheet = ({
         <QuestStats
           durationMin={quest?.durationMin ?? stats?.durationMin ?? 0}
           cost={quest?.cost ?? stats?.cost ?? 0}
+          costLabel={quest ? questCostLabel(quest) : undefined}
           players={quest?.players ?? stats?.players ?? [1, 1]}
           difficulty={quest?.difficulty}
         />

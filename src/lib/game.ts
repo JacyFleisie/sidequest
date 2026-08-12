@@ -323,6 +323,15 @@ export const fmtDuration = (minutes: number): string => {
 
 export const fmtCost = (cost: number): string => (cost === 0 ? 'FREE' : `R${cost}`)
 
+/** Display cost for a quest — real ticket price when it's a ticketed event
+ * (e.g. "from R2 150"), otherwise the per-person cost (FREE when 0). Fixes the
+ * "tickets from R2k but shows FREE" mismatch for auto-discovered events. */
+export const questCostLabel = (q: { cost?: number; ticketInfo?: { required?: boolean; price?: string } }): string => {
+  if (q.ticketInfo?.price) return q.ticketInfo.price
+  if (q.ticketInfo?.required) return 'Tickets'
+  return fmtCost(q.cost ?? 0)
+}
+
 export const difficultyStars = (n: number): string => '⭐'.repeat(n)
 
 export const categoryColor = (category: Category): string => CATEGORY_META[category].color

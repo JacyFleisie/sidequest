@@ -6,6 +6,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+- **Ticket price vs FREE mismatch** — ticketed events (e.g. auto-discovered
+  gigs) showed "from R2 150" in the event line but "💰 FREE" in the stats;
+  the 💰 stat now shows the real ticket price everywhere (feed cards and the
+  quest sheet) via a shared `questCostLabel` helper
+
 ### Added
 - **🟥 Live + date filter** — the Live chip now combines with a "📅 When"
   sub-filter: **This weekend** (Fri 5pm–Sun) or **This month**, so users can

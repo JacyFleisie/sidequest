@@ -13,7 +13,7 @@ import {
   type Vibe,
 } from '../data/quests'
 import { fetchRemoteEvents } from '../lib/eventsSync'
-import { creatorTierFor, getUserLocation, haversineKm, isUpcomingEvent, reverseGeocodeLabel } from '../lib/game'
+import { creatorTierFor, getUserLocation, haversineKm, isUpcomingEvent, questCostLabel, reverseGeocodeLabel } from '../lib/game'
 import { supabase } from '../lib/supabase'
 import { taglineOfTheDay } from '../lib/taglines'
 import { useGame, type StartPlace } from '../lib/store'
@@ -688,7 +688,13 @@ function QuestCard({
       </div>
 
       <footer className="feed-card-actions">
-        <QuestStats durationMin={q.durationMin} cost={q.cost} players={q.players} difficulty={q.difficulty} />
+        <QuestStats
+          durationMin={q.durationMin}
+          cost={q.cost}
+          costLabel={questCostLabel(q)}
+          players={q.players}
+          difficulty={q.difficulty}
+        />
         <div className="feed-card-btn-row">
           {isMine && (
             <button className="feed-card-del" onClick={() => onDelete(q)} title="Delete your quest">
