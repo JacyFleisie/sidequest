@@ -10,8 +10,10 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b",
+    "test": "vitest run",
     "apk": "bash scripts/build-apk.sh",
     "check:quests": "node scripts/check-quests.mjs",
+    "icons": "node scripts/generate-icons.mjs",
     "fetch:events": "node scripts/fetch-events.mjs",
     "bump": "bash scripts/bump-version.sh",
     "release": "bash scripts/release.sh"
@@ -36,8 +38,10 @@
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
     "@vitejs/plugin-react": "^4.4.1",
+    "sharp": "^0.35.3",
     "typescript": "~5.8.3",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vitest": "^4.1.10"
   },
   "allowScripts": {
     "esbuild@0.25.12": true

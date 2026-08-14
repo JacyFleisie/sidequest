@@ -75,8 +75,8 @@ quests across all 9 provinces — from a kota hunt in Soweto and a sunset at Zoo
 Lake, to lion-watching in the Kruger and a waterfall in KZN. Every quest is a
 real place, pinned on a real map, waiting for you to actually show up.
 
-XP, levels, ranks, **46 badges**, friends, squads and streaks turn "going
-somewhere" into a game you play with your crew. Seasonal quests tied to real SA
+XP, levels, ranks, **46 badges**, friends, squads, streaks and a real
+**leaderboard** turn "going somewhere" into a game you play with your crew. Seasonal quests tied to real SA
 events (Braai Day, Comrades, Splashy Fen, the National Arts Festival…) keep the
 map alive all year — with an "Ends Sunday" countdown so you don't miss them.
 And real upcoming festivals, markets and motorsport events are quests too —
@@ -158,6 +158,13 @@ co-op layer: create a squad, invite friends, see the roster update in real
 time, and every member earns a **+20% XP bonus** on quests completed together.
 The Activity feed surfaces friends' quest completions and badge milestones as
 they happen.
+
+### 🏆 Leaderboards
+Every player in South Africa is on the board — ranked by real XP straight from
+the database. Switch between **Global SA** (everyone), **Regional** (players
+near your home base and its neighbours) and **Friends** (you and your crew) —
+top 3 get medals, and your own rank stays pinned even when you're outside the
+top 100. XP is server-validated so nobody can write fake scores onto the board.
 
 ### 🔧 Chain Builder
 Assemble your own multi-stop quest from the whole catalog, reorder the stops,
@@ -377,6 +384,8 @@ in-app "What's new" keeps showing the previous release's notes.
 ## 🧪 Testing & Quality
 
 - **TypeScript strict** — `tsc -b` runs in CI before every deploy
+- **Vitest unit tests** — `npm test` covers the core game rules (levels, ranks,
+  all 46 badges, stats) and the leaderboard's scope + ranking logic
 - **Quest data checker** — `npm run check:quests` flags missing provinces,
   coordinates outside SA, duplicate titles within 1 km, and unfillable quest
   cards across all 377 quests
@@ -395,6 +404,7 @@ in-app "What's new" keeps showing the previous release's notes.
 - [x] Seasonal quests tied to real SA events
 - [x] Auto-discovered live events (nightly pipeline)
 - [x] Account deletion (POPIA-friendly)
+- [x] Global, regional & friends leaderboards
 - [ ] Google Play Store listing (kills sideload warnings + unlocks push reliability)
 - [ ] Localization — badge & rank names in isiZulu / Afrikaans
 - [ ] Offline caching of map tiles (data-friendly mode)
@@ -415,6 +425,9 @@ that all interactions are governed by our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 - Accounts & sync run on **Supabase** with row-level security — you can only
   ever read or write your own data (or data your friends shared with you).
+- **XP is server-validated** — a Postgres trigger bounds how much XP a profile
+  can gain per sync and in total, so nobody can write fake scores onto the
+  leaderboard.
 - Sign-in is protected by **Cloudflare Turnstile** to block bots.
 - Your **GPS stays on-device** — quest completion is checked locally; only
   your chosen home base and quest stats ever sync.
