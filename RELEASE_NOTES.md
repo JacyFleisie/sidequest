@@ -1,26 +1,12 @@
-# SideQuest v1.0.21 — Leaderboards 🏆
+# SideQuest v1.0.22 — Your name, your call ✍️
 
-The whole country is now your leaderboard.
+A small but important one.
 
-## 🏆 Leaderboards
-Every player in South Africa is on the board, ranked by real XP straight
-from the database. Switch between three views:
-
-- **Global SA** — the whole country
-- **Regional** — players near your home base and its neighbours
-- **Friends** — you and your crew
-
-Top 3 get medals 🥇🥈🥉, and your own rank stays pinned at the bottom even
-when you're outside the top 100 — so you always know how far the climb is.
-Pull down to refresh and chase the top.
-
-## 🎨 New look
-A fresh new app icon — cream background, navy S-curve, map pin start and a
-pointer at the finish.
-
-## 🔒 Fair play
-XP is now server-validated, so nobody can write fake scores onto the board.
-Every point on the leaderboard was earned.
+## ✍️ Your username is always yours
+When you create an account, the name you type is exactly what you get. The
+sign-up form no longer pre-fills a default name — so nobody can end up with an
+account named after something they never chose. Every account name on
+SideQuest is now explicitly picked by the person who owns it.
 
 ---
 

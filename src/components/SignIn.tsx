@@ -5,9 +5,11 @@ import Turnstile, { turnstileEnabled } from './Turnstile'
 import { Button, Sheet } from './ui'
 
 export default function SignIn({ onClose }: { onClose: () => void }) {
-  const { playerName, setPlayerName } = useGame()
+  const { setPlayerName } = useGame()
   const [mode, setMode] = useState<'signin' | 'create'>('create')
-  const [username, setUsername] = useState(playerName)
+  // Starts empty so the account name is always explicitly typed — never a
+  // pre-filled default (the local default is 'SideQuester').
+  const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPass, setShowPass] = useState(false)
@@ -297,7 +299,7 @@ export default function SignIn({ onClose }: { onClose: () => void }) {
             <button
               type="button"
               className="signin-switch"
-              onClick={() => { setMode(mode === 'create' ? 'signin' : 'create'); setError(null); setCheck('idle') }}
+              onClick={() => { setMode(mode === 'create' ? 'signin' : 'create'); setUsername(''); setError(null); setCheck('idle') }}
               disabled={busy || done}
             >
               {mode === 'create' ? 'Already have an account? Sign in' : 'New here? Create an account'}

@@ -1024,52 +1024,6 @@ select {
 .friend-last { font-size: 10.5px; color: var(--muted); flex-shrink: 0; display: flex; align-items: center; gap: 5px; background: var(--card-2); border: 1px solid var(--border); border-radius: 99px; padding: 3px 9px; }
 .friend-last-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
 
-/* ── Leaderboard (Friends tab) ──────────────────────────────────────────── */
-.leaderboard { margin-bottom: 24px; }
-.leaderboard-scopes { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
-.leaderboard-list {
-  list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 0 0 14px;
-}
-.leaderboard-row {
-  display: flex; gap: 12px; align-items: center; background: var(--card);
-  border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px;
-}
-.leaderboard-row-you {
-  background: linear-gradient(135deg, #fffaf0, #f7e6c3);
-  border-color: #c97f1444; box-shadow: inset 0 0 0 1px #c97f1422;
-}
-.leaderboard-rank {
-  width: 34px; height: 34px; flex-shrink: 0; border-radius: 50%;
-  background: var(--card-2); border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 800; color: var(--text-2);
-}
-.leaderboard-row:nth-child(1) .leaderboard-rank,
-.leaderboard-row:nth-child(2) .leaderboard-rank,
-.leaderboard-row:nth-child(3) .leaderboard-rank {
-  background: transparent; border: none; font-size: 20px;
-}
-.leaderboard-avatar {
-  width: 42px; height: 42px; flex-shrink: 0; border-radius: 50%;
-  background: linear-gradient(135deg, var(--card-2), #e9dcc0);
-  border: 2px solid var(--border); display: flex; align-items: center; justify-content: center;
-  font-size: 21px;
-}
-.leaderboard-row-you .leaderboard-avatar { border-color: var(--gold); }
-.leaderboard-main { flex: 1; min-width: 0; }
-.leaderboard-name {
-  font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 6px;
-  letter-spacing: -0.2px;
-}
-.leaderboard-you-tag {
-  font-size: 10px; font-weight: 800; color: var(--gold); background: #c97f1422;
-  border-radius: 99px; padding: 1px 7px; letter-spacing: 0.3px; text-transform: uppercase;
-}
-.leaderboard-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
-.leaderboard-xp { font-size: 12.5px; font-weight: 800; color: var(--gold); white-space: nowrap; }
-.leaderboard-you-pinned { margin-top: 4px; }
-.leaderboard-you-pinned .section-sub { margin: 8px 2px 0; }
-
 .friends-howto { margin-bottom: 10px; }
 
 .friend-badge-chip {

@@ -130,11 +130,6 @@ CREATE TABLE push_tokens (
 -- ============================================================================
 -- Read models
 -- ============================================================================
-CREATE OR REPLACE VIEW v_leaderboard AS
-    SELECT id, name, emoji, xp,
-           rank() OVER (ORDER BY xp DESC) AS xp_rank
-    FROM profiles;
-
 CREATE OR REPLACE VIEW v_friend_feed AS
     SELECT q.profile_id, p.name AS player_name, p.emoji AS player_emoji,
            q.quest_id, q.completed_at, q.xp

@@ -1,8 +1,7 @@
 # Project Developer Handover — SideQuest 🇿🇦
 
 *Status: current as of v1.0.20 (August 2026). This document describes the final
-state of the repository, including the recently added global leaderboard and
-the app-icon pipeline.*
+state of the repository, including the app-icon pipeline.*
 
 ---
 
@@ -20,7 +19,7 @@ browser (GitHub Pages) and inside a **Capacitor 8 Android shell** (sideloaded
 APK, self-updating via GitHub Releases + FCM push notifications). The game is
 **offline-first**: the full quest catalog ships in the bundle and play is fully
 local, with a progressive **Supabase (Postgres)** sync layer for accounts,
-friends, squads, reviews, community quests and the leaderboard. Authentication
+friends, squads, reviews and community quests. Authentication
 is Supabase Auth with anonymous sign-in by default (each device gets a stable
 uid) and optional email/Google account upgrades, protected by Cloudflare
 Turnstile.
@@ -55,8 +54,6 @@ end-to-end sync tests run before releases.
   optional Ticketmaster key), geocodes and validates real dated events, commits
   `public/events-remote.json`, and the app merges those events into the map and
   feed with ticket links and countdowns.
-- **Leaderboard** *(new)* — a filterable global (SA-wide) / regional (home base
-  + neighbours) / friends-only XP leaderboard, on the Friends tab.
 - **Updates & notifications** — the Android app self-updates from GitHub
   Releases with an in-app banner; FCM pushes announce releases, friend requests
   and acceptances.
@@ -79,7 +76,7 @@ matches it.
 | Native shell | Capacitor 8 (`@capacitor/core`, `@capacitor/android`) | ^8.5 | Android APK wrapper |
 | Map | Leaflet + react-leaflet + leaflet.markercluster | 1.9 / 5.0 / 1.5 | Quest map, clustering, tile failover |
 | Routing | react-router-dom | ^7.6 | SPA routes |
-| Backend | Supabase (Postgres) + Supabase JS client | ^2.112 | Accounts, profiles, friends, squads, reviews, custom quests, push tokens, leaderboard |
+| Backend | Supabase (Postgres) + Supabase JS client | ^2.112 | Accounts, profiles, friends, squads, reviews, custom quests, push tokens |
 | Auth | Supabase Auth (anonymous + email + Google, PKCE) | via client | Identity; anonymous by default |
 | Realtime | Supabase Realtime (`postgres_changes`) | via client | Live friend requests, activity feed, squad roster, community quests |
 | State | React Context + localStorage | — | Offline-first local game state |
@@ -88,7 +85,7 @@ matches it.
 | Edge functions | Deno (`supabase/functions/`) | — | delete-account, notify-user, notify-update |
 | Image pipeline (new) | sharp (devDependency) | ^0.35 | Regenerates app icons from `assets/app-icon.jpg` |
 | CI/CD | GitHub Actions | — | Pages deploy, release pipeline, nightly events fetch, release notifications |
-| Testing | Vitest (unit tests for game rules + leaderboard) + tsc/build + manual e2e scripts | 4.x | See §24 |
+| Testing | Vitest (unit tests for game rules) + tsc/build + manual e2e scripts | 4.x | See §24 |
 
 ---
 
@@ -98,7 +95,7 @@ matches it.
 project/
 ├── src/                  # The whole app (TS/TSX + CSS)
 │   ├── data/             # Static game content: quests, chains, places, events
-│   ├── lib/              # Logic: game rules, sync engine, social, leaderboard, push…
+│   ├── lib/              # Logic: game rules, sync engine, social, push…
 │   ├── components/       # UI: screens, sheets, cards, forms
 │   ├── App.tsx           # Routes + boot orchestration
 │   ├── main.tsx          # Entry point
@@ -187,11 +184,10 @@ project/
 │   │   ├── CreateQuest.tsx         # community quest form (blocklist-checked)
 │   │   ├── DeleteAccount.tsx       # POPIA erasure flow
 │   │   ├── EditProfile.tsx         # username editor (availability check)
-│   │   ├── Friends.tsx             # squad/leaderboard/activity tabs + find friends
+│   │   ├── Friends.tsx             # squad/activity tabs + find friends
 │   │   ├── Generator.tsx           # the quest feed (Instagram-style, heavy filters)
 │   │   ├── Home.tsx                # landing screen
 │   │   ├── Icon.tsx                # inline SVG icon set for the nav
-│   │   ├── Leaderboard.tsx         # NEW — filterable leaderboard UI
 │   │   ├── LocationPicker.tsx      # city picker / use-my-location
 │   │   ├── MapScreen.tsx           # Leaflet map, filters, search, live pins
 │   │   ├── Profile.tsx             # player stats, badges, account, updates
@@ -216,7 +212,6 @@ project/
 │       ├── eventsSync.ts           # fetch/cache/merge the live events feed
 │       ├── friends.ts              # deterministic demo friend profiles + rivalry
 │       ├── game.ts                 # XP/levels/ranks/badges/stats/geo helpers
-│       ├── leaderboard.ts          # NEW — leaderboard data layer
 │       ├── moderation.ts           # blocklist + report helpers
 │       ├── push.ts                 # FCM registration
 │       ├── reviews.ts              # quest review fetch/save/report
@@ -307,9 +302,9 @@ authorization; the client just queries.
 **Side effects.** Supabase network calls; `console.warn` on failures (never
 throws to callers).
 
-**Problems.** Large and dense, but cohesive. `v_leaderboard`-style duplicated
-query patterns exist in several places (profiles + counts) — a candidate for a
-shared helper, but fine as-is.
+**Problems.** Large and dense, but cohesive. Duplicated query patterns exist
+in several places (profiles + counts) — a candidate for a shared helper, but
+fine as-is.
 
 ### `src/lib/game.ts`
 
@@ -328,28 +323,6 @@ shared helper, but fine as-is.
 object with a predicate over a `Progress` summary, and the sync layer reuses the
 same definitions server-side (via `syncCompletions`) so the phone and the DB
 agree on what's earned.
-
-### `src/lib/leaderboard.ts` *(NEW — added with this handover)*
-
-**Purpose.** The leaderboard data layer. Fetches real player stats from
-Supabase for three scopes:
-
-- **global** — top 100 profiles by XP (plus the player's true rank when they're
-  outside the top 100, via a cheap `gt('xp', mine)` count query).
-- **regional** — profiles whose `home_base_id` is in the player's region or a
-  neighbour region (`HOME_BASES[homeBaseId].neighbors`). Players with a custom
-  map-picked home base (`home_base_id` null) can't be placed and are excluded —
-  the UI explains this.
-- **friends** — the player + their accepted friendships (RLS-scoped query, so
-  only the caller's own friendships are ever visible).
-
-**Exports.** `LeaderboardScope`, `LeaderboardEntry`, `LeaderboardData`,
-`fetchLeaderboard(uid, scope, homeBaseId)`. Returns `null` when Supabase is
-unconfigured or the fetch fails; the component falls back to an offline message.
-
-**Design note.** `profiles` is publicly readable by design, so a plain
-`select`/`in` query works for every scope. Ranks are 1-based list positions
-(ties broken by name) except the out-of-top-100 global case.
 
 ### `src/lib/friends.ts`
 
@@ -475,8 +448,7 @@ by `npm run check:quests`.
 | `ActiveQuest.tsx` | The in-progress quest bar: GPS distance to each stop, completion gating (within 5 km), weather fetch, directions |
 | `CompletionModal.tsx` | Post-completion celebration: XP, level/rank ups, memory save, review prompt |
 | `ChainBuilder.tsx` | Multi-stop chain builder + share links |
-| `Friends.tsx` | Squad / **Leaderboard** / Activity tabs, find-friends search, friend cards, requests, friend sheet |
-| `Leaderboard.tsx` | *(NEW)* The filterable leaderboard UI (Global SA / Regional / Friends scopes) |
+| `Friends.tsx` | Squad / Activity tabs, find-friends search, friend cards, requests, friend sheet |
 | `SquadPanel.tsx` | Squad creation, roster, invites, leave/disband |
 | `Profile.tsx` | Player card, stats dashboard, SA completion, badges, creator tier, account card, home base, memories, updates card, reset |
 | `SignIn.tsx` / `Turnstile.tsx` | Email/Google auth sheet; Turnstile captcha wrapper |
@@ -528,7 +500,7 @@ toasts, and the route table.
               │  · quests, XP    │   │  profiles / friends     │
               │  · offline-first │   │  squads / reviews       │
               │  · localStorage  │   │  custom quests          │
-              │  · store.tsx     │   │  leaderboard reads      │
+              │  · store.tsx     │   │  stats + names           │
               └────────────┬─────┘   └─────┬──────────────────┘
                            │               │
                            └── sync engine ┘
@@ -590,7 +562,7 @@ main.tsx
 | `/feed` | Generator | none | Quest feed (community + live events) |
 | `/generate` | → `/feed` | none | Legacy redirect (old shared links) |
 | `/builder` | ChainBuilder | none | Multi-stop chain builder |
-| `/friends` | Friends | none | Squad / Leaderboard / Activity |
+| `/friends` | Friends | none | Squad / Activity |
 | `/profile` | Profile | none | Stats, badges, account, updates |
 | `*` | → `/` | none | Fallback |
 
@@ -614,11 +586,10 @@ features are gated by RLS server-side, not by routes.
   market/automotive, budget slider, feed location + radius, trending), shuffle,
   pagination, community quest cards with creator titles, report/delete, and a
   "Create" button (CreateQuest sheet).
-- **Friends (`/friends`)** — three tabs: **Squad** (squad panel, you-card,
-  find-friends search, friend list with rivalry lines, friend sheet),
-  **Leaderboard** (Global SA / Regional / Friends scopes), **Activity** (live
-  quest feed + badge buzz from real completions). Friend requests appear above
-  the tabs. Pull-to-refresh refetches everything including the leaderboard.
+- **Friends (`/friends`)** — two tabs: **Squad** (squad panel, you-card,
+  find-friends search, friend list with rivalry lines, friend sheet) and
+  **Activity** (live quest feed + badge buzz from real completions). Friend
+  requests appear above the tabs. Pull-to-refresh refetches everything.
 - **Profile (`/profile`)** — player card (avatar emoji, name edit, level/rank,
   XP bars), account card (sign in / out / edit / delete), stats dashboard (time,
   places, favourite province, per-category bars), SA completion (9 provinces),
@@ -644,9 +615,7 @@ features are gated by RLS server-side, not by routes.
   pins), `StartMarker`.
 - **Generator internals** — `QuestCard` renders a feed item (title, expiry/
   countdown chips, live-event ticket row, creator chip, report/delete, start).
-- **Friends internals** — `FriendSheet` (friend profile sheet), plus the new
-  `Leaderboard` component with `LeaderboardRow` (rank medal for top 3, avatar,
-  name + "you" tag, level/rank/home base meta, XP).
+- **Friends internals** — `FriendSheet` (friend profile sheet).
 - **ui.tsx primitives** — `Button` (primary/ghost/gold), `Sheet` (modal with
   overlay), `Chip` (filter pills), `Bar` (progress), `Stat`/`QuestStats`,
   `Tag`, `SectionTitle`. Used across all screens — add new UI here first.
@@ -664,7 +633,6 @@ SIDEQUEST
 ├── Live events            events-fetch.yml → fetch-events.mjs → eventsSync.ts
 ├── Friends                sync.ts (requests), Friends.tsx, friends.ts (demo)
 ├── Squads                 squads.ts, SquadPanel, migrations 0012–0014
-├── Leaderboard (NEW)      leaderboard.ts, Leaderboard.tsx, Friends tab
 ├── Community quests       CreateQuest.tsx, sync.ts (save/fetch/report), moderation
 ├── Reviews                reviews.ts, QuestSheet (review UI), migration 0011
 ├── Chains & sharing       ChainBuilder.tsx, share.ts, App.tsx (?chain=)
@@ -693,16 +661,6 @@ User reaches the place
   → friends' apps: realtime quest_completions → activity feed refetch
 ```
 
-**Leaderboard (new):**
-
-```text
-Friends tab → Leaderboard tab
-  → Leaderboard component (scope state: global | regional | friends)
-  → fetchLeaderboard(uid, scope, homeBaseId)
-      → global:   profiles top-100 by xp (+ my true rank via count)
-      → regional: profiles where home_base_id ∈ [myRegion, ...neighbors]
-      → friends:  friendships (RLS) → profiles of friend ids + me
-  → rows sorted by XP → rendered with ranks/medals; "you" pinned
   → pull-to-refresh on the Friends page bumps refreshKey → refetch
 ```
 
@@ -730,9 +688,9 @@ tiles), and two internal webhooks (edge functions).
 
 | Table / RPC | Operations | Used by | Purpose |
 |---|---|---|---|
-| `profiles` | SELECT (all), INSERT/UPDATE (own) | sync.ts, leaderboard.ts, squads.ts, friends | Stats, names, home base, leaderboard |
+| `profiles` | SELECT (all), INSERT/UPDATE (own) | sync.ts, squads.ts, friends | Stats, names, home base |
 | `friend_requests` | SELECT/INSERT/UPDATE | sync.ts | Pending → accepted flow |
-| `friendships` | SELECT/INSERT/DELETE | sync.ts, leaderboard.ts | Accepted mutual pairs (RLS-scoped) |
+| `friendships` | SELECT/INSERT/DELETE | sync.ts | Accepted mutual pairs (RLS-scoped) |
 | `quest_completions` | SELECT/INSERT/UPDATE | sync.ts, friends | Feed, counts, reviews gate |
 | `chain_completions` | SELECT/INSERT | sync.ts | Multi-stop completions |
 | `badge_earnings` | SELECT/INSERT | sync.ts, friends | Badge counts + events |
@@ -744,7 +702,6 @@ tiles), and two internal webhooks (edge functions).
 | `push_tokens` | SELECT/INSERT/DELETE | push.ts, edge fns | FCM device tokens |
 | `rpc('create_squad')` | EXECUTE | squads.ts | Atomic squad creation |
 | `functions.invoke('delete-account')` | POST | sync.ts | Account erasure |
-| `profiles` (count) | SELECT head:true | leaderboard.ts | True rank outside top 100 |
 
 ### GitHub API (public repo, no auth)
 
@@ -789,7 +746,7 @@ profiles (id = auth.uid, name, emoji, xp, streak, last_quest_at,
  │            role leader/member, unique per profile — one squad per player)
  └── moderation_blocks (word) — blocklist for the triggers
 
-Views (unused legacy): v_leaderboard, v_friend_feed
+Views (unused legacy): v_friend_feed
 Non-public: app_config (push_fn_url, push_webhook_secret — set via dashboard)
 Functions: notify_push(), push_friend_request(), push_friend_accepted(),
            on_quest_report(), on_review_report(), block_flagged_content(),
@@ -805,10 +762,6 @@ Extension: pg_net (async webhooks to edge functions)
 - Friendships stored once with `user_a_id < user_b_id`.
 - Usernames unique case-insensitively, **except** the anonymous default
   `'SideQuester'` (migration 0008 partial index).
-- **Server-side XP guard** (migration 0015): `profiles.xp` is bounded (≤ 10M
-  total, ≤ 1M gained per sync, ≤ 1M on a fresh insert), `streak` ≤ 3650, and
-  per-row completion XP ≤ 10 000 — so nobody can write arbitrary XP to their
-  own row via the API (see §33).
 - One squad per player (partial unique index on `squad_members(profile_id)`).
 - Reviews only insertable when the reviewer completed the quest (RLS `WITH
   CHECK` on `quest_completions`).
@@ -853,11 +806,11 @@ same profile id.
 
 All authorization is **server-side RLS**, never client checks:
 
-- `profiles` — SELECT for everyone (by design: that's how friend search and the
-  leaderboard work); INSERT/UPDATE only your own row.
+- `profiles` — SELECT for everyone (by design: that's how friend search
+  works); INSERT/UPDATE only your own row.
 - `friend_requests` / `friendships` — only the involved users.
 - `quest_completions` / `chain_completions` / `badge_earnings` — SELECT all
-  (feeds, rivalries, leaderboard), writes only your own.
+  (feeds, rivalries), writes only your own.
 - `custom_quests` — SELECT all (platform-wide feed; hidden rows filtered by the
   app, except the owner can see their own), writes only your own.
 - `quest_reviews` — SELECT all; INSERT only if you completed the quest; edit/
@@ -878,13 +831,13 @@ everything about the game: xp, streak, completed map, memories, active session,
 custom quests/chains, friends, home base, feed place, recent generated ids.
 
 **Server state (fetched per screen):** real friends, friend requests, squad,
-feed events, community quests, reviews, leaderboard, live events — each screen
+feed events, community quests, reviews, live events — each screen
 fetches what it needs and subscribes to realtime where live updates matter
 (friend requests, squad roster, quest completions, custom quests).
 
 **Cross-cutting module state:** `squads.ts` holds `squadStatus` (drives the XP
 bonus everywhere); `push.ts` holds the tap handler; `supabase.ts` holds the
-client; `leaderboard.ts` is stateless.
+client.
 
 **Transient UI state:** local `useState` in each component; no global UI store.
 
@@ -922,7 +875,7 @@ dashboard); Android signing keystore (`sidequest-release.keystore`,
 | `@supabase/supabase-js` | Backend/auth/realtime | Yes |
 | `@capacitor/*` (core, android, app, cli, push-notifications) | Native shell + FCM | Yes (Android) |
 | `sharp` *(dev)* | Icon generation (`npm run icons`) | Dev-only; justifies itself as the icon pipeline |
-| `vitest` *(dev)* | Unit tests (`npm test`) | Dev-only; tests `game.ts` rules + leaderboard scope/rank logic |
+| `vitest` *(dev)* | Unit tests (`npm test`) | Dev-only; tests `game.ts` rules |
 | `typescript`, `vite`, `@vitejs/plugin-react` | Toolchain | Yes |
 
 No obvious duplicate libraries. No runtime UI/state libraries beyond React —
@@ -941,7 +894,7 @@ state is hand-rolled context, styling is hand-rolled CSS.
 - **Navigation:** floating 6-item bottom nav (`BottomNav.tsx` + `Icon.tsx`
   inline SVGs).
 - **Patterns:** bottom sheets for detail views, chips for filters, cards for
-  feed/friends/leaderboard rows, `seg` segmented control for tabs (Friends),
+  feed/friends rows, `seg` segmented control for tabs (Friends),
   `PullHint` for pull-to-refresh.
 - **Accessibility:** focus-visible outlines, `aria-label`s on icon buttons,
   semantic buttons/lists, `prefers-reduced-motion` support, `aria-hidden` on
@@ -955,8 +908,7 @@ state is hand-rolled context, styling is hand-rolled CSS.
   (`null`, `[]`, `false`) with a `console.warn` — offline is a first-class
   state, not an error.
 - **UI:** screens render explicit states — loading, empty, error/offline
-  messages (e.g. leaderboard "couldn't load — pull down to retry", feed empty
-  states with taglines, update-card error with retry).
+  messages (feed empty states with taglines, update-card error with retry).
 - **Pull-to-refresh** has a 2.5 s safety timeout so the spinner never sticks.
 - **Map tiles:** error-counting failover between providers, with a retry button
   when all are dead.
@@ -989,12 +941,6 @@ state is hand-rolled context, styling is hand-rolled CSS.
   categories, provinces, time-of-day, weather, distance, XP), progress
   reporting, creator tiers, event horizon, `playerStats`, province stats,
   formatting and geo helpers.
-- `src/lib/leaderboard.test.ts` — scope + rank logic against an in-memory
-  stand-in for the Supabase query chain: global (top-100, out-of-top-100 true
-  rank, tie ordering), regional (region + neighbours only, unplaced custom
-  bases excluded), friends (player + friends only, RLS-shaped rows).
-- `src/lib/leaderboard.offline.test.ts` — the no-client no-op path.
-
 Other verification, as before:
 
 - `npm run typecheck` (`tsc -b`, strict) — runs in CI before every deploy
@@ -1020,7 +966,7 @@ README lists a Playwright e2e suite as future work.
 npm install
 npm run dev              # vite dev server (auto-creates .env from .env.defaults)
 npm run typecheck        # tsc -b
-npm test                 # vitest run (game rules + leaderboard)
+npm test                 # vitest run (game rules)
 npm run build            # tsc -b && vite build → dist/
 npm run check:quests     # quest data quality
 npm run fetch:events     # run the live-events scraper now
@@ -1068,10 +1014,8 @@ notifies devices via FCM.
 4. **`src/lib/game.ts`** — rules: XP, ranks, badges, stats, geo.
 5. **`supabase/migrations/20260810000000_init.sql`** — schema + RLS baseline.
 6. **`src/lib/squads.ts` + migrations 0012–0014** — the most intricate RLS story.
-7. **`src/lib/leaderboard.ts` + `src/components/Leaderboard.tsx`** — the newest
-   feature (good example of the fetch→component pattern).
-8. **`scripts/generate-icons.mjs`** — the icon pipeline (also the newest tooling).
-9. **`src/styles.css`** — design tokens; read the `:root` block before styling
+7. **`scripts/generate-icons.mjs`** — the icon pipeline.
+8. **`src/styles.css`** — design tokens; read the `:root` block before styling
    anything.
 
 ---
@@ -1113,11 +1057,11 @@ notifies devices via FCM.
 | Location | Problem | Why it matters | Severity | Direction |
 |---|---|---|---|---|
 | `docs/database.md` intro | Says "Today the app has no backend" — outdated | Misleads new devs | Low | Rewrite intro to reflect the deployed schema |
-| `Friends.tsx`, `Profile.tsx`, `Leaderboard.tsx`, `sync.ts` | `LEVEL_EMOJI` array duplicated (and `playerEmoji`) | Drift risk | Low | Extract to `game.ts` |
+| `Friends.tsx`, `Profile.tsx`, `sync.ts` | `LEVEL_EMOJI` array duplicated (and `playerEmoji`) | Drift risk | Low | Extract to `game.ts` |
 | `src/lib/sync.ts` | Very large, many responsibilities | Hard to navigate | Medium | Consider splitting auth vs social vs quests |
 | `App.tsx` | Handles `data.type 'challenge'/'challenge-accepted'` in the push handler, but challenges were removed (migration 0009) | Dead path | Low | Remove |
-| `v_leaderboard`, `v_friend_feed` views | Created in 0000, never used by the app | Dead code | Low | Remove or adopt |
-| Unit-test coverage incomplete | `game.ts` + `leaderboard.ts` covered by Vitest; store (`store.tsx`), `sync.ts`, components and the icon generator remain untested | Regression risk in the most-touched logic | Medium | Extend Vitest to the store award logic and sync helpers; add a Playwright e2e suite (roadmap) |
+| `v_friend_feed` view | Created in 0000, never used by the app | Dead code | Low | Remove or adopt |
+| Unit-test coverage incomplete | `game.ts` covered by Vitest; store (`store.tsx`), `sync.ts`, components and the icon generator remain untested | Regression risk in the most-touched logic | Medium | Extend Vitest to the store award logic and sync helpers; add a Playwright e2e suite (roadmap) |
 | `SideQuest.apk` on disk (untracked) | Local artifact | Confusion | Low | Leave (gitignored) |
 
 ---
@@ -1127,7 +1071,6 @@ notifies devices via FCM.
 | Location | Observed | Assessment | Confidence | Impact |
 |---|---|---|---|---|
 | `Profile.tsx` pull-to-refresh | Only re-pushes local state to the server; doesn't pull server state down | Not a bug per se — a design choice ("re-sync your stats from the server" implies push) | Possible (label mismatch) | Low |
-| `fetchLeaderboard` regional scope | Players with a custom `start_place` (home_base_id null) never appear in any regional board | Intentional (documented in UI), not a bug | Confirmed design | Low |
 | `App.tsx` shared `?chain=` | `decodeChainShare` can produce quests from `ALL_QUESTS` only — live/community quest ids won't resolve and are silently dropped | Edge case, harmless | Possible | Low |
 | `sync.ts` `playerEmoji` | Uses `LEVEL_EMOJI` local copy vs `Friends`/`Profile` copies — emoji sets could drift | Cosmetic | Possible | Low |
 | `quests.ts` `anywhere()` builder | The 18 "anywhere" quests (`walk-nowhere-*`, `weirdest-r50-*`, `ice-cream-quest-*`, …) are built with real main-city coordinates and **without** `anywhere: true` (only `social.ts`/`seasonal.ts` set it via `qAny`). So the map shows them, the feed's Anywhere filter and the `anywhere-5/15` badges never count them, and cards label them by city — contradicting the builder's own "doable anywhere" comment | Wrong quest categorization | Possible (product intent unclear — could be deliberate) | Medium | Either set `anywhere: true` in the builder (matching the comment) or add a `check:quests` rule documenting the intent |
@@ -1138,7 +1081,7 @@ notifies devices via FCM.
 
 | Location | Issue | Risk | Severity | Remediation direction |
 |---|---|---|---|---|
-| `profiles.xp` is client-writable (RLS: own-row UPDATE) | **Mitigated** by migration 0015: triggers bound XP (≤ 10M total, ≤ 1M gained per sync, ≤ 1M on insert), streak (≤ 3650) and per-row completion XP (≤ 10 000). A direct "set my XP to 9 999 999" call is now rejected. | Leaderboard/ranking integrity | Low (residual) | Residual risk: a determined attacker could still reach the 10M ceiling over many writes, or fake many completion rows (each ≤ 10k). Fully deterministic scoring needs the server to own the quest catalog and compute XP from validated completions — see §42 |
+| `profiles.xp` is client-writable (RLS: own-row UPDATE) | Anyone with the anon key can write any XP/streak value to their own profile — self-reported stats only, no cross-user impact, but XP shown to friends/squads is untrusted. (A server-side guard was tried in migration 0015 and removed in 0016 per product decision.) | Profile XP integrity (friend/squad displays) | Medium | Reintroduce bounded-XP triggers or move to deterministic server-computed scores — see §42 |
 | Anon key + URL in client bundle | By design (public publishable key) | Not a finding per se — document | Info | Keep RLS as the only real boundary |
 | `app_config` webhook secrets | Held in DB, never granted to anon/authenticated; edge fns verify secrets | OK | Info | Keep grants restrictive |
 | `delete-account` edge fn | Verifies JWT via `sub` claim parsing | OK — standard | Info | — |
@@ -1152,7 +1095,7 @@ design).
 
 ## 34. Dead Code
 
-- `v_leaderboard`, `v_friend_feed` views (migration 0000, unused).
+- `v_friend_feed` view (migration 0000, unused).
 - `App.tsx` push-handler branches for `'challenge'` / `'challenge-accepted'`
   (feature removed in migration 0009).
 - `scripts/make-friend.mjs` — dev-only utility (keep; used by the release
@@ -1163,9 +1106,9 @@ design).
 
 ## 35. Duplicated Functionality
 
-- `LEVEL_EMOJI` / `playerEmoji` in `Friends.tsx`, `Profile.tsx`,
-  `Leaderboard.tsx`, `sync.ts` — same 12-emoji level ladder. Intentional
-  duplication today; consolidate into `game.ts`.
+- `LEVEL_EMOJI` / `playerEmoji` in `Friends.tsx`, `Profile.tsx`, `sync.ts` —
+  same 12-emoji level ladder. Intentional duplication today; consolidate into
+  `game.ts`.
 - Profile+counts query pattern (`fetchRealFriends`, `fetchMySquad`,
   `fetchFriendFeed`) — same shape three times; fine at this scale.
 - Haversine/geo helpers centralized in `game.ts` (good).
@@ -1174,15 +1117,13 @@ design).
 
 ## 36. Architectural Inconsistencies
 
-- **Data access styles:** most reads go through `sync.ts`; the leaderboard
-  introduced a dedicated `leaderboard.ts` module; `Generator.tsx` queries
-  `quest_reviews` directly. Acceptable (each screen owns its queries), but note
-  that `sync.ts` is the default home for Supabase queries.
+- **Data access styles:** most reads go through `sync.ts`; `Generator.tsx`
+  queries `quest_reviews` directly. Acceptable (each screen owns its queries),
+  but note that `sync.ts` is the default home for Supabase queries.
 - **CSS:** nearly all styles live in one file (intentional single-source), but
   some one-off inline styles exist in JSX (e.g. category gradients) — fine.
-- **Realtime usage:** friend feed + requests + squad roster + custom quests are
-  live; the leaderboard is refresh-only (documented trade-off — a
-  `postgres_changes` subscription on `profiles` would be chatty).
+- **Realtime usage:** friend feed + requests + squad roster + custom quests
+  are live where updates matter.
 
 ---
 
@@ -1199,9 +1140,6 @@ STARTUP: main.tsx → GameProvider (localStorage) → App (boot sync + subs)
     │
     ├─ SOCIAL: Friends.tsx → sync.ts (requests/friends/feed) + squads.ts (roster)
     │      → realtime channels → UI updates; XP bonus via squads.inSquad()
-    │
-    ├─ LEADERBOARD (new): Friends tab → Leaderboard.tsx → leaderboard.ts
-    │      → profiles/friendships (RLS) → ranks
     │
     ├─ LIVE EVENTS: cron → fetch-events.mjs → events-remote.json → Pages
     │      → eventsSync.ts → registerCustomQuests → map/feed
@@ -1226,7 +1164,8 @@ STARTUP: main.tsx → GameProvider (localStorage) → App (boot sync + subs)
 7. Read `supabase/migrations/20260810000000_init.sql` — schema + RLS.
 8. Skim `squads.ts` + migrations 0012–0014 — the trickiest RLS.
 9. Run `npm run typecheck`, `npm run build`, `npm run check:quests`.
-10. Try a feature end-to-end (e.g. follow the leaderboard data flow in §13).
+10. Try a feature end-to-end (e.g. follow a quest from the map to a
+    completion in §13).
 
 ---
 
@@ -1238,18 +1177,17 @@ STARTUP: main.tsx → GameProvider (localStorage) → App (boot sync + subs)
 | Change XP/levels/ranks/badges | `src/lib/game.ts` |
 | Change how a quest completes | `src/lib/store.tsx` (`completeActiveSession`) + `ActiveQuest.tsx` |
 | Add a new route/page | `src/App.tsx` + a component + a nav entry in `BottomNav.tsx` |
-| Change the leaderboard scopes/ranking | `src/lib/leaderboard.ts`; UI in `Leaderboard.tsx` |
 | Change friends behaviour | `src/lib/sync.ts` + `Friends.tsx` |
 | Change squads | `src/lib/squads.ts` + migrations 0012–0014 |
 | Change the feed | `src/components/Generator.tsx` |
 | Change the map | `src/components/MapScreen.tsx` |
 | Change styling | `src/styles.css` (tokens in `:root`); shared bits in `ui.tsx` |
-| Add a Supabase query | follow `sync.ts`/`leaderboard.ts` patterns; check grants + RLS |
+| Add a Supabase query | follow `sync.ts` patterns; check grants + RLS |
 | Change auth | `src/lib/sync.ts` (auth flows) + `SignIn.tsx` |
 | Change push notifications | `src/lib/push.ts`, migrations 0006–0007, edge fns |
 | Change the app icon | `assets/app-icon.jpg` → `npm run icons` |
 | Change events feed | `scripts/fetch-events.mjs`, `src/lib/eventsSync.ts` |
-| Add automated tests | create a Vitest setup; target `game.ts` / `leaderboard.ts` first |
+| Add automated tests | create a Vitest setup; target `game.ts` first |
 | Cut a release | `scripts/release.sh` (see README) |
 
 ---
@@ -1262,7 +1200,7 @@ STARTUP: main.tsx → GameProvider (localStorage) → App (boot sync + subs)
 | Chain | A multi-stop quest (official or user-built), shared as a URL |
 | Anywhere quest | A quest with no location — doable right now |
 | Home base | The player's chosen city (of 19) or exact GPS spot; measures "how far" |
-| Region / neighbours | The 19 `HOME_BASES` each with a `region` id + neighbour regions; drives the regional leaderboard and generator distances |
+| Region / neighbours | The 19 `HOME_BASES` each with a `region` id + neighbour regions; drives generator distances |
 | XP / Level / Rank | Progression: XP → level (300·triangular); ranks Rookie→Explorer→Trailblazer→Legend of SA |
 | Badge | 46 achievement definitions evaluated from a `Progress` summary |
 | Streak | Consecutive days with ≥1 quest completed |
@@ -1277,17 +1215,10 @@ STARTUP: main.tsx → GameProvider (localStorage) → App (boot sync + subs)
 
 ## 41. Unknowns & Unresolved Questions
 
-- **Leaderboard rank semantics:** ties in XP break by name (then by last-active
-  in the top-100 fetch). This matches nothing documented by the product owner —
-  confirm whether tied players should share a rank (the legacy `v_leaderboard`
-  view used `rank()` which does share).
-- **Regional scope definition:** "your region + neighbours" was chosen to match
-  the app's existing distance concept. A province-based scope is a reasonable
-  alternative if the product owner intended that.
-- **`profiles.xp` trust:** the leaderboard ranks by client-written XP, now
-  bounded server-side (migration 0015, see §33). The residual risk — reaching
-  the 10M ceiling over many writes — is a product call: accept it, or move to
-  fully deterministic server-computed scores.
+- **`profiles.xp` trust:** XP is fully client-written (see §33). Anyone can
+  write any XP to their own profile — acceptable for self-reported stats, but
+  any ranking by XP should be treated as untrusted until the server owns the
+  scoring.
 - **docs/database.md** predates the current schema in places — a rewrite is
   recommended.
 
@@ -1295,24 +1226,19 @@ STARTUP: main.tsx → GameProvider (localStorage) → App (boot sync + subs)
 
 ## 42. Recommended Next Steps
 
-1. **Extend the Vitest suite** (now covers `game.ts` + `leaderboard.ts`) to the
-   store award logic (`completeActiveSession`), `sync.ts` helpers, and the
-   icon generator.
-2. **Server-side XP hardening** — shipped in migration 0015 (bounded XP/streak/
-   completion rows). The remaining gap is deterministic scoring: seed the
-   quest XP catalog server-side and compute `profiles.xp` from validated
-   completions, so the ceiling itself becomes unreachable.
-3. **Remove dead code** (`v_leaderboard`/`v_friend_feed` views, challenge push
-   branches) and consolidate the duplicated `LEVEL_EMOJI`.
+1. **Extend the Vitest suite** (now covers `game.ts`) to the store award logic
+   (`completeActiveSession`), `sync.ts` helpers, and the icon generator.
+2. **Server-side XP validation** — `profiles.xp` is client-writable (see
+   §33); reintroduce bounded-XP triggers or deterministic server-computed
+   scores if XP integrity matters.
+3. **Remove dead code** (`v_friend_feed` view, challenge push branches) and
+   consolidate the duplicated `LEVEL_EMOJI`.
 4. **Rewrite `docs/database.md`** to match the deployed schema.
-5. Consider a **realtime leaderboard subscription** (or periodic refetch) if
-   live updates matter to players.
-6. Follow the existing roadmap items (Play Store listing, isiZulu/Afrikaans
-   localization, offline tile caching, Playwright e2e, squad leaderboards).
+5. Follow the existing roadmap items (Play Store listing, isiZulu/Afrikaans
+   localization, offline tile caching, Playwright e2e).
 
 ---
 
 *Prepared as part of the codebase handover. Facts above are Confirmed (from
 the repository) unless labelled otherwise. "Cannot determine" applies to
-nothing structural; product decisions (leaderboard tie semantics, XP trust)
-are flagged in §41.*
+nothing structural; product decisions (XP trust) are flagged in §41.*

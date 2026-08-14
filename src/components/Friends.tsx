@@ -28,7 +28,6 @@ import {
   type RealFriend,
 } from '../lib/sync'
 import { usePullToRefresh } from '../lib/usePullToRefresh'
-import Leaderboard from './Leaderboard'
 import SquadPanel from './SquadPanel'
 import { Sheet } from './ui'
 import PullHint from './PullHint'
@@ -40,7 +39,7 @@ const LEVEL_ICON = (level: number): string => LEVEL_EMOJI[Math.min(level - 1, LE
 /** Pulls a friend card out of anything a friend might paste: a full link, a ?friend= param, or the raw code. */
 export default function Friends() {
   const { state, playerName, friends, addFriend, removeFriend } = useGame()
-  const [tab, setTab] = useState<'squad' | 'activity' | 'leaderboard'>('squad')
+  const [tab, setTab] = useState<'squad' | 'activity'>('squad')
   const [selected, setSelected] = useState<Friend | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [incoming, setIncoming] = useState<IncomingRequest[]>([])
@@ -192,10 +191,7 @@ export default function Friends() {
   }, [profiles])
 
   const pageRef = useRef<HTMLDivElement | null>(null)
-  // Bumped on every pull-to-refresh so the leaderboard refetches too.
-  const [refreshCount, setRefreshCount] = useState(0)
   const refreshAll = () => {
-    setRefreshCount((c) => c + 1)
     if (!uid) return
     void Promise.all([refreshRequests(uid), refreshFriends(uid), refreshFeed(uid)])
   }
@@ -214,15 +210,10 @@ export default function Friends() {
         <button className={`seg-btn ${tab === 'squad' ? 'seg-active' : ''}`} onClick={() => setTab('squad')}>
           👥 Squad <span className="seg-count">{friends.length}</span>
         </button>
-        <button className={`seg-btn ${tab === 'leaderboard' ? 'seg-active' : ''}`} onClick={() => setTab('leaderboard')}>
-          🏆 Leaderboard
-        </button>
         <button className={`seg-btn ${tab === 'activity' ? 'seg-active' : ''}`} onClick={() => setTab('activity')}>
           🔔 Activity <span className="seg-count">{feed.length + feedEvents.length}</span>
         </button>
       </div>
-
-      {tab === 'leaderboard' && <Leaderboard uid={uid} refreshKey={refreshCount} />}
 
       {tab === 'squad' ? (
         <>
@@ -315,7 +306,7 @@ export default function Friends() {
             </section>
           )}
         </>
-      ) : tab === 'activity' ? (
+      ) : (
         <>
           {feedEvents.length > 0 && (
             <section className="friends-feed">
@@ -380,7 +371,7 @@ export default function Friends() {
             </p>
           </section>
         </>
-      ) : null}
+      )}
 
       {incoming.length > 0 && (
         <section className="incoming-requests">
