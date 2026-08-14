@@ -1,0 +1,141 @@
+{
+  "generatedAt": "2026-08-13T08:52:42.527Z",
+  "source": "howler",
+  "events": [
+    {
+      "id": "remote-howler-the-bookmark-awards-2026-20260813",
+      "title": "The Bookmark Awards 2026",
+      "emoji": "🎟️",
+      "category": "event",
+      "city": "Johannesburg",
+      "province": "GP",
+      "provinceName": "Gauteng",
+      "region": "",
+      "lat": -26.2041,
+      "lng": 28.0473,
+      "durationMin": 150,
+      "cost": 0,
+      "players": [
+        1,
+        8
+      ],
+      "difficulty": 1,
+      "vibe": [
+        "entertainment"
+      ],
+      "description": "Live ticketed event at The Forum, The Campus — check the ticket page for details.",
+      "completionLine": "You were there. Legend.",
+      "xp": 300,
+      "when": "Thu, 13 Aug 2026",
+      "startsAt": "2026-08-13T18:00:00.000Z",
+      "ticketInfo": {
+        "required": true,
+        "price": "from R 2 150",
+        "where": [
+          {
+            "label": "Online at Howler",
+            "url": "https://iabsa.howler.co.za/Bookmarks2026?utm_campaign=Upcoming+Events&utm_medium=Web&utm_source=Landing+Page"
+          },
+          {
+            "label": "See the event page for more options"
+          }
+        ]
+      },
+      "tags": [
+        "howler",
+        "live",
+        "johannesburg"
+      ]
+    },
+    {
+      "id": "remote-howler-night-of-the-queens-queen-to-queen-20260813",
+      "title": "Night of the Queens: Queen to Queen",
+      "emoji": "🎟️",
+      "category": "event",
+      "city": "Cape Town",
+      "province": "WC",
+      "provinceName": "Western Cape",
+      "region": "",
+      "lat": -33.9249,
+      "lng": 18.4241,
+      "durationMin": 150,
+      "cost": 0,
+      "players": [
+        1,
+        8
+      ],
+      "difficulty": 1,
+      "vibe": [
+        "entertainment"
+      ],
+      "description": "Live ticketed event at Time Out Market Studio Cape Town — check the ticket page for details.",
+      "completionLine": "You were there. Legend.",
+      "xp": 300,
+      "when": "Thu, 13 Aug 2026",
+      "startsAt": "2026-08-13T18:00:00.000Z",
+      "ticketInfo": {
+        "required": true,
+        "price": "from R 150",
+        "where": [
+          {
+            "label": "Online at Howler",
+            "url": "https://timeoutmarket.howler.co.za/NightoftheQueenAug13?utm_campaign=Upcoming+Events&utm_medium=Web&utm_source=Landing+Page"
+          },
+          {
+            "label": "See the event page for more options"
+          }
+        ]
+      },
+      "tags": [
+        "howler",
+        "live",
+        "cape-town"
+      ]
+    },
+    {
+      "id": "remote-howler-campus-fest-winter-edition-20260814",
+      "title": "Campus Fest Winter Edition",
+      "emoji": "🎟️",
+      "category": "event",
+      "city": "Durban",
+      "province": "KZN",
+      "provinceName": "KwaZulu-Natal",
+      "region": "",
+      "lat": -29.8587,
+      "lng": 31.0218,
+      "durationMin": 150,
+      "cost": 0,
+      "players": [
+        1,
+        8
+      ],
+      "difficulty": 1,
+      "vibe": [
+        "entertainment"
+      ],
+      "description": "Live ticketed event at The Villa Durban — check the ticket page for details.",
+      "completionLine": "You were there. Legend.",
+      "xp": 300,
+      "when": "Fri, 14 Aug 2026",
+      "startsAt": "2026-08-14T18:00:00.000Z",
+      "ticketInfo": {
+        "required": true,
+        "price": "from R 50",
+        "where": [
+          {
+            "label": "Online at Howler",
+            "url": "https://www.howler.co.za/CeespromotionAgencyOff?utm_campaign=Upcoming+Events&utm_medium=Web&utm_source=Landing+Page"
+          },
+          {
+            "label": "See the event page for more options"
+          }
+        ]
+      },
+      "tags": [
+        "howler",
+        "live",
+        "durban"
+      ]
+    }
+  ]
+}
