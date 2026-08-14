@@ -6,11 +6,29 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- **🏆 Leaderboards** — every player in SA is ranked by XP straight from the
+  database, filterable three ways: **Global SA** (everyone), **Regional**
+  (players near your home base and its neighbours) and **Friends** (you and
+  your crew). Top 3 get medals, your own rank stays pinned even when you're
+  outside the top 100, and rows show level, rank and home base
+- **New app icon** — fresh cream-and-navy artwork across every Android
+  density, the adaptive icon and the web favicon, regenerable via
+  `npm run icons` (`scripts/generate-icons.mjs`)
+- **Vitest unit tests** — `npm test` covers the core game rules (levels,
+  ranks, all 46 badges, stats) and the leaderboard's scope + ranking logic
+  (64 tests)
+
 ### Fixed
 - **Ticket price vs FREE mismatch** — ticketed events (e.g. auto-discovered
   gigs) showed "from R2 150" in the event line but "💰 FREE" in the stats;
   the 💰 stat now shows the real ticket price everywhere (feed cards and the
   quest sheet) via a shared `questCostLabel` helper
+
+### Security
+- **XP is server-validated** — a Postgres trigger bounds how much XP a
+  profile can gain per sync and in total, and caps per-completion XP, so
+  nobody can write fake scores onto the leaderboard
 
 ### Added
 - **🟥 Live + date filter** — the Live chip now combines with a "📅 When"
