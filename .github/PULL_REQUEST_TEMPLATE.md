@@ -26,7 +26,7 @@
 
 - [ ] No fake data added — real numbers come from the database
 - [ ] Follows existing code conventions and design tokens
-- [ ] Update `CHANGELOG.md` if this is user-facing
+- [ ] Update the release notes if this is user-facing
 
 <!--
 Closes #issue-number

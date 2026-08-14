@@ -30,27 +30,6 @@ road trip to nowhere.
 
 ---
 
-## 📖 Table of Contents
-
-- [The Problem](#-the-problem)
-- [The Solution](#-the-solution)
-- [How It Works](#-how-it-works)
-- [Features](#-features)
-- [Screenshots](#-screenshots)
-- [Tech Stack](#-tech-stack)
-- [Architecture](#-architecture)
-- [Engineering Highlights](#-engineering-highlights)
-- [Getting Started](#-getting-started)
-- [Android App & Auto-Updates](#-android-app--auto-updates)
-- [Documentation](#-documentation)
-- [Testing & Quality](#-testing--quality)
-- [Roadmap](#-roadmap)
-- [Contributing](#-contributing)
-- [Security](#-security)
-- [License](#-license)
-
----
-
 ## 🎯 The Problem
 
 South Africa is one of the most beautiful, weird and wonderful countries on
@@ -73,7 +52,9 @@ just needed a reason to go.**
 **SideQuest turns all of South Africa into a game board.** 377 hand-written
 quests across all 9 provinces — from a kota hunt in Soweto and a sunset at Zoo
 Lake, to lion-watching in the Kruger and a waterfall in KZN. Every quest is a
-real place, pinned on a real map, waiting for you to actually show up.XP, levels, ranks, **46 badges**, friends, squads and streaks turn "going
+real place, pinned on a real map, waiting for you to actually show up.
+
+XP, levels, ranks, **46 badges**, friends, squads and streaks turn "going
 somewhere" into a game you play with your crew. Seasonal quests tied to real SA
 events (Braai Day, Comrades, Splashy Fen, the National Arts Festival…) keep the
 map alive all year — with an "Ends Sunday" countdown so you don't miss them.
@@ -82,8 +63,7 @@ found **automatically, every night**, with dates, entry fees and exactly where
 to buy tickets.
 
 > **Every number you see is real.** No fake "X people loved this" counters —
-> ratings come only from players who actually completed the quest, straight
-> from the database.
+> ratings come only from players who actually completed the quest.
 
 ## 🧭 How It Works
 
@@ -162,10 +142,10 @@ Assemble your own multi-stop quest from the whole catalog, reorder the stops,
 and share it as a link that carries the entire quest inside the URL.
 
 ### ⭐ Ratings & Reviews (real, moderated)
-After completing a quest you can **rate it 1–5 stars** and leave a tip — the
-database only accepts reviews from players who actually finished the quest.
-Reviews are blocklist-checked, anyone can report one, and a review auto-hides
-after enough reports.
+After completing a quest you can **rate it 1–5 stars** and leave a tip — only
+players who actually finished the quest can review it. Reviews are
+blocklist-checked, anyone can report one, and a review auto-hides after enough
+reports.
 
 ### ⏳ Seasonal Quests
 Limited-time quests tied to real SA events — Braai Day, the Soweto Food
@@ -174,23 +154,19 @@ National Arts Festival — with a live countdown in the feed and automatic
 removal once the event passes.
 
 ### 🎟️ Live Events — automatically discovered
-SideQuest finds new events **by itself**. Every morning a GitHub Actions cron
-runs `scripts/fetch-events.mjs`, which pulls real, dated, ticketed events from
-free sources (the Howler homepage, plus an optional free Ticketmaster API key),
-pins them to real map coordinates — only events we can place accurately are
-kept — and publishes `public/events-remote.json`. The app pulls that feed at
-launch and on every refresh, merges it into the map and feed with ticket links,
-prices and countdowns, and caches it for 12 hours so it works offline.
+SideQuest finds new events **by itself**, every night: real, dated, ticketed
+events are pulled from free public sources, placed on real map coordinates,
+and merged into the map and feed with ticket links, prices and countdowns —
+so there's always something happening this weekend.
 
 - **Tickets built in** — every ticketed event lists exactly where to buy:
   Ticketmaster, Webtickets, Computicket, Ticketpro, Quicket, Howler, iTickets,
   Big Concerts and the festivals' own sites — with a **countdown** ("⏳ 2 days
   left to get tickets", red when ≤ 3 days) so you don't miss out.
-- **Zero cost, zero keys required** — without any token the Howler feed alone
-  keeps events fresh.
-- **Never stale, never wrong** — if a run fails, the previous feed is kept;
-  past and far-future events are dropped automatically.
-- Run it yourself anytime: `npm run fetch:events`.
+- **Works offline** — the event feed is cached, so recent events stay
+  available without a connection.
+- **Never stale** — past and far-future events are dropped automatically, and
+  only events that can be placed accurately are ever shown.
 
 ---
 
@@ -205,185 +181,16 @@ prices and countdowns, and caches it for 12 hours so it works offline.
 
 ---
 
-## 🧰 Tech Stack
+## 📲 Get the App
 
-| Layer | Choice |
-| --- | --- |
-| Frontend | React 19 · TypeScript · Vite |
-| Map | Leaflet + react-leaflet (OSM / CARTO tiles, auto-fallback) |
-| Routing | react-router |
-| Native shell | Capacitor 8 (`com.jacy.sidequest`) + FCM push notifications |
-| Backend | Supabase (Postgres) — accounts, profiles, friends, squads, reviews, custom quests, push tokens |
-| Auth | Supabase Auth — email + password, protected by Cloudflare Turnstile |
-| Realtime | Supabase Realtime (postgres_changes) — friend requests, activity feed, squads |
-| State | React context + `localStorage` (offline-first), synced to your account |
-| Styling | Hand-rolled CSS design tokens, mobile-first with a bottom nav |
-| CI/CD | GitHub Actions — Pages deploy, release pipeline, **nightly live-events fetch** |
-| Notifications | Firebase Cloud Messaging — releases, friend requests, badges |
+SideQuest runs in any browser — try the live demo above — or as a native
+Android app with full GPS support.
 
----
+**Install on Android:** download the APK from the [releases page](https://github.com/JacyFleisie/sidequest/releases/latest), enable *"Install unknown apps"* for your browser or file manager when prompted, and open the file.
 
-## 🏗️ Architecture
-
-```
-                    ┌──────────────────────────────┐
-                    │         SideQuest app         │
-                    │  React SPA (web + Capacitor)  │
-                    └──────┬───────────────┬────────┘
-                           │               │
-              ┌────────────▼─────┐   ┌─────▼──────────────────┐
-              │  Local game      │   │  Supabase (Postgres)    │
-              │  · quests, XP    │   │  · profiles / friends   │
-              │  · offline-first │   │  · squads / reviews     │
-              │  · localStorage  │   │  · custom quests        │
-              └────────────┬─────┘   └─────┬──────────────────┘
-                           │               │
-                           └── sync engine ┘
-                         (idempotent, offline-safe)
-
-  GitHub Pages  → live demo + shared quest links
-  GitHub Releases → APK downloads + in-app auto-updates
-  Firebase Cloud Messaging → push notifications (releases, friend requests)
-
-  LIVE EVENTS (automatic):
-  nightly GitHub Actions cron ──▶ scripts/fetch-events.mjs
-       (Howler + optional Ticketmaster, free)
-            └──▶ public/events-remote.json ──▶ app pulls at launch,
-                 merged into the map + feed with tickets & countdowns
-```
-
-The app is **offline-first**: the full quest catalog ships in the bundle and
-the game is fully playable with no connection. Sync is a progressive layer —
-every sync call no-ops gracefully when offline, and the UI falls back to local
-state. Nothing breaks when you drive through a dead zone.
-
-### Project structure
-
-```
-src/
-├── data/            # quests.ts · hangouts.ts · places.ts · events.ts · seasonal.ts · social.ts
-├── lib/             # game logic, 46 badges, creator tiers, friends, squads, reviews,
-│                    #   sync engine, events feed, store (offline-first state)
-├── components/      # MapScreen, Generator (feed), Profile, QuestSheet, SquadPanel, …
-└── App.tsx          # routes + share-link handling + boot sync
-android/             # Capacitor native shell (custom updater plugin)
-supabase/
-├── migrations/      # versioned schema — applied automatically via GitHub integration
-└── functions/       # edge functions: delete-account, notify-user, notify-update
-scripts/             # build-apk, bump-version, release, quest data checker, events fetcher
-docs/                # database design + push notification setup
-```
-
----
-
-## 🏆 Engineering Highlights
-
-Things I'm proud of under the hood:
-
-- **GPS-gated completion integrity** — a quest only completes when your device
-  is physically at the location; there's no "complete from the couch" path.
-- **Offline-first sync engine** — idempotent, offline-safe sync to Postgres;
-  the game is fully playable with no connection and merges cleanly when you're
-  back online.
-- **A self-updating content pipeline** — the app's event catalog is *grown by
-  CI*: a nightly cron scrapes free sources, geocodes and validates every event,
-  and ships it to users as a static feed. Zero manual data entry, zero API
-  keys required to run.
-- **Data-quality tooling** — `npm run check:quests` validates all 377 quests
-  (missing provinces, out-of-SA coordinates, duplicate titles within 1 km) so
-  the map grows clean instead of messier.
-- **Real anti-gaming systems** — completion-gated reviews, blocklisted content,
-  report + auto-hide moderation, CAPTCHA-protected sign-up, row-level security
-  on every table.
-- **End-to-end release pipeline** — one command bumps the version everywhere,
-  rebuilds the APK, tags a release, deploys the web build, and pushes an FCM
-  notification to every phone.
-- **Resilient map** — tile-server failover so the map never dies with its
-  provider, and marker clustering tuned for low-mid Android devices.
-
----
-
-## 🚀 Getting Started
-
-### Requirements
-
-- **Node.js 20+** and npm
-- For Android builds: **Java 17+** and the Android SDK
-
-### Run it locally
-
-```bash
-npm install
-npm run dev          # → http://localhost:5173
-```
-
-No `.env` setup needed — `npm run dev` / `npm run build` auto-generate `.env`
-from the committed `.env.defaults` (public values only: Supabase URL,
-publishable key, Turnstile site key). New machines just clone and go.
-
-### Useful commands
-
-```bash
-npm run typecheck    # full TypeScript check
-npm run build        # production build → dist/
-npm run check:quests # validates quest data quality (provinces, coords, duplicates)
-npm run fetch:events # fetch the live events feed right now (used by the nightly cron)
-npm run apk          # build the Android APK → SideQuest.apk
-npm run release      # cut a release (see below)
-```
-
----
-
-## 📲 Android App & Auto-Updates
-
-The web app is wrapped in a **Capacitor native shell**, so it runs as a real
-Android app with full GPS access.
-
-**Install:** download the APK (button at the top), enable *"Install unknown
-apps"* for your file manager or browser, and open the file — or plug in your
-phone with USB debugging and run `adb install SideQuest.apk`.
-
-Once installed, the app **self-updates** via GitHub Releases — on launch it
-checks for a newer version and offers to install it in one tap, with a push
-notification announcing each new release.
-
-**Cut a new release from your machine:**
-
-```bash
-npm run release patch        # or: minor / major
-npm run release -- --silent  # silent update — keeps the previous release's notes
-```
-
-This bumps the version everywhere, rebuilds the APK, tags `vX.Y.Z`, attaches
-the APK to a GitHub release, deploys the web build to Pages, and pushes an FCM
-notification to every registered phone. Your phone picks it up automatically.
-Use `--silent` for quiet bugfix/hotfix releases — the update installs, but the
-in-app "What's new" keeps showing the previous release's notes.
-
----
-
-## 📚 Documentation
-
-| Doc | What it covers |
-| --- | --- |
-| [`CHANGELOG.md`](CHANGELOG.md) | Every release, versioned and dated |
-| [`docs/database.md`](docs/database.md) | The Postgres schema — every table, what it fixes, and how it maps to the app |
-| [`docs/fcm-setup.md`](docs/fcm-setup.md) | One-time Firebase setup for push notifications |
-
----
-
-## 🧪 Testing & Quality
-
-- **TypeScript strict** — `tsc -b` runs in CI before every deploy
-- **Vitest unit tests** — `npm test` covers the core game rules (levels, ranks,
-  all 46 badges, stats)
-- **Quest data checker** — `npm run check:quests` flags missing provinces,
-  coordinates outside SA, duplicate titles within 1 km, and unfillable quest
-  cards across all 377 quests
-- **Production build** — Vite build runs in the Pages workflow on every push
-- **E2E-verified features** — the sync engine (friends, squads, reviews,
-  account deletion) is tested against the live database with throwaway
-  accounts before each release
+Once installed, the app **updates itself** — it checks for a newer version on
+launch and offers a one-tap install, with a notification announcing each new
+release.
 
 ---
 
@@ -398,27 +205,19 @@ in-app "What's new" keeps showing the previous release's notes.
 - [ ] Google Play Store listing (kills sideload warnings + unlocks push reliability)
 - [ ] Localization — badge & rank names in isiZulu / Afrikaans
 - [ ] Offline caching of map tiles (data-friendly mode)
-- [ ] Playwright end-to-end test suite
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome — bug reports, quest suggestions, translations, and
-code. Please read the [Contributing Guide](CONTRIBUTING.md) first, and note
-that all interactions are governed by our [Code of Conduct](CODE_OF_CONDUCT.md).
+- [ ] Expanded automated testing
 
 ---
 
 ## 🔒 Security
 
-- Accounts & sync run on **Supabase** with row-level security — you can only
-  ever read or write your own data (or data your friends shared with you).
-- Sign-in is protected by **Cloudflare Turnstile** to block bots.
+- Your data is private — you can only ever read or write your own data (or
+  data your friends shared with you).
+- Sign-up is protected against bots.
 - Your **GPS stays on-device** — quest completion is checked locally; only
   your chosen home base and quest stats ever sync.
-- **POPIA-friendly** — users can delete their account and all their data from
-  the Profile tab, wired end-to-end to the database.
+- **POPIA-friendly** — you can delete your account and all your data from the
+  Profile tab at any time.
 - Found a vulnerability? See [SECURITY.md](SECURITY.md) — and please don't
   open a public issue for it.
 
@@ -428,12 +227,4 @@ that all interactions are governed by our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 [MIT](LICENSE) © 2026 Jacy Fleisie
 
----
-
-<div align="center">
-
-*Made with ❤️ in South Africa · by Jacy*
-
-**SideQuest** — *Your life is the main story. South Africa is your map.*
-
-</div>
+All interactions are governed by our [Code of Conduct](CODE_OF_CONDUCT.md).

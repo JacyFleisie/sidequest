@@ -8,6 +8,3 @@ sign-up form no longer pre-fills a default name — so nobody can end up with an
 account named after something they never chose. Every account name on
 SideQuest is now explicitly picked by the person who owns it.
 
----
-
-*Full details in the [changelog](https://github.com/JacyFleisie/sidequest/blob/main/CHANGELOG.md).*
