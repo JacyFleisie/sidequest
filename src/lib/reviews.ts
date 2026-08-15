@@ -1,3 +1,8 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Community quest reviews — a star rating + comment per quest, stored in
+// Supabase and shown on quest sheets. Every function no-ops when offline or
+// unsigned-in, so reviewing is a progressive enhancement, never a blocker.
+// ─────────────────────────────────────────────────────────────────────────────
 import { supabase } from './supabase'
 import { ensureIdentity } from './sync'
 

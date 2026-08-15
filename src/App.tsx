@@ -1,3 +1,9 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// App — the composition root. Wires the router to every screen, owns the
+// app-wide side effects (remote-events sync, version/update notice, deep-link
+// handling, push registration), and renders the bottom nav. Each route maps to
+// one screen component in ./components.
+// ─────────────────────────────────────────────────────────────────────────────
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Capacitor } from '@capacitor/core'
 import { App as CapApp } from '@capacitor/app'

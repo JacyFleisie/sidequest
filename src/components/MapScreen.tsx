@@ -187,8 +187,8 @@ function QuestMarkers({
   onSelectChain: (c: Chain) => void
   completed: Record<string, unknown>
 }) {
-  // Auto-discovered live events (the nightly events-remote.json feed) get a
-  // distinct pulsing red pin so they're easy to spot against curated quests.
+  // Auto-discovered live events (the remote events feed) get a distinct
+  // pulsing red pin so they're easy to spot against curated quests.
   const isLive = (q: Quest): boolean => q.id.startsWith('remote-')
   const map = useMap()
   const groupRef = useRef<L.MarkerClusterGroup | null>(null)
@@ -333,7 +333,7 @@ export default function MapScreen() {
   }
 
   const visible = useMemo(() => {
-    // Live events come from the nightly feed — real, dated, map-pinnable.
+    // Live events come from the remote events feed — real, dated, map-pinnable.
     const all = [...ALL_QUESTS, ...liveQuests]
     let quests = all.filter((q) => {
       if (q.anywhere) return false // anywhere-quests have no real location — keep them off the map
@@ -451,7 +451,7 @@ export default function MapScreen() {
         <div className="map-hint">
           {visible.quests.length + visible.chains.length} quests · starting from {startLabel}
           {liveQuests.length > 0 && (
-            <span className="map-hint-live" title="Auto-discovered live events (nightly feed)">
+            <span className="map-hint-live" title="Auto-discovered live events">
               🟥 {liveQuests.length} live
             </span>
           )}

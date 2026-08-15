@@ -1,3 +1,9 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Self-update — the Android app checks GitHub Releases on launch, downloads a
+// newer APK when one exists, and offers to install it. The repo must stay
+// public (no API key needed). The browser build can't install APKs, so it just
+// records the version for the "what's new" toast.
+// ─────────────────────────────────────────────────────────────────────────────
 import { Capacitor, registerPlugin } from '@capacitor/core'
 import { App as CapApp } from '@capacitor/app'
 
@@ -6,7 +12,7 @@ import { App as CapApp } from '@capacitor/app'
 export const REPO = 'JacyFleisie/sidequest'
 
 // Keep in sync with package.json + android/app/build.gradle (the release script does it).
-export const APP_VERSION = '1.0.22'
+export const APP_VERSION = '1.0.23'
 
 interface SideQuestUpdaterPlugin {
   downloadApk(options: { url: string; fileName?: string }): Promise<{ path: string }>

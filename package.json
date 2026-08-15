@@ -1,7 +1,7 @@
 {
   "name": "sidequest",
   "private": true,
-  "version": "1.0.22",
+  "version": "1.0.23",
   "type": "module",
   "scripts": {
     "predev": "node scripts/sync-env.mjs",
@@ -14,6 +14,7 @@
     "apk": "bash scripts/build-apk.sh",
     "check:quests": "node scripts/check-quests.mjs",
     "icons": "node scripts/generate-icons.mjs",
+    "screenshots": "node scripts/screenshot-app.mjs",
     "fetch:events": "node scripts/fetch-events.mjs",
     "bump": "bash scripts/bump-version.sh",
     "release": "bash scripts/release.sh"
@@ -38,6 +39,7 @@
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
     "@vitejs/plugin-react": "^4.4.1",
+    "puppeteer-core": "^25.7.0",
     "sharp": "^0.35.3",
     "typescript": "~5.8.3",
     "vite": "^6.3.5",

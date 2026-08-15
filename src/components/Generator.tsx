@@ -126,8 +126,8 @@ export default function Generator() {
     const uid = await ensureIdentity()
     setMyUid(uid)
     const rows = uid ? await fetchCustomQuests(uid) : []
-    // The auto-discovered live events feed (festivals, markets, concerts,
-    // sport — fetched nightly by the GitHub Actions scraper). Merged in so
+    // The auto-discovered live events (festivals, markets, concerts, sport —
+    // snapshot feed + live Ticketmaster, see lib/eventsSync.ts). Merged in so
     // pull-to-refresh also grabs the freshest events.
     const liveEvents = await fetchRemoteEvents()
     const shaped = [...rows.map(rowToQuest), ...liveEvents]
@@ -161,7 +161,7 @@ export default function Generator() {
   const [anywhereOnly, setAnywhereOnly] = useState(false)
   const [communityOnly, setCommunityOnly] = useState(false)
   const [seasonalOnly, setSeasonalOnly] = useState(false)
-  // Live = ticketed sport, concerts & comedy from the nightly auto-discovered
+  // Live = ticketed sport, concerts & comedy from the auto-discovered events
   // feed (the same remote- quests the map marks with pulsing LIVE pins).
   const [liveOnly, setLiveOnly] = useState(false)
   // When Live is on, a date sub-filter narrows to events starting soon:

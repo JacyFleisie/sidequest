@@ -217,8 +217,12 @@ const q = (d: Omit<Quest, 'provinceName'>): Quest => ({
   provinceName: PROVINCES[d.province].name,
 })
 
-// Generic "anywhere" quests, instantiated per major city so the generator can
-// always find something near you.
+// Generic quests with no unique landmark, instantiated per major city so the
+// generator can always find something near you.
+// NOTE: unlike qAny() in social.ts these do NOT set `anywhere: true` — they
+// keep a real city pin so they appear on the map. The `anywhere` name is
+// historical ("no landmark", not "no location"); don't "fix" it without
+// deciding what should happen to their map pins.
 const anywhere = (
   id: string,
   d: Omit<Quest, 'id' | 'provinceName' | 'city' | 'region' | 'lat' | 'lng' | 'province'>,

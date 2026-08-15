@@ -1,3 +1,9 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Friend profiles for the Squad tab. Real friends sync their stats from
+// Supabase; local-only friends (added by sharing a link while offline) get a
+// deterministic fake profile seeded from their id, so the squad list always
+// has something to show without a backend.
+// ─────────────────────────────────────────────────────────────────────────────
 import { ALL_QUESTS, CHAINS, type Quest } from '../data/quests'
 import { BADGES, levelFromXp, type Progress } from './game'
 import type { Friend } from './store'

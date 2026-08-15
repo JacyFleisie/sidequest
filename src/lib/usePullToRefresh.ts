@@ -1,3 +1,9 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Pull-to-refresh gesture hook — shared by the feed, map, and friends screens.
+// Tracks touch distance against PULL_THRESHOLD and calls onRefresh once when
+// the gesture completes. Purely additive: returns inert values where the
+// gesture isn't supported (desktop, non-touch).
+// ─────────────────────────────────────────────────────────────────────────────
 import { useEffect, useRef, useState, type RefObject } from 'react'
 
 export const PULL_THRESHOLD = 64

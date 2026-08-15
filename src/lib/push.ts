@@ -1,3 +1,9 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Push notifications (Android only). Registers the device with FCM via
+// Capacitor, saves the token to the player's profile so the server can target
+// it, and routes taps into a single in-app action handler. No-ops gracefully on
+// web or when permissions are denied.
+// ─────────────────────────────────────────────────────────────────────────────
 import { Capacitor } from '@capacitor/core'
 import { PushNotifications } from '@capacitor/push-notifications'
 import { ensureIdentity, savePushToken } from './sync'

@@ -1,4 +1,9 @@
-// ── Share links: chains travel as URL params, no backend needed ─────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// Share links — quests and chains travel as URL params, no backend needed.
+// Inside the installed app the origin is a private https://localhost, so links
+// generated there must point at the public web build instead — otherwise a
+// friend receiving a link would get a dead localhost URL.
+// ─────────────────────────────────────────────────────────────────────────────
 import { Capacitor } from '@capacitor/core'
 
 // The public copy of the web app (GitHub Pages). Inside the installed app the origin

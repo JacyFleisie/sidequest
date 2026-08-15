@@ -14,7 +14,6 @@ road trip to nowhere.
 
 [![Release](https://img.shields.io/github/v/release/JacyFleisie/sidequest?color=f5c542&label=latest%20release&style=flat-square)](https://github.com/JacyFleisie/sidequest/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/JacyFleisie/sidequest/total?color=108c43&label=APK%20downloads&style=flat-square)](https://github.com/JacyFleisie/sidequest/releases)
-[![Build](https://img.shields.io/github/actions/workflow/status/JacyFleisie/sidequest/pages.yml?color=108c43&label=build&style=flat-square)](https://github.com/JacyFleisie/sidequest/actions/workflows/pages.yml)
 [![License](https://img.shields.io/github/license/JacyFleisie/sidequest?color=a55eea&label=license&style=flat-square)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Android%20%26%20Web-108c43?style=flat-square&logo=android&logoColor=white)](https://github.com/JacyFleisie/sidequest/releases/latest)
 [![Made in](https://img.shields.io/badge/made%20in-South%20Africa-0a3d91?style=flat-square)](https://github.com/JacyFleisie/sidequest)
@@ -75,8 +74,8 @@ to buy tickets.
    your device is near the place. No completing quests from the couch.
 4. **Get rewarded.** XP, levels, ranks (Rookie → Explorer → Trailblazer →
    Legend of SA), badges, streaks and stats — alone or with a squad (+20% XP).
-5. **Stay for the events.** The app finds new ticketed events by itself every
-   night, so there's always something happening this weekend.
+5. **Stay for the events.** New ticketed events keep appearing on their own,
+   so there's always something happening this weekend.
 
 ---
 
@@ -86,9 +85,9 @@ to buy tickets.
 The whole country as a dark game board with every quest pinned in its real
 location. **Search** finds any place or quest — local results first, then live
 OpenStreetMap for anything else — and flies you straight to it. The map
-**survives tile-server outages** by falling back to a backup source instead of
-crashing to a blank screen. Auto-discovered events stand out with **pulsing
-red LIVE pins** and their own filter chip.
+**never goes blank** — if the map service hiccups, it quietly switches to a
+backup source. Auto-discovered events stand out with **pulsing red LIVE pins**
+and their own filter chip.
 
 ### 📍 Location-first gameplay
 Quests are **GPS-gated**: you can only complete one when your device is within
@@ -202,7 +201,7 @@ release.
 - [x] Seasonal quests tied to real SA events
 - [x] Auto-discovered live events (nightly pipeline)
 - [x] Account deletion (POPIA-friendly)
-- [ ] Google Play Store listing (kills sideload warnings + unlocks push reliability)
+- [ ] Google Play Store listing (removes Android sideload warnings and improves push reliability)
 - [ ] Localization — badge & rank names in isiZulu / Afrikaans
 - [ ] Offline caching of map tiles (data-friendly mode)
 - [ ] Expanded automated testing
@@ -215,7 +214,7 @@ release.
   data your friends shared with you).
 - Sign-up is protected against bots.
 - Your **GPS stays on-device** — quest completion is checked locally; only
-  your chosen home base and quest stats ever sync.
+  your chosen home base and quest stats ever leave your device.
 - **POPIA-friendly** — you can delete your account and all your data from the
   Profile tab at any time.
 - Found a vulnerability? See [SECURITY.md](SECURITY.md) — and please don't
@@ -228,3 +227,11 @@ release.
 [MIT](LICENSE) © 2026 Jacy Fleisie
 
 All interactions are governed by our [Code of Conduct](CODE_OF_CONDUCT.md).
+
+---
+
+<div align="center">
+
+**Built with ❤️ in South Africa — [Jacy Fleisie](https://github.com/JacyFleisie)**
+
+</div>

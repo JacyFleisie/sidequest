@@ -1,3 +1,12 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// The game store — one React context holding the player's persisted state
+// (name, XP, streak, completions, friends, custom quests) plus every action
+// that mutates it: starting/completing quests, earning XP, streaks, memories.
+//
+// Persistence is offline-first: the whole state lives in localStorage under
+// 'sidequest-state-v1' and syncs to Supabase progressively (see sync.ts) when
+// a session exists. Components read via useGame() and never touch storage.
+// ─────────────────────────────────────────────────────────────────────────────
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { ALL_QUESTS, CHAINS, findQuest, questById, registerCustomQuests, unregisterCustomQuest, type Chain, type Quest } from '../data/quests'
 import { levelFromXp, rankFromXp } from './game'

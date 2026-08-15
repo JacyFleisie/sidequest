@@ -1,3 +1,12 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// SideQuest game rules — the pure heart of the app, deliberately kept free of
+// UI and I/O so every rule is unit-testable (see game.test.ts).
+//
+// Levels & ranks derive from total XP; badges and the stats dashboard derive
+// from the completion history (entries) plus XP/streak. Nothing in this file
+// touches localStorage, Supabase, or the DOM — components pass in plain data
+// and get plain results back.
+// ─────────────────────────────────────────────────────────────────────────────
 import {
   ALL_QUESTS,
   CATEGORY_META,
@@ -10,14 +19,18 @@ import {
 } from '../data/quests'
 
 // ── Levels ───────────────────────────────────────────────────────────────────
+/** Cumulative XP required to REACH level n (level 1 = 0 XP): 0, 300, 900, 1 800… */
 export const xpForLevel = (n: number): number => 300 * ((n * (n - 1)) / 2)
 
+/** The player's level (1-based) for a given XP total. */
 export const levelFromXp = (xp: number): number => {
   let level = 1
   while (xpForLevel(level + 1) <= xp) level += 1
   return level
 }
 
+/** Level breakdown for progress bars: current level, XP into it, XP needed for
+ * the next level, and 0–1 progress. */
 export const levelProgress = (xp: number): { level: number; into: number; needed: number; pct: number } => {
   const level = levelFromXp(xp)
   const base = xpForLevel(level)
@@ -32,6 +45,8 @@ export interface Rank {
   minXp: number
 }
 
+/** The rank ladder — big XP milestones that unlock titles. A player holds the
+ * highest rank whose minXp they've reached. */
 export const RANKS: Rank[] = [
   { name: 'Rookie', emoji: '🌱', minXp: 0 },
   { name: 'Explorer', emoji: '🧭', minXp: 900 },
@@ -39,6 +54,7 @@ export const RANKS: Rank[] = [
   { name: 'Legend of SA', emoji: '🇿🇦', minXp: 6300 },
 ]
 
+/** The rank for an XP total, plus the next rank and 0–1 progress toward it. */
 export const rankFromXp = (xp: number): { rank: Rank; next: Rank | null; pct: number } => {
   let rank = RANKS[0]
   let next: Rank | null = RANKS[1] ?? null
@@ -69,8 +85,10 @@ export interface Progress {
   entries?: Record<string, CompletionMeta>
 }
 
+/** Total completions: single quests + multi-stop chains. */
 export const totalCompleted = (p: Progress): number => p.completedIds.length + p.completedChainIds.length
 
+/** Completed quests + chains per province — drives the province badges. */
 export const completedCountByProvince = (p: Progress): Record<ProvinceId, number> => {
   const counts = Object.fromEntries(Object.keys(PROVINCES).map((k) => [k, 0])) as Record<ProvinceId, number>
   for (const id of p.completedIds) {
@@ -84,6 +102,8 @@ export const completedCountByProvince = (p: Progress): Record<ProvinceId, number
   return counts
 }
 
+/** Total quests + chains available in a province — the pool badge targets are
+ * sized against. */
 export const totalQuestsInProvince = (province: ProvinceId): number =>
   ALL_QUESTS.filter((x) => x.province === province).length +
   CHAINS.filter((x) => x.province === province).length
@@ -98,6 +118,9 @@ export interface PlayerStats {
   favProvince: ProvinceId | null
 }
 
+/** Aggregate dashboard stats from the completion history: places visited, km
+ * from home, hours played, per-category & per-province tallies, and the
+ * favourite province. */
 export const playerStats = (
   entries: Record<string, CompletionMeta> | undefined,
   home: { lat: number; lng: number },
@@ -314,6 +337,7 @@ export const isUpcomingEvent = (q: { startsAt?: string; expiresAt?: string }): b
 }
 
 // ── Misc formatting helpers ──────────────────────────────────────────────────
+/** "45 min", "1h", "1h 30m" — from a duration in minutes. */
 export const fmtDuration = (minutes: number): string => {
   if (minutes < 60) return `${minutes} min`
   const h = Math.floor(minutes / 60)
@@ -332,6 +356,7 @@ export const questCostLabel = (q: { cost?: number; ticketInfo?: { required?: boo
   return fmtCost(q.cost ?? 0)
 }
 
+/** 1–5 difficulty as a repeatable star string. */
 export const difficultyStars = (n: number): string => '⭐'.repeat(n)
 
 export const categoryColor = (category: Category): string => CATEGORY_META[category].color
@@ -434,6 +459,7 @@ export const nearestBase = (lat: number, lng: number): HomeBase => {
   return best
 }
 
+/** Great-circle distance between two coordinates in kilometres. */
 export const haversineKm = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
   const R = 6371
   const dLat = ((lat2 - lat1) * Math.PI) / 180
