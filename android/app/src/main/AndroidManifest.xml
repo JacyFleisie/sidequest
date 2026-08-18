@@ -9,6 +9,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!-- Push notifications: FCM uses these to render the small icon and pick a
+             notification channel for background/killed delivery. Without the icon,
+             background pushes are silently dropped on many devices. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
+
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
             android:name=".MainActivity"
@@ -22,9 +32,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Google OAuth callback: com.jacy.sidequest://auth/callback
-                 re-opens the app after Google consent so the PKCE code can be
-                 exchanged for a session (see src/App.tsx appUrlOpen). -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -45,14 +52,9 @@
         </provider>
     </application>
 
-    <!-- Permissions -->
-
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Location: SideQuest quests are location-gated and the map uses device GPS -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!-- Self-update: lets the in-app updater install the new APK (user approves once) -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-    <!-- Update notifications: 'SideQuest updated to vX' in the phone's notification tray (Android 13+ asks once) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 </manifest>

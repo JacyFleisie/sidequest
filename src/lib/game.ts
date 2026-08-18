@@ -469,3 +469,16 @@ export const haversineKm = (lat1: number, lng1: number, lat2: number, lng2: numb
     Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2
   return 2 * R * Math.asin(Math.sqrt(a))
 }
+
+// -- Taglines ----------------------------------------------------------
+const TAGLINES = [
+  'Adventure is closer than you think.',
+  "Bored? That's a side quest waiting to happen.",
+  'Every day is a quest. Go play.',
+] as const
+
+/** Today's tagline - stable within a day, different tomorrow. */
+export const taglineOfTheDay = (): string => {
+  const days = Math.floor(Date.now() / 86_400_000)
+  return TAGLINES[days % TAGLINES.length]
+}

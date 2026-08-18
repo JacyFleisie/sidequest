@@ -4,4 +4,6 @@
     <string name="title_activity_main">SideQuest</string>
     <string name="package_name">com.jacy.sidequest</string>
     <string name="custom_url_scheme">com.jacy.sidequest</string>
+    <string name="default_notification_channel_id">sidequest_notifications</string>
+    <string name="default_notification_channel_name">SideQuest notifications</string>
 </resources>

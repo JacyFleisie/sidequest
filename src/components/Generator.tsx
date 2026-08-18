@@ -13,9 +13,8 @@ import {
   type Vibe,
 } from '../data/quests'
 import { fetchRemoteEvents } from '../lib/eventsSync'
-import { creatorTierFor, getUserLocation, haversineKm, isUpcomingEvent, questCostLabel, reverseGeocodeLabel } from '../lib/game'
+import { creatorTierFor, getUserLocation, haversineKm, isUpcomingEvent, questCostLabel, reverseGeocodeLabel, taglineOfTheDay } from '../lib/game'
 import { supabase } from '../lib/supabase'
-import { taglineOfTheDay } from '../lib/taglines'
 import { useGame, type StartPlace } from '../lib/store'
 import { usePullToRefresh } from '../lib/usePullToRefresh'
 import PullHint from './PullHint'

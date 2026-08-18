@@ -65,7 +65,6 @@ export default function App() {
 
   // ── Sync: sign in anonymously, push real stats, listen for friend requests ──
   const uidRef = useRef<string | null>(null)
-  const pushedRef = useRef(false)
   const unsubSquadRef = useRef<(() => void) | null>(null)
   useEffect(() => {
     let unsub: (() => void) | null = null
@@ -73,12 +72,11 @@ export default function App() {
     void (async () => {
       const uid = await ensureIdentity()
       if (cancelled) return
-      uidRef.current = uid
       if (!uid) return
       // Push everything on launch (idempotent), then keep the profile fresh.
       await syncCompletions(uid, state)
       await syncProfile(uid, state)
-      pushedRef.current = true
+      uidRef.current = uid
       // Register for FCM so releases, friend requests and challenges arrive
       // even when the app is closed. Tapping a request/challenge push lands on
       // the Friends tab (the in-app toast already covers the open-app case).
@@ -144,7 +142,7 @@ export default function App() {
   // Push stat changes as they happen (debounced — the game fires many updates).
   useEffect(() => {
     const uid = uidRef.current
-    if (!uid || !pushedRef.current) return
+    if (!uid) return
     const t = window.setTimeout(() => {
       void syncProfile(uid, state)
       void syncCompletions(uid, state)

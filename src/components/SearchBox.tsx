@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ALL_QUESTS, CATEGORY_META, CHAINS, type Chain, type Quest } from '../data/quests'
 import { isUpcomingEvent } from '../lib/game'
-import { fmtCost, fmtDuration } from '../lib/game'
-import { taglineOfTheDay } from '../lib/taglines'
+import { fmtCost, fmtDuration, taglineOfTheDay } from '../lib/game'
 import { searchGazetteer, searchOsm, type GazHit } from '../data/places'
 
 export interface PlaceHit {

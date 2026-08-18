@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { searchGazetteer, searchOsm, type GazHit } from '../data/places'
-import { taglineOfTheDay } from '../lib/taglines'
+import { taglineOfTheDay } from '../lib/game'
 import type { StartPlace } from '../lib/store'
 
 export default function LocationPicker({

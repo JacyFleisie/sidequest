@@ -11,7 +11,7 @@ import {
   type Vibe,
 } from '../data/quests'
 import { findBlockedWords, fetchBlocklist, BLOCKLIST_WORDS } from '../lib/moderation'
-import { taglineOfTheDay } from '../lib/taglines'
+import { taglineOfTheDay } from '../lib/game'
 import { useGame } from '../lib/store'
 import {
   ensureIdentity,
