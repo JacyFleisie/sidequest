@@ -1,16 +1,23 @@
-# SideQuest v1.0.23 — Polished under the hood 🔧
+# SideQuest v1.0.24 — Fresh events, spring edition 🌸
 
-A quiet one — no new buttons, but the engine room got a proper tidy-up.
+The feed got its spring clean: everything that already happened is gone,
+replaced with what's actually coming up across South Africa.
 
-## 🔧 What changed
+## 🗓️ What's new in the feed
 
-- **A cleaner core.** The codebase got a thorough cleanup: clearer file
-  structure, explained internals, and a full architecture map — so the app is
-  easier to keep improving without surprises.
-- **A fresher events engine.** The live-events system was rebuilt so the app
-  can pull fresh, real ticketed events straight at launch. This release
-  carries the new engine; once it's switched on, concerts, festivals and
-  comedy shows in the feed will stay current automatically.
+- **Expired events removed.** The August dates that have come and gone
+  (Campus Fest Durban, Tarlton's Baltimore 500, Skhumba at the Market Theatre
+  and the Ellis Park All Blacks Test) are out of the feed.
+- **New events added.** Fresh September listings: Springboks vs Australia at
+  Ellis Park (26 Sep), a comedy night at the Market Theatre in Newtown
+  (12 Sep), and the Tarlton drag-racing weekend returns with a new date.
+- **Live feed refreshed.** The app's live events snapshot was regenerated
+  today straight from Howler, so what you see at launch is current.
 
-Same great quests, same South Africa as your map — just tidier behind the
-scenes.
+## 📍 Places & markets
+
+- All recurring markets, hangouts and seasonal quests checked against their
+  schedules — the weekly markets, Heritage Day / Braai Day quests and the
+  Rocking the Daisies weekend are all lined up correctly for spring.
+
+Same map, same quests — just nothing stale left in it.

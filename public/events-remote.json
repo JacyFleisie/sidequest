@@ -1,18 +1,18 @@
 {
-  "generatedAt": "2026-08-15T10:03:01.232Z",
+  "generatedAt": "2026-08-26T12:13:00.998Z",
   "source": "howler",
   "events": [
     {
-      "id": "remote-howler-bollyrave-family-festival-maracan-sandton-20260815",
-      "title": "BollyRave™ Family Festival @ Maracanà, Sandton",
+      "id": "remote-howler-cnbc-africa-ai-summit-2026-20260827",
+      "title": "CNBC Africa - AI Summit 2026",
       "emoji": "🎟️",
       "category": "event",
-      "city": "sandton",
+      "city": "johannesburg",
       "province": "GP",
       "provinceName": "Gauteng",
       "region": "",
-      "lat": -26.1073,
-      "lng": 28.0556,
+      "lat": -26.2041,
+      "lng": 28.0473,
       "durationMin": 150,
       "cost": 0,
       "players": [
@@ -23,18 +23,18 @@
       "vibe": [
         "entertainment"
       ],
-      "description": "Live ticketed event at Maracanà, Sandton — check the ticket page for details.",
+      "description": "Live ticketed event at The Maslow Hotel, Sandton, Johannesburg — check the ticket page for details.",
       "completionLine": "You were there. Legend.",
       "xp": 300,
-      "when": "Sat, 15 Aug 2026",
-      "startsAt": "2026-08-15T16:00:00.000Z",
+      "when": "Thu, 27 Aug 2026",
+      "startsAt": "2026-08-27T16:00:00.000Z",
       "ticketInfo": {
         "required": true,
-        "price": "from R 50",
+        "price": "from R 2 500",
         "where": [
           {
             "label": "Online at Howler",
-            "url": "https://www.howler.co.za/brffamilyjhb?utm_campaign=Upcoming+Events&utm_medium=Web&utm_source=Landing+Page"
+            "url": "https://www.howler.co.za/CNBC_AI_summit_2026?utm_campaign=Upcoming+Events&utm_medium=Web&utm_source=Landing+Page"
           },
           {
             "label": "See the event page for more options"
@@ -44,7 +44,7 @@
       "tags": [
         "howler",
         "live",
-        "sandton"
+        "johannesburg"
       ]
     }
   ]

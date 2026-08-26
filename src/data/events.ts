@@ -317,26 +317,6 @@ export const EVENT_QUESTS: Quest[] = [
     tags: ['festival', 'food', 'karoo', 'calvinia'],
   }),
   q({
-    id: 'ev-campus-fest', title: 'Campus Fest Winter Edition — Durban', emoji: '🎧',
-    category: 'event', province: 'KZN', city: 'Durban', region: 'durban',
-    lat: -29.8600, lng: 31.0450,
-    durationMin: 240, cost: 50, players: [1, 8], difficulty: 1,
-    vibe: ['entertainment', 'social'],
-    description: 'The student lifestyle festival — live sets, DJs and your whole campus crew at The Villa on the Durban waterfront. Winter edition, loud edition.',
-    completionLine: 'You braved the winter edition and came out with summer stories.',
-    xp: 320,
-    eventType: 'festival', when: 'Fri 14 Aug 2026 · from 4pm', startsAt: '2026-08-14T16:00:00+02:00',
-    ticketInfo: {
-      required: true, price: 'from R50 (tiers up to ~R250)',
-      where: [
-        { label: 'Online at Howler', url: 'https://www.howler.co.za/' },
-        { label: 'At the door on the night' },
-      ],
-      url: 'https://www.howler.co.za/',
-    },
-    tags: ['music', 'students', 'durban', 'howler'],
-  }),
-  q({
     id: 'ev-durban-july', title: 'Durban July Day', emoji: '🎩',
     category: 'event', province: 'KZN', city: 'Durban', region: 'durban',
     lat: -29.8433, lng: 31.0069,
@@ -521,7 +501,7 @@ export const EVENT_QUESTS: Quest[] = [
     description: 'The West Rand’s rowdiest racing weekend — street-stock drags at Tarlton International Raceway with a boeredag country-vibe on the side. Cars from all over SA.',
     completionLine: 'You watched 500s launch off the line and felt the ground shake.',
     xp: 480, trending: true,
-    eventType: 'automotive', when: 'Fri 14 – Sat 15 Aug 2026', startsAt: '2026-08-14T09:00:00+02:00',
+    eventType: 'automotive', when: 'Sat 26 Sep 2026 · from 9am', startsAt: '2026-09-26T09:00:00+02:00',
     ticketInfo: {
       required: true, price: 'from ~R150 at the gate',
       where: [
@@ -595,42 +575,42 @@ export const EVENT_QUESTS: Quest[] = [
 
   // ── 🎟️ LIVE: SPORT, CONCERTS & COMEDY (ticketed) ──────────────────────────
   q({
-    id: 'ev-boks-ellis-park', title: 'Springboks vs All Blacks — Ellis Park', emoji: '🏉',
+    id: 'ev-boks-ellis-park', title: 'Springboks vs Australia — Ellis Park', emoji: '🏉',
     category: 'event', province: 'GP', city: 'Johannesburg', region: 'jhb',
     lat: -26.1981, lng: 28.0615,
     durationMin: 240, cost: 150, players: [1, 8], difficulty: 2,
     vibe: ['competitive', 'social', 'entertainment'],
-    description: "The greatest rivalry in rugby, live at Ellis Park — 60,000 voices, green and gold, and the All Blacks in town. Book tickets early: this one goes.",
+    description: "The Boks are home at Ellis Park — 60,000 voices, green and gold, and championship rugby under the Highveld lights. Book tickets early: this one goes.",
     completionLine: 'You shouted yourself hoarse for the Boks at Ellis Park. Worth every decibel.',
     xp: 500, trending: true,
-    when: 'Sat 22 Aug 2026 · kick-off 17:00', startsAt: '2026-08-22T17:00:00+02:00',
+    when: 'Sat 26 Sep 2026 · kick-off 17:00', startsAt: '2026-09-26T17:00:00+02:00',
     ticketInfo: {
       required: true, price: 'from ~R150',
       where: [
-        { label: 'Online at Ticketmaster', url: 'https://www.ticketmaster.co.za/artist/springboks-tickets/27387' },
+        { label: 'Online at Ticketmaster', url: 'https://www.ticketmaster.co.za/' },
         { label: 'At Ellis Park on match day (subject to availability)' },
       ],
-      url: 'https://www.ticketmaster.co.za/artist/springboks-tickets/27387',
+      url: 'https://www.ticketmaster.co.za/',
     },
     tags: ['rugby', 'springboks', 'ellis park', 'sport'],
   }),
   q({
-    id: 'ev-boks-dhl', title: 'Springboks vs All Blacks — DHL Stadium', emoji: '🏟️',
+    id: 'ev-boks-dhl', title: 'Springboks vs Argentina — DHL Stadium', emoji: '🏟️',
     category: 'event', province: 'WC', city: 'Cape Town', region: 'cape-town',
     lat: -33.9035, lng: 18.4110,
     durationMin: 240, cost: 150, players: [1, 8], difficulty: 2,
     vibe: ['competitive', 'social', 'entertainment'],
-    description: 'Test two of the series at the stadium with Table Mountain behind the stands — the best rugby backdrop on the planet. Get in early for the pre-match buzz.',
+    description: 'Test rugby at the stadium with Table Mountain behind the stands — the best rugby backdrop on the planet. Get in early for the pre-match buzz.',
     completionLine: 'You watched the Boks with the mountain behind them. There is no better seat in sport.',
     xp: 500,
     when: 'Sat 29 Aug 2026 · kick-off 17:00', startsAt: '2026-08-29T17:00:00+02:00',
     ticketInfo: {
       required: true, price: 'from ~R150',
       where: [
-        { label: 'Online at Ticketmaster', url: 'https://www.ticketmaster.co.za/artist/springboks-tickets/27387' },
+        { label: 'Online at Ticketmaster', url: 'https://www.ticketmaster.co.za/' },
         { label: 'At DHL Stadium on match day (subject to availability)' },
       ],
-      url: 'https://www.ticketmaster.co.za/artist/springboks-tickets/27387',
+      url: 'https://www.ticketmaster.co.za/',
     },
     tags: ['rugby', 'springboks', 'dhl stadium', 'cape town'],
   }),
@@ -789,15 +769,15 @@ export const EVENT_QUESTS: Quest[] = [
     tags: ['comedy', 'trevor noah', 'festival', 'sunbet arena'],
   }),
   q({
-    id: 'ev-skhumba', title: 'Skhumba at The Market Theatre', emoji: '😄',
+    id: 'ev-comedy-market-theatre-sep', title: 'Comedy Night at The Market Theatre', emoji: '😄',
     category: 'event', province: 'GP', city: 'Johannesburg', region: 'jhb',
     lat: -26.2039, lng: 28.0320,
     durationMin: 150, cost: 250, players: [1, 8], difficulty: 1,
     vibe: ['entertainment', 'funny'],
-    description: "One of SA's sharpest comics live at the iconic Market Theatre in Newtown — a night of crowd work and proper Joburg comedy.",
-    completionLine: 'You survived the front row of a Skhumba show (if you were brave enough to sit there).',
+    description: "Top SA comics live at the iconic Market Theatre in Newtown — a night of crowd work and proper Joburg comedy.",
+    completionLine: 'You survived the front row of a Joburg comedy show (if you were brave enough to sit there).',
     xp: 280,
-    when: 'Thu 13 Aug 2026 · 19:00', startsAt: '2026-08-13T19:00:00+02:00',
+    when: 'Sat 12 Sep 2026 · 19:00', startsAt: '2026-09-12T19:00:00+02:00',
     ticketInfo: {
       required: true, price: 'prices vary by seat',
       where: [
