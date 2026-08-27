@@ -6,6 +6,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { Capacitor, registerPlugin } from '@capacitor/core'
 import { App as CapApp } from '@capacitor/app'
+import { expectedApkHash } from './apk-hashes'
 
 // The public GitHub repo hosting SideQuest releases (the APK is attached to each
 // release as an asset). Public is required so the app can check it with no API key.
@@ -17,9 +18,12 @@ export const APP_VERSION = '1.0.24'
 interface SideQuestUpdaterPlugin {
   downloadApk(options: { url: string; fileName?: string }): Promise<{ path: string }>
   installApk(options: { fileName?: string }): Promise<void>
+  verifyApk(options: { fileName?: string; expectedSha256: string | null }): Promise<{ ok: boolean; verified: boolean; actual?: string }>
   showUpdatedNotification(options: { version: string; notes: string }): Promise<void>
 }
 
+// A test seam: the pure functions below are trivially unit-testable, but the
+// native plugin calls go through this indirection so tests can stub them.
 const SideQuestUpdater = registerPlugin<SideQuestUpdaterPlugin>('SideQuestUpdater')
 
 export interface UpdateInfo {
@@ -184,5 +188,20 @@ export async function checkForUpdate(): Promise<UpdateInfo | null> {
 /** Downloads the update (natively — no CORS) and hands it to the Android installer. */
 export async function downloadAndInstall(info: UpdateInfo): Promise<void> {
   await SideQuestUpdater.downloadApk({ url: info.downloadUrl, fileName: 'sidequest-update.apk' })
+  // Integrity gate: never install an APK whose hash doesn't match the pinned
+  // value for this version. On a mismatch the native plugin rejects, so the
+  // install below never runs with a tampered/corrupted file.
+  const pin = expectedApkHash(info.latest)
+  await SideQuestUpdater.verifyApk({ fileName: 'sidequest-update.apk', expectedSha256: pin ? pin.sha256 : null })
   await SideQuestUpdater.installApk({ fileName: 'sidequest-update.apk' })
+}
+
+/**
+ * Pure helper: compares a computed lowercase SHA-256 against the expected pin.
+ * Case-insensitive, and an expected value of null/empty means "no pin — skip".
+ * Kept pure so it can be unit-tested without a device or native plugin.
+ */
+export function hashMatches(actualSha256: string, expectedSha256: string | null | undefined): boolean {
+  if (!expectedSha256) return true // unpinned version — allowed (just unverified)
+  return actualSha256.trim().toLowerCase() === expectedSha256.trim().toLowerCase()
 }

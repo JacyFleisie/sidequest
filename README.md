@@ -222,6 +222,48 @@ release.
 
 ---
 
+## 🛠️ Troubleshooting & Operations
+
+### The app shows "fetch failed" / won't load my stats (backend paused)
+
+SideQuest's backend runs on a **free-tier Supabase project**, which
+**automatically pauses after ~1 week of inactivity**. When it's paused, every
+network call fails (`fetch failed`, `521`, or "User from sub claim…"), so
+quests, friends and sync stop working until the project wakes up.
+
+**To recover (takes ~1 minute):**
+
+1. Go to [supabase.com](https://supabase.com) → your project → it will say
+   *"Project is paused"*.
+2. Click **Restore project**. Wait ~30–60s for it to come back online.
+3. Reopen SideQuest — sync resumes automatically. Your local progress on the
+   device was never lost; it just couldn't reach the server.
+
+> **Permanent fix:** upgrade the Supabase project to a paid tier (Pro+ does
+> not pause), **or** enable the daily keep-alive workflow in this repo
+> (`.github/workflows/keep-alive.yml`) which pings the project so it never
+> sleeps. The daily events-fetch cron already helps, but a dedicated ping is
+> more reliable.
+
+### Backups
+
+The free tier has **no automatic backups**. Before any schema change, run a
+manual dump:
+
+```bash
+supabase db dump --data-only --linked > backup-$(date +%F).sql
+```
+
+Set up Supabase's scheduled backups (Pro tier) for hands-off safety.
+
+### Monitoring
+
+There is no uptime monitor yet. Until one is added, the daily events-fetch
+cron is the canary: if it stops committing, the project is likely paused.
+A lightweight uptime check can be added to `keep-alive.yml`.
+
+---
+
 ## 📄 License
 
 [MIT](LICENSE) © 2026 Jacy Fleisie

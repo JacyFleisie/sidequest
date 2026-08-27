@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Capacitor } from '@capacitor/core'
 import { App as CapApp } from '@capacitor/app'
 import { Navigate, Route, Routes, useNavigate, useSearchParams } from 'react-router-dom'
+import ErrorBoundary from './components/ErrorBoundary'
 import { supabase } from './lib/supabase'
 import BottomNav from './components/BottomNav'
 import ChainBuilder from './components/ChainBuilder'
@@ -203,7 +204,8 @@ export default function App() {
           </button>
         ))}
       </div>
-      <Routes>
+      <ErrorBoundary>
+        <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/map" element={<MapScreen />} />
         <Route path="/feed" element={<Generator />} />
@@ -214,6 +216,7 @@ export default function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </ErrorBoundary>
       <BottomNav />
       <ActiveQuest />
       <CompletionModal />

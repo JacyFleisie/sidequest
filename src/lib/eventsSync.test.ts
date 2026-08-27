@@ -81,9 +81,14 @@ describe('liveEventToQuest', () => {
 })
 
 describe('mergeEventSources', () => {
-  const later = '2026-09-20T18:00:00.000Z'
-  const sooner = '2026-08-25T18:00:00.000Z'
-  const past = '2026-01-10T18:00:00.000Z'
+  // All fixtures are computed relative to the REAL wall clock (not the fixed
+  // NOW above) because isUpcomingEvent filters against Date.now(). Using real
+  // "now + N days" keeps every fixture firmly in the upcoming window regardless
+  // of when the suite runs.
+  const now = Date.now()
+  const later = new Date(now + 40 * 864e5).toISOString()
+  const sooner = new Date(now + 10 * 864e5).toISOString()
+  const past = new Date(now - 30 * 864e5).toISOString()
 
   it('lets the live source win a title|city tie', () => {
     const snapshot = [mkQuest('Big Music Fest', 'cape town', later)]
@@ -114,7 +119,7 @@ describe('mergeEventSources', () => {
 
   it('caps the merged list at 30 events', () => {
     const many = Array.from({ length: 40 }, (_, i) =>
-      mkQuest(`Event ${i}`, 'johannesburg', `2026-09-${String((i % 28) + 1).padStart(2, '0')}T18:00:00.000Z`),
+      mkQuest(`Event ${i}`, 'johannesburg', new Date(now + (i + 1) * 864e5).toISOString()),
     )
     expect(mergeEventSources(many, [])).toHaveLength(30)
   })

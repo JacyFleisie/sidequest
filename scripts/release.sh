@@ -33,6 +33,38 @@ COMMIT_MSG="${COMMIT_MSG:-Release v$V}"
 echo "==> Building APK (npm run apk)"
 npm run apk
 
+# ── APK integrity pin ───────────────────────────────────────────────────────
+# Compute the released APK's SHA-256 and write it into src/lib/apk-hashes.ts so
+# the app can verify the download before installing. Falls back gracefully if
+# no hash tool is available (the updater then skips the check and warns).
+APK="SideQuest.apk"
+if [ -f "$APK" ]; then
+  if command -v sha256sum >/dev/null 2>&1; then
+    HASH=$(sha256sum "$APK" | awk '{print $1}')
+  elif command -v shasum >/dev/null 2>&1; then
+    HASH=$(shasum -a 256 "$APK" | awk '{print $1}')
+  else
+    HASH=""
+  fi
+  if [ -n "$HASH" ]; then
+    echo "==> Pinning APK SHA-256 for v$V: $HASH"
+    node -e "
+      const fs = require('fs');
+      const v = process.argv[1], h = process.argv[2];
+      const file = 'src/lib/apk-hashes.ts';
+      const date = new Date().toISOString().slice(0,10);
+      const block = \"  '\" + v + \"': {\n    sha256: '\" + h + \"',\n    generatedAt: '\" + date + \"',\n  },\";
+      let src = fs.readFileSync(file, 'utf8');
+      src = src.replace(/\nexport const APK_HASHES[\s\S]*?\n}/, '');
+      src = src.replace(/(\/\/ ─+\n\n)/, \"\$1\" + block + \"\n\");
+      fs.writeFileSync(file, src);
+    " "$V" "$HASH"
+    git add src/lib/apk-hashes.ts
+  else
+    echo "==> WARNING: no sha256 tool found — APK hash left unpinned for v$V."
+  fi
+fi
+
 echo "==> Committing and tagging v$V"
 git add -A
 git commit -m "$COMMIT_MSG

@@ -5,6 +5,16 @@ import { BADGES, levelFromXp, type Progress } from './game'
 import { acquireTurnstileToken, turnstileEnabled } from '../components/Turnstile'
 import type { CompletedEntry, PersistedState } from './store'
 
+// Test seam — allows unit tests to inject a fake Supabase client so the auth +
+// sync flows can be exercised without a live backend. In the real app this stays
+// null and `supabase` (the configured singleton) is used.
+let injectedClient: unknown = null
+export function __setTestClient(client: unknown): void {
+  injectedClient = client
+  cachedUid = undefined // reset the identity cache so each test starts clean
+}
+const sb = (): any => injectedClient ?? supabase
+
 // ============================================================================
 // SideQuest sync engine — the bridge between the local game and Supabase.
 //
@@ -24,10 +34,12 @@ let cachedUid: string | null | undefined
 
 /** Returns the device's stable uid, or null when offline/unconfigured. */
 export async function ensureIdentity(): Promise<string | null> {
-  if (!supabase) return null
+  if (!supabaseConfigured && !injectedClient) return null
   if (cachedUid !== undefined) return cachedUid
   try {
-    const { data } = await supabase.auth.getSession()
+    const client = sb()
+    if (!client) return null
+    const { data } = await client.auth.getSession()
     let uid = data.session?.user.id ?? null
     if (uid) {
       // Validate the session server-side. If the auth user was deleted (e.g. a
@@ -35,10 +47,10 @@ export async function ensureIdentity(): Promise<string | null> {
       // fails with "User from sub claim JWT does not exist". Self-heal: clear
       // it and fall through to a fresh anonymous identity. Network errors are
       // NOT healed (offline should keep the cached session).
-      const { error } = await supabase.auth.getUser()
+      const { error } = await client.auth.getUser()
       if (error && /sub claim|does not exist/i.test(error.message)) {
         console.warn('[sync] stale session detected, starting fresh identity')
-        await supabase.auth.signOut()
+        await client.auth.signOut()
         uid = null
       }
     }
@@ -64,9 +76,10 @@ export const isNativePlatform = (): boolean => Capacitor.isNativePlatform()
  * Returns the uid, or null on failure.
  */
 async function signInAnonymouslyWithCaptcha(): Promise<string | null> {
-  if (!supabase) return null
+  const client = sb()
+  if (!client) return null
   const captchaToken = turnstileEnabled ? await acquireTurnstileToken() : undefined
-  const { data: anon, error: anonErr } = await supabase.auth.signInAnonymously(
+  const { data: anon, error: anonErr } = await client.auth.signInAnonymously(
     captchaToken ? { options: { captchaToken } } : undefined,
   )
   if (anonErr) console.warn('[sync] anonymous sign-in unavailable (enable it in Supabase → Authentication → Sign In / Up):', anonErr.message)
@@ -77,6 +90,7 @@ async function signInAnonymouslyWithCaptcha(): Promise<string | null> {
 
 /** Upserts the player's real stats into `profiles` (id = the auth uid). */
 export async function syncProfile(uid: string, state: PersistedState): Promise<void> {
+  const supabase = sb()
   if (!supabase) return
   const { error } = await supabase
     .from('profiles')
@@ -104,8 +118,11 @@ export async function syncProfile(uid: string, state: PersistedState): Promise<v
  * Idempotent — safe to call on every launch and after every completion.
  */
 export async function syncCompletions(uid: string, state: PersistedState): Promise<void> {
-  if (!supabase) return
-
+  const client = sb()
+  if (!client) return
+  // The rest of this function calls the Supabase client via `supabase.*`; alias
+  // the injected client to that name so the body reads unchanged.
+  const supabase = client
   const questRows: { profile_id: string; quest_id: string; completed_at: string; xp: number; weather: string | null; dist_from_home_km: number | null }[] = []
   const chainRows: { profile_id: string; chain_id: string; completed_at: string; xp: number; is_custom: boolean }[] = []
 

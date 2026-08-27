@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.MessageDigest;
 
 /**
  * Native side of SideQuest's self-update: downloads the new APK straight to the app's
@@ -106,6 +107,52 @@ public class SideQuestUpdaterPlugin extends Plugin {
             call.resolve();
         } catch (Exception e) {
             call.reject("Could not open installer: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Verifies the downloaded APK's SHA-256 against the expected value before it is
+     * handed to the installer. A mismatch (tampered or corrupted release asset) is
+     * rejected so a bad file is never installed. Returns { ok: true } on match.
+     */
+    @PluginMethod
+    public void verifyApk(PluginCall call) {
+        String fileName = call.getString("fileName", "sidequest-update.apk");
+        String expected = call.getString("expectedSha256");
+        if (expected == null) {
+            // No pin for this version — allow install but signal unverified.
+            JSObject ret = new JSObject();
+            ret.put("ok", true);
+            ret.put("verified", false);
+            call.resolve(ret);
+            return;
+        }
+        File file = new File(getContext().getCacheDir(), fileName);
+        if (!file.exists()) {
+            call.reject("APK not found: " + file.getAbsolutePath());
+            return;
+        }
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            try (InputStream in = new java.io.FileInputStream(file)) {
+                byte[] buf = new byte[8192];
+                int n;
+                while ((n = in.read(buf)) != -1) md.update(buf, 0, n);
+            }
+            StringBuilder hex = new StringBuilder();
+            for (byte b : md.digest()) hex.append(String.format("%02x", b));
+            boolean match = hex.toString().equalsIgnoreCase(expected);
+            JSObject ret = new JSObject();
+            ret.put("ok", match);
+            ret.put("verified", true);
+            ret.put("actual", hex.toString());
+            if (match) {
+                call.resolve(ret);
+            } else {
+                call.reject("APK hash mismatch — expected " + expected + " but got " + hex);
+            }
+        } catch (Exception e) {
+            call.reject("Hash check failed: " + e.getMessage());
         }
     }
 
