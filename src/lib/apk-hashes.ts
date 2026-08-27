@@ -12,6 +12,10 @@
 // check and warns (so a manual upload still installs, just without verification).
 // ─────────────────────────────────────────────────────────────────────────────
 
+  '1.0.25': {
+    sha256: 'abebb809a91ccb0fc2897396f0da70806d2c0ec61bf0d99bfc5f2474d2d42044',
+    generatedAt: '2026-08-27',
+  },
 export interface ApkHashEntry {
   /** Lowercase hex SHA-256 of the release APK. */
   sha256: string
@@ -20,12 +24,6 @@ export interface ApkHashEntry {
 }
 
 /** Map of app version ("1.0.24") → expected APK hash. */
-export const APK_HASHES: Record<string, ApkHashEntry> = {
-  '1.0.24': {
-    sha256: 'REPLACE_AT_RELEASE_TIME',
-    generatedAt: '2026-08-26',
-  },
-}
 
 /** Returns the pinned hash for a version, or null when unpinned. */
 export function expectedApkHash(version: string): ApkHashEntry | null {
