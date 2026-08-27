@@ -13,7 +13,7 @@ import { expectedApkHash } from './apk-hashes'
 export const REPO = 'JacyFleisie/sidequest'
 
 // Keep in sync with package.json + android/app/build.gradle (the release script does it).
-export const APP_VERSION = '1.0.24'
+export const APP_VERSION = '1.0.25'
 
 interface SideQuestUpdaterPlugin {
   downloadApk(options: { url: string; fileName?: string }): Promise<{ path: string }>

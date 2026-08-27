@@ -1,23 +1,24 @@
-# SideQuest v1.0.24 — Fresh events, spring edition 🌸
+# SideQuest v1.0.25 — Safer updates & a backend that stays awake 🛡️
 
-The feed got its spring clean: everything that already happened is gone,
-replaced with what's actually coming up across South Africa.
+The behind-the-scenes fixes from the health check are in — nothing changes how
+the app plays, but it's now more robust and the most annoying outage is gone.
 
-## 🗓️ What's new in the feed
+## 🛡️ What's new
 
-- **Expired events removed.** The August dates that have come and gone
-  (Campus Fest Durban, Tarlton's Baltimore 500, Skhumba at the Market Theatre
-  and the Ellis Park All Blacks Test) are out of the feed.
-- **New events added.** Fresh September listings: Springboks vs Australia at
-  Ellis Park (26 Sep), a comedy night at the Market Theatre in Newtown
-  (12 Sep), and the Tarlton drag-racing weekend returns with a new date.
-- **Live feed refreshed.** The app's live events snapshot was regenerated
-  today straight from Howler, so what you see at launch is current.
+- **Verified updates.** The app now checks the downloaded update's SHA-256
+  against a pinned value before installing it, so a tampered or corrupted
+  release can never be silently installed.
+- **The backend stops going to sleep.** A daily keep-alive now pings the
+  Supabase project so the free tier no longer auto-pauses after a week of
+  quiet — that "fetch failed / can't load my stats" outage should be a thing
+  of the past.
+- **No more white screens.** A render error anywhere in the app now shows a
+  friendly "hit a snag — try again" card instead of a blank crash.
+- **More tests.** Anonymous sign-in, the stale-session self-heal, completion
+  sync and the updater are now covered by automated tests (76 passing).
 
-## 📍 Places & markets
+## 📍 Feeds & places
 
-- All recurring markets, hangouts and seasonal quests checked against their
-  schedules — the weekly markets, Heritage Day / Braai Day quests and the
-  Rocking the Daisies weekend are all lined up correctly for spring.
+- Same SA map, same quests. Event feed and markets remain current from v1.0.24.
 
-Same map, same quests — just nothing stale left in it.
+Same great quests, same South Africa — just tougher to break.
