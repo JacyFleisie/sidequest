@@ -1,0 +1,51 @@
+name: Supabase DB backup
+
+# Weekly automated backup so a bad migration or accidental delete is recoverable.
+# The Supabase FREE tier has NO automatic backups — without this, data loss is
+# permanent. The dump is ENCRYPTED with BACKUP_PASSPHRASE before upload because
+# this repo is PUBLIC and a raw dump would leak user data (profiles, completions,
+# friends, tokens).
+#
+# REQUIRED secrets (Settings -> Secrets and variables -> Actions -> Repository):
+#   SUPABASE_DB_URL     Direct Postgres connection string (Project Settings ->
+#                       Database -> Connection string, "URI" form). Starts postgresql://.
+#   BACKUP_PASSPHRASE   Any long random string used to encrypt the dump. Keep it safe;
+#                       you need it to decrypt:  gpg -d sidequest-backup-YYYYMMDD.sql.gpg
+#
+# Restore:  gpg -d sidequest-backup-YYYYMMDD.sql.gpg | psql "$SUPABASE_DB_URL"
+
+on:
+  schedule:
+    - cron: '47 3 * * 1'   # 05:47 SAST every Monday
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install postgres client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Dump + encrypt
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          test -n "$SUPABASE_DB_URL" || { echo "::error::SUPABASE_DB_URL secret not set"; exit 1; }
+          test -n "$BACKUP_PASSPHRASE" || { echo "::error::BACKUP_PASSPHRASE secret not set"; exit 1; }
+          STAMP=$(date +%Y%m%d)
+          echo "Dumping public schema (data only) -> sidequest-backup-$STAMP.sql"
+          pg_dump "$SUPABASE_DB_URL" --data-only --schema=public --no-owner --no-privileges \
+            | gpg --batch --yes --passphrase "$BACKUP_PASSPHRASE" -c -o "sidequest-backup-$STAMP.sql.gpg"
+          ls -l "sidequest-backup-$STAMP.sql.gpg"
+
+      - name: Upload encrypted backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: sidequest-db-backup
+          path: 'sidequest-backup-*.sql.gpg'
+          retention-days: 35
