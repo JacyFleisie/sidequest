@@ -1,0 +1,53 @@
+name: Keep Supabase awake
+
+# Keeps the free-tier Supabase backend from auto-pausing. The free tier pauses
+# after ~1 week idle, which takes the whole app's sync offline (every network
+# call fails with "fetch failed" / 521 until someone restores it manually).
+# A daily lightweight ping keeps the project active so users never hit that.
+#
+# Also acts as a cheap uptime check: if the ping fails, the workflow fails and
+# notifies via the Actions tab + (optionally) the repo's failure email.
+#
+# SECRETS needed (Settings → Secrets and variables → Actions → Repository secrets):
+#   SUPABASE_URL        e.g. https://xxxx.supabase.co
+#   SUPABASE_ANON_KEY   the project anon key (safe to expose to the client; used
+#                       here only to hit a public read endpoint)
+
+on:
+  schedule:
+    - cron: '23 6 * * *'   # 08:23 SAST every day
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping the backend (a public read keeps the project warm)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "SUPABASE_URL / SUPABASE_ANON_KEY secrets are not set — skipping ping."
+            echo "Set them so the free-tier project stops pausing. See README Troubleshooting."
+            exit 0
+          fi
+          echo "Pinging $SUPABASE_URL to keep the project awake…"
+          # A tiny authenticated read against a public table. A 200/401 means the
+          # project is awake (401 = anon can't read without a column grant, but the
+          # server responded); anything else (timeout/52x) means it's paused/broken.
+          CODE=$(curl -s -o /dev/null -w '%{http_code}' \
+            --max-time 20 \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            "$SUPABASE_URL/rest/v1/profiles?select=id&limit=1")
+          echo "Backend responded with HTTP $CODE"
+          if [ "$CODE" = "200" ] || [ "$CODE" = "401" ]; then
+            echo "✅ Backend is awake."
+          else
+            echo "⚠️ Backend did not respond normally (HTTP $CODE). It may be paused — restore it in the Supabase dashboard."
+            exit 1
+          fi
