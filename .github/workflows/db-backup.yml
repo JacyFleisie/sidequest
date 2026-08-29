@@ -47,7 +47,7 @@ jobs:
           sudo apt-get update && sudo apt-get install -y gnupg
 
           # Public tables to export (kept in sync with supabase/migrations).
-          TABLES="profiles friend_requests friendships quest_completions chain_completions badge_earnings challenges push_tokens custom_quests moderation_blocks quest_reports quest_reviews review_reports squads squad_members"
+          export TABLES="profiles friend_requests friendships quest_completions chain_completions badge_earnings challenges push_tokens custom_quests moderation_blocks quest_reports quest_reviews review_reports squads squad_members"
 
           python3 - <<'PY'
           import os, json, urllib.request, urllib.error, time
