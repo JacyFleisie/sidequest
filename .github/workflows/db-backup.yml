@@ -2,17 +2,25 @@ name: Supabase DB backup
 
 # Weekly automated backup so a bad migration or accidental delete is recoverable.
 # The Supabase FREE tier has NO automatic backups — without this, data loss is
-# permanent. The dump is ENCRYPTED with BACKUP_PASSPHRASE before upload because
-# this repo is PUBLIC and a raw dump would leak user data (profiles, completions,
-# friends, tokens).
+# permanent.
+#
+# WHY REST INSTEAD OF pg_dump: GitHub-hosted runners block outbound port 5432
+# (direct Postgres), so `pg_dump` cannot reach the DB. Supabase's REST API (port
+# 443) IS reachable, so we export every public table's rows over HTTPS, paginate
+# to capture everything, then GPG-encrypt the JSON before upload. The dump is
+# row-level JSON (re-insertable), not a psql restore file — sufficient to fully
+# recover user data after a wipe.
+#
+# The dump is ENCRYPTED with BACKUP_PASSPHRASE before upload because this repo is
+# PUBLIC and a raw dump would leak user data (profiles, completions, friends,
+# tokens). These tables are world-readable by RLS design, so the anon key is used.
 #
 # REQUIRED secrets (Settings -> Secrets and variables -> Actions -> Repository):
-#   SUPABASE_DB_URL     Direct Postgres connection string (Project Settings ->
-#                       Database -> Connection string, "URI" form). Starts postgresql://.
-#   BACKUP_PASSPHRASE   Any long random string used to encrypt the dump. Keep it safe;
-#                       you need it to decrypt:  gpg -d sidequest-backup-YYYYMMDD.sql.gpg
+#   SUPABASE_URL         https://<project-ref>.supabase.co
+#   SUPABASE_ANON_KEY    the project anon key (safe client-side; used for reads)
+#   BACKUP_PASSPHRASE    any long random string used to encrypt the dump. Keep safe.
 #
-# Restore:  gpg -d sidequest-backup-YYYYMMDD.sql.gpg | psql "$SUPABASE_DB_URL"
+# Restore:  gpg -d sidequest-backup-YYYYMMDD.json.gpg  (then re-INSERT the rows)
 
 on:
   schedule:
@@ -26,26 +34,68 @@ jobs:
   backup:
     runs-on: ubuntu-latest
     steps:
-      - name: Install postgres client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
-
-      - name: Dump + encrypt
+      - name: Export + encrypt all public tables over REST
         env:
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
         run: |
           set -euo pipefail
-          test -n "$SUPABASE_DB_URL" || { echo "::error::SUPABASE_DB_URL secret not set"; exit 1; }
+          test -n "$SUPABASE_URL" || { echo "::error::SUPABASE_URL secret not set"; exit 1; }
+          test -n "$SUPABASE_ANON_KEY" || { echo "::error::SUPABASE_ANON_KEY secret not set"; exit 1; }
           test -n "$BACKUP_PASSPHRASE" || { echo "::error::BACKUP_PASSPHRASE secret not set"; exit 1; }
+          sudo apt-get update && sudo apt-get install -y gnupg
+
+          # Public tables to export (kept in sync with supabase/migrations).
+          TABLES="profiles friend_requests friendships quest_completions chain_completions badge_earnings challenges push_tokens custom_quests moderation_blocks quest_reports quest_reviews review_reports squads squad_members"
+
+          python3 - <<'PY'
+          import os, json, urllib.request, urllib.error, time
+
+          base = os.environ["SUPABASE_URL"].rstrip("/")
+          key  = os.environ["SUPABASE_ANON_KEY"]
+          tables = os.environ["TABLES"].split()
+          PAGE = 1000
+          out = {}
+          for t in tables:
+              rows = []
+              offset = 0
+              while True:
+                  url = f"{base}/rest/v1/{t}?select=*&limit={PAGE}&offset={offset}"
+                  req = urllib.request.Request(url, headers={
+                      "apikey": key, "Authorization": f"Bearer {key}",
+                      "Accept": "application/json",
+                  })
+                  try:
+                      with urllib.request.urlopen(req, timeout=30) as r:
+                          chunk = json.loads(r.read().decode())
+                  except urllib.error.HTTPError as e:
+                      body = e.read().decode()[:200]
+                      print(f"WARN {t}: HTTP {e.code} {body}")
+                      break
+                  if not isinstance(chunk, list):
+                      print(f"WARN {t}: unexpected payload {str(chunk)[:200]}")
+                      break
+                  rows.extend(chunk)
+                  if len(chunk) < PAGE:
+                      break
+                  offset += PAGE
+                  time.sleep(0.1)
+              out[t] = rows
+              print(f"  {t}: {len(rows)} rows")
+          payload = json.dumps(out, indent=2, default=str)
+          sys.stdout.write(f"TOTAL rows: {sum(len(v) for v in out.values())}\n")
+          with open("sidequest-backup.json", "w") as f:
+              f.write(payload)
+          PY
+
           STAMP=$(date +%Y%m%d)
-          echo "Dumping public schema (data only) -> sidequest-backup-$STAMP.sql"
-          pg_dump "$SUPABASE_DB_URL" --data-only --schema=public --no-owner --no-privileges \
-            | gpg --batch --yes --passphrase "$BACKUP_PASSPHRASE" -c -o "sidequest-backup-$STAMP.sql.gpg"
-          ls -l "sidequest-backup-$STAMP.sql.gpg"
+          gpg --batch --yes --passphrase "$BACKUP_PASSPHRASE" -c -o "sidequest-backup-$STAMP.json.gpg" sidequest-backup.json
+          ls -l "sidequest-backup-$STAMP.json.gpg"
 
       - name: Upload encrypted backup
         uses: actions/upload-artifact@v4
         with:
           name: sidequest-db-backup
-          path: 'sidequest-backup-*.sql.gpg'
+          path: 'sidequest-backup-*.json.gpg'
           retention-days: 35
