@@ -2560,6 +2560,73 @@ export const HANGOUT_QUESTS: Quest[] = [
     tags: ['scuba', 'reef', 'wreck', 'jeffreys bay', 'warm water'],
   }),
 
+  // ── 🏊 INLAND & LEARNING ────────────────────────────────────────────────────
+  // Inland quarries, training centres and courses — for when the nearest
+  // ocean is a long drive away. Costs are the real 2026 rates from PADI
+  // centres / quarry gate fees surveyed this month.
+  q({
+    id: 'scuba-miracle-waters',
+    title: 'Miracle Waters Inland Quarry', emoji: '🐟',
+    category: 'activity', province: 'NW', city: 'Brits', region: 'north-west',
+    lat: -25.6211, lng: 27.7447,
+    durationMin: 180, cost: 220, players: [1, 6], difficulty: 1,
+    vibe: ['outdoors', 'competitive'],
+    description: "A 33m-deep abandoned chrome mine (1,050 m altitude) turned fresh-water dive site — five training platforms, ~10m visibility, warm in summer (up to 24°C) and thermoclines at 12/17/21 m. Air fills, gear hire and a shop on site. Under an hour from Joburg and Pretoria, it's the training ground for every Gauteng Open Water course.",
+    completionLine: "You dived an inland quarry with a bus, a plane, and a helicopter at the bottom. The kelp is still in Cape Town; you made do with bass and a puma helicopter.",
+    xp: 220,
+    ticketInfo: {
+      required: true, price: 'R220 per person · R200–R250 daily gate entry (not included in course fees)',
+      where: [
+        { label: 'At the Miracle Waters gatehouse (Brits, North West)' },
+        { label: 'Info & directions at SA-Venues', url: 'https://www.sa-venues.com/things-to-do/northwest/miracle-waters-diving' },
+      ],
+      url: 'https://www.sa-venues.com/things-to-do/northwest/miracle-waters-diving/',
+    },
+    tags: ['scuba', 'inland', 'quarry', 'training', 'miracle waters', 'north west'],
+  }),
+  q({
+    id: 'scuba-padi-open-water-gp',
+    title: 'PADI Open Water — Gauteng', emoji: '🤿',
+    category: 'activity', province: 'GP', city: 'Johannesburg', region: 'jhb',
+    lat: -26.2041, lng: 28.0473,
+    durationMin: 960, cost: 5200, players: [1, 4], difficulty: 2,
+    vibe: ['outdoors', 'social'],
+    description: "The world's most popular entry cert — 4–5 days of theory (PADI eLearning or classroom), 5 pool/confined sessions and 4 open-water dives. Gauteng centres train at Miracle Waters or Bass Lake; the price typically covers eLearning, all instruction, gear rental and a cert card. Quarry gate fees (~R200–R250/day) are extra.",
+    completionLine: "You earned your Open Water ticket and can now legally go deeper than a snorkel. The ocean (eventually) awaits.",
+    xp: 380, trending: true,
+    ticketInfo: {
+      required: true,
+      price: 'R5,200–R6,500 per person (course + eLearning + gear; quarry entry ~R200/day extra)',
+      where: [
+        { label: 'SCUBA.co.za (Northriding / Fourways, JHB)', url: 'https://www.scuba.co.za/' },
+        { label: 'Divestyle Africa (Johannesburg)', url: 'https://www.divestyleafrica.com/' },
+        { label: 'Any PADI 5-Star centre in Gauteng' },
+      ],
+      url: 'https://www.scuba.co.za/',
+    },
+    tags: ['scuba', 'training', 'padi', 'open water', 'gauteng', 'certification'],
+  }),
+  q({
+    id: 'scuba-bass-lake',
+    title: 'Bass Lake Inland Dive', emoji: '🐟',
+    category: 'activity', province: 'GP', city: 'Vereeniging', region: 'vaal',
+    lat: -26.5958, lng: 28.0334,
+    durationMin: 180, cost: 200, players: [1, 6], difficulty: 1,
+    vibe: ['outdoors', 'competitive'],
+    description: "The other Gauteng training quarry (Rietfontein, near Vereeniging) — warm, still, fresh water with underwater training aids and platforms. Used alongside Miracle Waters for Open Water courses; air fills and full gear hire on site. Less than 2 hours from Johannesburg.",
+    completionLine: "You did the inland double: two quarries, one cert. The fish are smaller but the thermoclines are honest.",
+    xp: 200,
+    ticketInfo: {
+      required: true, price: 'R200 per person · gear hire extra',
+      where: [
+        { label: 'At the Bass Lake gate (Vereeniging)' },
+        { label: 'SCUBA.co.za courses run here', url: 'https://www.scuba.co.za/' },
+      ],
+      url: 'https://www.padi.com/dive-center/south-africa/scubacoza',
+    },
+    tags: ['scuba', 'inland', 'quarry', 'training', 'bass lake', 'freestate'],
+  }),
+
   // Social & variety quests live in src/data/social.ts
   ...SOCIAL_QUESTS,
 ]
