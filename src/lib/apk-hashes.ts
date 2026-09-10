@@ -21,6 +21,10 @@ export const APK_HASHES: Record<string, { sha256: string; generatedAt: string }>
     sha256: 'abebb809a91ccb0fc2897396f0da70806d2c0ec61bf0d99bfc5f2474d2d42044',
     generatedAt: '2026-08-27',
   },
+  '1.0.27': {
+    sha256: '47e004808f39fdc8f124343900e84bb3bc1454bbd3e534048e11ab638c0618ee',
+    generatedAt: '2026-08-28',
+  },
 }
 
 export interface ApkHashEntry {

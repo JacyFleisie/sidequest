@@ -1,24 +1,21 @@
-# SideQuest v1.0.25 — Safer updates & a backend that stays awake 🛡️
+# SideQuest v1.0.27 — Go where the water's blue 🐠
 
-The behind-the-scenes fixes from the health check are in — nothing changes how
-the app plays, but it's now more robust and the most annoying outage is gone.
+Scuba diving locations, finally in the app. Coastal great whites and coral reefs, plus inland quarries and PADI training — wherever you are, there's somewhere to dive.
 
-## 🛡️ What's new
+## 🐠 What's new
 
-- **Verified updates.** The app now checks the downloaded update's SHA-256
-  against a pinned value before installing it, so a tampered or corrupted
-  release can never be silently installed.
-- **The backend stops going to sleep.** A daily keep-alive now pings the
-  Supabase project so the free tier no longer auto-pauses after a week of
-  quiet — that "fetch failed / can't load my stats" outage should be a thing
-  of the past.
-- **No more white screens.** A render error anywhere in the app now shows a
-  friendly "hit a snag — try again" card instead of a blank crash.
-- **More tests.** Anonymous sign-in, the stale-session self-heal, completion
-  sync and the updater are now covered by automated tests (76 passing).
+- **9 scuba diving locations** on the map, with real costs and booking links:
+  - **Coastal:** Gansbaai & Mossel Bay great white cage diving, Sodwana coral reefs, Aliwal Shoal ragged-tooths, Cape Town kelp & seals, Jeffreys Bay reef & wreck.
+  - **Inland & learning:** Miracle Waters quarry (Brits), Bass Lake (Vereeniging), and a full **PADI Open Water course** quest for Gauteng — the cheapest cert path with real gate-fee callouts.
+- All costs are the **current 2026 rates** surveyed from operator sites — no made-up numbers. Gate/entry fees that aren't bundled (Miracle Waters ~R220, Bass Lake ~R200) are surfaced separately so there are no surprises.
 
 ## 📍 Feeds & places
+- Live events feed remains current (v1.0.25 baseline). No stale August events.
+- No other data changes — the 376 existing quests + 4 from v1.0.26's backup/RLS work = 382 total, all clean.
 
-- Same SA map, same quests. Event feed and markets remain current from v1.0.24.
-
-Same great quests, same South Africa — just tougher to break.
+## 🛡️ Also ships (carried over from v1.0.25)
+- Verified APK updates (SHA-256 pinned, check before install)
+- Daily keep-alive so the free-tier backend never auto-pauses
+- ErrorBoundary — no more white screens
+- 100 passing automated tests
+- Automated, encrypted weekly DB backups

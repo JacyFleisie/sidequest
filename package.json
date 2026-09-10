@@ -1,7 +1,7 @@
 {
   "name": "sidequest",
   "private": true,
-  "version": "1.0.25",
+  "version": "1.0.27",
   "type": "module",
   "scripts": {
     "predev": "node scripts/sync-env.mjs",
