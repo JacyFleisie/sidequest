@@ -1,24 +1,13 @@
-# SideQuest v1.0.25 — Safer updates & a backend that stays awake 🛡️
+# SideQuest v1.0.28 — Cleaner updates, maps, and counts 🧹
 
-The behind-the-scenes fixes from the health check are in — nothing changes how
-the app plays, but it's now more robust and the most annoying outage is gone.
+A focused release on the three things the recent reviewer said made the app feel broken on first launch. No new features — just fixes.
 
-## 🛡️ What's new
+## 🐛 What's fixed
+- **Update prompts no longer stack.** The changelog modal and "Update available" toast no longer appear on top of each other across screens. Each prompt now shows **once** per version per session.
+- **Map tiles stay clean.** The basemap no longer falls back to a broken-provider watermark — the free Carto → OpenStreetMap chain is now the tested default, with a real retry button if tiles are unreachable.
+- **Quest counts agree.** The 280/393/430 drift is gone: every screen now reads from one canonical quest-count source. Gauteng completion shows a single consistent total.
+- **Star ratings now say what they mean.** Renamed to "Quality score" with visit counts, so a rating reflects actual proof-backed visits, not vague opinions.
 
-- **Verified updates.** The app now checks the downloaded update's SHA-256
-  against a pinned value before installing it, so a tampered or corrupted
-  release can never be silently installed.
-- **The backend stops going to sleep.** A daily keep-alive now pings the
-  Supabase project so the free tier no longer auto-pauses after a week of
-  quiet — that "fetch failed / can't load my stats" outage should be a thing
-  of the past.
-- **No more white screens.** A render error anywhere in the app now shows a
-  friendly "hit a snag — try again" card instead of a blank crash.
-- **More tests.** Anonymous sign-in, the stale-session self-heal, completion
-  sync and the updater are now covered by automated tests (76 passing).
-
-## 📍 Feeds & places
-
-- Same SA map, same quests. Event feed and markets remain current from v1.0.24.
-
-Same great quests, same South Africa — just tougher to break.
+## 🐠 Carried over from v1.0.27
+- 9 scuba diving locations (6 coastal, 3 inland) with 2026 rates and booking links.
+- Verified APK updates (SHA-256 pinned), daily keep-alive, ErrorBoundary, 110 passing tests.
