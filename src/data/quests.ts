@@ -1098,6 +1098,9 @@ export const unregisterCustomQuest = (id: string): void => {
   customRegistry.delete(id)
 }
 
+/** Snapshot of all runtime custom quests (use for canonical counts). */
+export const customQuests = (): Quest[] => [...customRegistry.values()]
+
 /** Non-throwing lookup: official quests first, then the custom registry. */
 export const findQuest = (id: string): Quest | undefined =>
   ALL_QUESTS.find((x) => x.id === id) ?? customRegistry.get(id)

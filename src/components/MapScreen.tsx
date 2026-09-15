@@ -449,7 +449,7 @@ export default function MapScreen() {
           />
         </div>
         <div className="map-hint">
-          {visible.quests.length + visible.chains.length} quests · starting from {startLabel}
+        {visible.quests.length + visible.chains.length} quests · starting from {startLabel}
           {liveQuests.length > 0 && (
             <span className="map-hint-live" title="Auto-discovered live events">
               🟥 {liveQuests.length} live

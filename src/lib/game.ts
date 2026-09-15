@@ -102,11 +102,11 @@ export const completedCountByProvince = (p: Progress): Record<ProvinceId, number
   return counts
 }
 
-/** Total quests + chains available in a province — the pool badge targets are
- * sized against. */
-export const totalQuestsInProvince = (province: ProvinceId): number =>
-  ALL_QUESTS.filter((x) => x.province === province).length +
-  CHAINS.filter((x) => x.province === province).length
+import { questsInProvince as _questsInProvince } from '../lib/quests'
+
+/** @deprecated — use `questsInProvince` from `src/lib/quests`. Kept for back-compat;
+ *  now delegates to the single source of truth so counts are stable everywhere. */
+export const totalQuestsInProvince = _questsInProvince
 
 // ── Stats dashboard ──────────────────────────────────────────────────────────
 export interface PlayerStats {

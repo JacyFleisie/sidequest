@@ -382,12 +382,12 @@ function Reviews({ questId, canReview }: { questId: string; canReview: boolean }
   return (
     <div className="quest-reviews">
       <div className="reviews-head">
-        <span className="reviews-title">⭐ Ratings & reviews</span>
+        <span className="reviews-title">⭐ Quality score</span>
         {stats.count > 0 && (
           <span className="reviews-stats">
             {stats.avg !== null && <b>{stats.avg.toFixed(1)}</b>}
             {' · '}
-            {stats.count} {stats.count === 1 ? 'review' : 'reviews'}
+            {stats.count} {stats.count === 1 ? 'visit' : 'visits'}
             {stats.recommend !== null && ` · ${stats.recommend}% recommend`}
           </span>
         )}
