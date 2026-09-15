@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { detectJustUpdated, type UpdatedInfo } from '../lib/updater'
+import { shouldShowUpdatedNotice } from '../lib/updates'
 
 /**
  * Appears when the app was updated since its last launch (the Android installer
@@ -25,7 +26,10 @@ export default function UpdatedNotice() {
     if (checked.current) return
     checked.current = true
     void detectJustUpdated().then((u) => {
-      if (u) setInfo(u)
+      if (!u) return
+      // Once-per-session gate: prevents the modal stacking across screens (review §1).
+      if (!shouldShowUpdatedNotice(u.version)) return
+      setInfo(u)
     })
   }, [])
 

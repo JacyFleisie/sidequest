@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Capacitor } from '@capacitor/core'
 import { App as CapApp } from '@capacitor/app'
 import { checkForUpdate, downloadAndInstall, isAndroid, type UpdateInfo } from '../lib/updater'
+import { shouldShowUpdateBanner } from '../lib/updates'
 
 type State =
   | { kind: 'idle' }
@@ -24,6 +25,9 @@ export default function UpdateBanner() {
       const info = await checkForUpdate()
       setState((s) => {
         // Never regress a shown banner (an in-flight re-check must not blink it).
+        // Once-per-session gate: prevents the "Update available" toast from
+        // re-firing on every screen/resume within the same session (review §1).
+        if (info && !shouldShowUpdateBanner(info.latest)) return s
         if (info) return { kind: 'available', info }
         return s.kind === 'available' || s.kind === 'downloading' ? s : { kind: 'idle' }
       })
