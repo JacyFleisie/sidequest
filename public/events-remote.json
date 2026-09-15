@@ -1,18 +1,18 @@
 {
-  "generatedAt": "2026-08-26T12:13:00.998Z",
+  "generatedAt": "2026-09-15T08:53:26.239Z",
   "source": "howler",
   "events": [
     {
-      "id": "remote-howler-cnbc-africa-ai-summit-2026-20260827",
-      "title": "CNBC Africa - AI Summit 2026",
+      "id": "remote-howler-lentedag-2026-gotyme-bank-card-holder-only-20260916",
+      "title": "Lentedag 2026 | GoTyme Bank Card Holder Only",
       "emoji": "🎟️",
       "category": "event",
-      "city": "johannesburg",
+      "city": "pretoria",
       "province": "GP",
       "provinceName": "Gauteng",
       "region": "",
-      "lat": -26.2041,
-      "lng": 28.0473,
+      "lat": -25.7449,
+      "lng": 28.1876,
       "durationMin": 150,
       "cost": 0,
       "players": [
@@ -23,18 +23,18 @@
       "vibe": [
         "entertainment"
       ],
-      "description": "Live ticketed event at The Maslow Hotel, Sandton, Johannesburg — check the ticket page for details.",
+      "description": "Live ticketed event at Pretoria National Botanical Gardens — check the ticket page for details.",
       "completionLine": "You were there. Legend.",
       "xp": 300,
-      "when": "Thu, 27 Aug 2026",
-      "startsAt": "2026-08-27T16:00:00.000Z",
+      "when": "Wed, 16 Sept 2026",
+      "startsAt": "2026-09-16T16:00:00.000Z",
       "ticketInfo": {
         "required": true,
-        "price": "from R 2 500",
+        "price": "from R 400",
         "where": [
           {
             "label": "Online at Howler",
-            "url": "https://www.howler.co.za/CNBC_AI_summit_2026?utm_campaign=Upcoming+Events&utm_medium=Web&utm_source=Landing+Page"
+            "url": "https://www.howler.co.za/lentedag2026gotymebank?utm_campaign=Upcoming+Events&utm_medium=Web&utm_source=Landing+Page"
           },
           {
             "label": "See the event page for more options"
@@ -44,7 +44,52 @@
       "tags": [
         "howler",
         "live",
-        "johannesburg"
+        "pretoria"
+      ]
+    },
+    {
+      "id": "remote-howler-lentedag-2026-20260916",
+      "title": "Lentedag 2026",
+      "emoji": "🎟️",
+      "category": "event",
+      "city": "pretoria",
+      "province": "GP",
+      "provinceName": "Gauteng",
+      "region": "",
+      "lat": -25.7449,
+      "lng": 28.1876,
+      "durationMin": 150,
+      "cost": 0,
+      "players": [
+        1,
+        8
+      ],
+      "difficulty": 1,
+      "vibe": [
+        "entertainment"
+      ],
+      "description": "Live ticketed event at Pretoria National Botanical Gardens — check the ticket page for details.",
+      "completionLine": "You were there. Legend.",
+      "xp": 300,
+      "when": "Wed, 16 Sept 2026",
+      "startsAt": "2026-09-16T16:00:00.000Z",
+      "ticketInfo": {
+        "required": true,
+        "price": "from R 20",
+        "where": [
+          {
+            "label": "Online at Howler",
+            "url": "https://www.howler.co.za/lentedag26?utm_campaign=Upcoming+Events&utm_medium=Web&utm_source=Landing+Page"
+          },
+          {
+            "label": "See the event page for more options"
+          }
+        ]
+      },
+      "tags": [
+        "howler",
+        "live",
+        "pretoria"
       ]
     }
   ]
