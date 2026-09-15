@@ -1,21 +1,13 @@
-# SideQuest v1.0.27 — Go where the water's blue 🐠
+# SideQuest v1.0.28 — Cleaner updates, maps, and counts 🧹
 
-Scuba diving locations, finally in the app. Coastal great whites and coral reefs, plus inland quarries and PADI training — wherever you are, there's somewhere to dive.
+A focused release on the three things the recent reviewer said made the app feel broken on first launch. No new features — just fixes.
 
-## 🐠 What's new
+## 🐛 What's fixed
+- **Update prompts no longer stack.** The changelog modal and "Update available" toast no longer appear on top of each other across screens. Each prompt now shows **once** per version per session.
+- **Map tiles stay clean.** The basemap no longer falls back to a broken-provider watermark — the free Carto → OpenStreetMap chain is now the tested default, with a real retry button if tiles are unreachable.
+- **Quest counts agree.** The 280/393/430 drift is gone: every screen now reads from one canonical quest-count source. Gauteng completion shows a single consistent total.
+- **Star ratings now say what they mean.** Renamed to "Quality score" with visit counts, so a rating reflects actual proof-backed visits, not vague opinions.
 
-- **9 scuba diving locations** on the map, with real costs and booking links:
-  - **Coastal:** Gansbaai & Mossel Bay great white cage diving, Sodwana coral reefs, Aliwal Shoal ragged-tooths, Cape Town kelp & seals, Jeffreys Bay reef & wreck.
-  - **Inland & learning:** Miracle Waters quarry (Brits), Bass Lake (Vereeniging), and a full **PADI Open Water course** quest for Gauteng — the cheapest cert path with real gate-fee callouts.
-- All costs are the **current 2026 rates** surveyed from operator sites — no made-up numbers. Gate/entry fees that aren't bundled (Miracle Waters ~R220, Bass Lake ~R200) are surfaced separately so there are no surprises.
-
-## 📍 Feeds & places
-- Live events feed remains current (v1.0.25 baseline). No stale August events.
-- No other data changes — the 376 existing quests + 4 from v1.0.26's backup/RLS work = 382 total, all clean.
-
-## 🛡️ Also ships (carried over from v1.0.25)
-- Verified APK updates (SHA-256 pinned, check before install)
-- Daily keep-alive so the free-tier backend never auto-pauses
-- ErrorBoundary — no more white screens
-- 100 passing automated tests
-- Automated, encrypted weekly DB backups
+## 🐠 Carried over from v1.0.27
+- 9 scuba diving locations (6 coastal, 3 inland) with 2026 rates and booking links.
+- Verified APK updates (SHA-256 pinned), daily keep-alive, ErrorBoundary, 110 passing tests.
