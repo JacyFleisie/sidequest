@@ -26,7 +26,7 @@ export const APK_HASHES: Record<string, { sha256: string; generatedAt: string }>
     generatedAt: '2026-08-28',
   },
   '1.0.28': {
-    sha256: 'd0a9db031ab9f299d3ee840dfbe2e81cd81519dc7314fa3f165e676eda724d30',
+    sha256: '865b19ecea057ee15f5ee992d571d33153526661a762a4a9f947b8fff14e1b80',
     generatedAt: '2026-09-15',
   },
 }

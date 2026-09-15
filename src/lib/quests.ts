@@ -13,10 +13,12 @@
 // This module unifies that: questsInProvince() always includes custom quests,
 // so every count is stable and comparable.
 // ─────────────────────────────────────────────────────────────────────────────
-import { ALL_QUESTS, CHAINS, customQuests, type ProvinceId } from '../data/quests'
+import { ALL_QUESTS, CHAINS, customQuests, type ProvinceId, type Quest, type Chain } from '../data/quests'
 
-/** Every quest the app knows about right now: official + chains + runtime custom. */
-export const allQuests = (): (typeof ALL_QUESTS[number])[] => [
+type Countable = Quest | Chain
+
+/** Every quest/chain the app knows about right now: official + chains + runtime custom. */
+export const allQuests = (): Countable[] => [
   ...ALL_QUESTS,
   ...CHAINS,
   ...customQuests(),

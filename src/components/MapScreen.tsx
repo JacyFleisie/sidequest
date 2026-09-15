@@ -37,7 +37,7 @@ const pinHtml = (emoji: string, color: string, done: boolean, chain: boolean, li
     done ? '<span class="pin-check">✓</span>' : ''
   }${live ? '<span class="pin-live-tag">LIVE</span>' : ''}</div>`
 
-import { TILE_PROVIDERS, tileProviderForError, type TileProvider } from '../data/tiles'
+import { TILE_PROVIDERS, tileProviderForError } from '../data/tiles'
 
 // Tile provider data now lives in src/data/tiles.ts (leaflet-free) so the fallback
 // logic is unit-testable. MapScreen.tsx only consumes it here.
@@ -96,7 +96,10 @@ function FallbackTiles() {
   const retry = () => {
     errs.current = 0
     setDead(false)
-    setProviderIdx(0)
+    // Jump straight to the no-key OSM fallback instead of cycling through
+    // providers that just failed (the CARTO URLs 401'd for a reason).
+    const fallbackIdx = TILE_PROVIDERS.findIndex((p) => p === tileProviderForError())
+    setProviderIdx(fallbackIdx >= 0 ? fallbackIdx : TILE_PROVIDERS.length - 1)
   }
 
   return (
