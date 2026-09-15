@@ -37,30 +37,10 @@ const pinHtml = (emoji: string, color: string, done: boolean, chain: boolean, li
     done ? '<span class="pin-check">✓</span>' : ''
   }${live ? '<span class="pin-live-tag">LIVE</span>' : ''}</div>`
 
-// Free tile providers, tried in order. CARTO's public tiles are free but rate-limit and
-// drop out intermittently — if they fail we slide to the next source instead of showing a gray map.
-const TILE_PROVIDERS = [
-  {
-    name: 'CARTO',
-    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    subdomains: 'abcd',
-    maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-  },
-  {
-    name: 'CARTO light',
-    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    subdomains: 'abcd',
-    maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-  },
-  {
-    name: 'OpenStreetMap',
-    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-    maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-  },
-]
+import { TILE_PROVIDERS, tileProviderForError, type TileProvider } from '../data/tiles'
+
+// Tile provider data now lives in src/data/tiles.ts (leaflet-free) so the fallback
+// logic is unit-testable. MapScreen.tsx only consumes it here.
 
 function FallbackTiles() {
   const map = useMap()
